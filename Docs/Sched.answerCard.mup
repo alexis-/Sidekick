@@ -1,0 +1,1204 @@
+{
+  "title": "Sched.answerCard(Card, int)",
+  "id": 1,
+  "formatVersion": 2,
+  "attr": {
+    "style": {
+      "background": "transparent"
+    }
+  },
+  "ideas": {
+    "10": {
+      "title": "increase reps",
+      "id": 4,
+      "ideas": {
+        "1": {
+          "title": "if (BurySiblingOnAnswer) burySiblings(card)",
+          "id": 2,
+          "ideas": {
+            "1": {
+              "title": "if (wasNew) // queue = 0",
+              "id": 8,
+              "attr": {
+                "style": {},
+                "position": [
+                  192.25335693359511,
+                  -118.80312597838707,
+                  1
+                ]
+              },
+              "ideas": {
+                "1": {
+                  "title": "setQueue(1)",
+                  "id": 11,
+                  "ideas": {
+                    "3": {
+                      "title": "if (type = 0) type = 1",
+                      "id": 12,
+                      "ideas": {
+                        "1": {
+                          "title": "setLeft(initial val)",
+                          "id": 13,
+                          "ideas": {
+                            "3": {
+                              "title": "endif",
+                              "id": 17,
+                              "ideas": {
+                                "1": {
+                                  "title": "if (queue IN 1,3) // learning",
+                                  "id": 9,
+                                  "attr": {
+                                    "style": {},
+                                    "position": [
+                                      108.74664306640489,
+                                      -202.3062744140634,
+                                      1
+                                    ]
+                                  },
+                                  "ideas": {
+                                    "1": {
+                                      "title": "_answerLrnCard(card, ease)",
+                                      "id": 15,
+                                      "attr": {
+                                        "style": {
+                                          "background": "#ffcc99"
+                                        }
+                                      },
+                                      "ideas": {
+                                        "4": {
+                                          "title": "(impl)",
+                                          "id": 112,
+                                          "ideas": {
+                                            "1": {
+                                              "title": "else",
+                                              "id": 22,
+                                              "ideas": {
+                                                "1": {
+                                                  "title": "if (ease = 2) // good",
+                                                  "id": 23,
+                                                  "ideas": {
+                                                    "1": {
+                                                      "title": "setLeft(-1)",
+                                                      "id": 26,
+                                                      "ideas": {
+                                                        "1": {
+                                                          "title": "endif",
+                                                          "id": 75
+                                                        }
+                                                      },
+                                                      "attr": {
+                                                        "style": {}
+                                                      }
+                                                    }
+                                                  },
+                                                  "attr": {
+                                                    "position": [
+                                                      175,
+                                                      -38,
+                                                      2
+                                                    ],
+                                                    "style": {}
+                                                  }
+                                                },
+                                                "2": {
+                                                  "title": "else // fail or lapse",
+                                                  "id": 24,
+                                                  "ideas": {
+                                                    "1": {
+                                                      "title": "setLeft(initial val)",
+                                                      "id": 27,
+                                                      "ideas": {
+                                                        "1": {
+                                                          "title": "if (review)",
+                                                          "id": 31,
+                                                          "ideas": {
+                                                            "1": {
+                                                              "title": "card.setIvl(Math.max(Math.max(1, card.getIvl() * \"mult\"), \"minInt\"))",
+                                                              "id": 34,
+                                                              "ideas": {
+                                                                "1": {
+                                                                  "title": "endif",
+                                                                  "id": 35,
+                                                                  "ideas": {
+                                                                    "1": {
+                                                                      "title": "endif",
+                                                                      "id": 77,
+                                                                      "attr": {
+                                                                        "style": {},
+                                                                        "position": [
+                                                                          43.499999999999545,
+                                                                          -60,
+                                                                          1
+                                                                        ]
+                                                                      }
+                                                                    }
+                                                                  },
+                                                                  "attr": {
+                                                                    "style": {},
+                                                                    "position": [
+                                                                      224.74999999999955,
+                                                                      -56.999999999999545,
+                                                                      1
+                                                                    ]
+                                                                  }
+                                                                }
+                                                              },
+                                                              "attr": {
+                                                                "style": {},
+                                                                "position": [
+                                                                  43.0870056152321,
+                                                                  43.30627441406159,
+                                                                  1
+                                                                ]
+                                                              }
+                                                            }
+                                                          },
+                                                          "attr": {
+                                                            "style": {},
+                                                            "position": [
+                                                              115.74999999999955,
+                                                              56.193725585937955,
+                                                              1
+                                                            ]
+                                                          }
+                                                        }
+                                                      },
+                                                      "attr": {
+                                                        "style": {}
+                                                      }
+                                                    }
+                                                  },
+                                                  "attr": {
+                                                    "position": [
+                                                      163.58700561523256,
+                                                      69.11254882812364,
+                                                      3
+                                                    ],
+                                                    "style": {}
+                                                  }
+                                                }
+                                              },
+                                              "attr": {
+                                                "style": {},
+                                                "position": [
+                                                  95.08700561523483,
+                                                  82.91584766172781,
+                                                  3
+                                                ]
+                                              }
+                                            },
+                                            "0.5": {
+                                              "title": "elif (ease = 2 & graduating) // good",
+                                              "id": 19,
+                                              "ideas": {
+                                                "1": {
+                                                  "title": "_rescheduleAsRev(card, conf, false)",
+                                                  "id": 25,
+                                                  "ideas": {
+                                                    "1": {
+                                                      "title": "endif",
+                                                      "id": 29,
+                                                      "attr": {
+                                                        "style": {},
+                                                        "position": [
+                                                          668,
+                                                          62.97194922057594,
+                                                          1
+                                                        ]
+                                                      },
+                                                      "ideas": {
+                                                        "1": {
+                                                          "title": "if (due < now)",
+                                                          "id": 36,
+                                                          "attr": {
+                                                            "style": {}
+                                                          },
+                                                          "ideas": {
+                                                            "1": {
+                                                              "title": "addRandomness(25%)",
+                                                              "id": 51,
+                                                              "ideas": {
+                                                                "1": {
+                                                                  "title": "endif",
+                                                                  "id": 52,
+                                                                  "ideas": {
+                                                                    "1": {
+                                                                      "title": "setDue(nextLearnDelay)",
+                                                                      "id": 54,
+                                                                      "ideas": {
+                                                                        "1": {
+                                                                          "title": "if (dueToday)",
+                                                                          "id": 55,
+                                                                          "ideas": {
+                                                                            "1": {
+                                                                              "title": "setQueue(1)",
+                                                                              "id": 59,
+                                                                              "attr": {
+                                                                                "position": [
+                                                                                  145.0870056152321,
+                                                                                  -56.693725585937955,
+                                                                                  1
+                                                                                ],
+                                                                                "style": {}
+                                                                              },
+                                                                              "ideas": {
+                                                                                "1": {
+                                                                                  "title": "if (noRev & noNew & isLrn)",
+                                                                                  "id": 62,
+                                                                                  "ideas": {
+                                                                                    "1": {
+                                                                                      "title": "makeSureCurCardNotFirst",
+                                                                                      "id": 64,
+                                                                                      "ideas": {
+                                                                                        "1": {
+                                                                                          "title": "endif",
+                                                                                          "id": 65,
+                                                                                          "attr": {
+                                                                                            "position": [
+                                                                                              187.55361938476744,
+                                                                                              82.02185058593795,
+                                                                                              1
+                                                                                            ],
+                                                                                            "style": {}
+                                                                                          }
+                                                                                        }
+                                                                                      }
+                                                                                    }
+                                                                                  }
+                                                                                }
+                                                                              }
+                                                                            }
+                                                                          }
+                                                                        },
+                                                                        "2": {
+                                                                          "title": "else // due another day",
+                                                                          "id": 66,
+                                                                          "ideas": {
+                                                                            "1": {
+                                                                              "title": "setQueue(3) // dayLearnQueue",
+                                                                              "id": 69,
+                                                                              "ideas": {
+                                                                                "1": {
+                                                                                  "title": "setDue(daysFromToday)",
+                                                                                  "id": 71,
+                                                                                  "ideas": {}
+                                                                                }
+                                                                              }
+                                                                            }
+                                                                          },
+                                                                          "attr": {
+                                                                            "position": [
+                                                                              171.99999999999955,
+                                                                              56,
+                                                                              1
+                                                                            ],
+                                                                            "style": {}
+                                                                          }
+                                                                        }
+                                                                      }
+                                                                    }
+                                                                  },
+                                                                  "attr": {
+                                                                    "style": {}
+                                                                  }
+                                                                }
+                                                              },
+                                                              "attr": {
+                                                                "style": {}
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  },
+                                                  "attr": {
+                                                    "style": {
+                                                      "background": "#ffcc99"
+                                                    }
+                                                  }
+                                                }
+                                              },
+                                              "attr": {
+                                                "style": {},
+                                                "position": [
+                                                  96.33700561523483,
+                                                  -79.27805077942406,
+                                                  1
+                                                ]
+                                              }
+                                            },
+                                            "0.25": {
+                                              "title": "if (ease = 3) // easy",
+                                              "id": 18,
+                                              "ideas": {
+                                                "1": {
+                                                  "title": "_rescheduleAsRev(card, conf, true)",
+                                                  "id": 20,
+                                                  "attr": {
+                                                    "style": {
+                                                      "background": "#ffcc99"
+                                                    },
+                                                    "position": [
+                                                      185,
+                                                      -4,
+                                                      1
+                                                    ]
+                                                  },
+                                                  "ideas": {
+                                                    "0.25": {
+                                                      "title": "(Impl)",
+                                                      "id": 44,
+                                                      "attr": {
+                                                        "position": [
+                                                          332.5,
+                                                          -26.02805077942412,
+                                                          1
+                                                        ],
+                                                        "style": {
+                                                          "background": "#ffffff"
+                                                        }
+                                                      },
+                                                      "ideas": {
+                                                        "1": {
+                                                          "title": "if (type = 2) // lapse",
+                                                          "id": 38,
+                                                          "attr": {
+                                                            "style": {}
+                                                          },
+                                                          "ideas": {
+                                                            "1": {
+                                                              "title": "setDue(Math.max(mToday + 1, card.getODue()))",
+                                                              "id": 39,
+                                                              "ideas": {
+                                                                "1": {
+                                                                  "title": "setODue(0)",
+                                                                  "id": 40,
+                                                                  "ideas": {
+                                                                    "1": {
+                                                                      "title": "endif",
+                                                                      "id": 41,
+                                                                      "ideas": {
+                                                                        "1": {
+                                                                          "title": "setQueue(2)",
+                                                                          "id": 49,
+                                                                          "ideas": {
+                                                                            "1": {
+                                                                              "title": "setType(2)",
+                                                                              "id": 50
+                                                                            }
+                                                                          },
+                                                                          "attr": {
+                                                                            "style": {}
+                                                                          }
+                                                                        }
+                                                                      },
+                                                                      "attr": {
+                                                                        "style": {},
+                                                                        "position": [
+                                                                          147.58700561523165,
+                                                                          -36.02805077942571,
+                                                                          1
+                                                                        ]
+                                                                      }
+                                                                    }
+                                                                  }
+                                                                }
+                                                              }
+                                                            }
+                                                          }
+                                                        },
+                                                        "0.5": {
+                                                          "title": "else // review",
+                                                          "id": 42,
+                                                          "ideas": {
+                                                            "1": {
+                                                              "title": "_rescheduleNew(card, conf, early)",
+                                                              "id": 43,
+                                                              "attr": {
+                                                                "style": {
+                                                                  "background": "#ffcc99"
+                                                                },
+                                                                "position": [
+                                                                  161.5870056152321,
+                                                                  -14.028050779425712,
+                                                                  1
+                                                                ]
+                                                              },
+                                                              "ideas": {
+                                                                "1": {
+                                                                  "title": "(impl)",
+                                                                  "id": 107,
+                                                                  "ideas": {
+                                                                    "1": {
+                                                                      "title": "setIvl(_graduatingIvl(card, conf, early, adjust = false))",
+                                                                      "id": 83,
+                                                                      "attr": {
+                                                                        "style": {
+                                                                          "background": "#ffcc99"
+                                                                        }
+                                                                      },
+                                                                      "ideas": {
+                                                                        "1": {
+                                                                          "title": "setDue(today + interval)",
+                                                                          "id": 84,
+                                                                          "ideas": {
+                                                                            "1": {
+                                                                              "title": "setFactor(initialFactor)",
+                                                                              "id": 86
+                                                                            }
+                                                                          },
+                                                                          "attr": {
+                                                                            "style": {},
+                                                                            "position": [
+                                                                              225.50000000000273,
+                                                                              13.75,
+                                                                              2
+                                                                            ]
+                                                                          }
+                                                                        },
+                                                                        "0.5": {
+                                                                          "title": "(impl)",
+                                                                          "id": 106,
+                                                                          "ideas": {
+                                                                            "1": {
+                                                                              "title": "if (type = 2) // lapsed card",
+                                                                              "id": 87,
+                                                                              "attr": {
+                                                                                "style": {}
+                                                                              },
+                                                                              "ideas": {
+                                                                                "1": {
+                                                                                  "title": "return card.getInterval()",
+                                                                                  "id": 89,
+                                                                                  "ideas": {
+                                                                                    "1": {
+                                                                                      "title": "endif",
+                                                                                      "id": 90,
+                                                                                      "ideas": {
+                                                                                        "1": {
+                                                                                          "title": "if (adjust)",
+                                                                                          "id": 92,
+                                                                                          "ideas": {
+                                                                                            "1": {
+                                                                                              "title": "return _fuzzedIvl(\"ints\"[early ? 1 : 0])",
+                                                                                              "id": 93,
+                                                                                              "attr": {
+                                                                                                "style": {
+                                                                                                  "background": "#ffcc99"
+                                                                                                }
+                                                                                              },
+                                                                                              "ideas": {}
+                                                                                            }
+                                                                                          }
+                                                                                        },
+                                                                                        "2": {
+                                                                                          "title": "else",
+                                                                                          "id": 94,
+                                                                                          "ideas": {
+                                                                                            "1": {
+                                                                                              "title": "return \"ints\"[early ? 1 : 0]",
+                                                                                              "id": 95
+                                                                                            }
+                                                                                          }
+                                                                                        }
+                                                                                      }
+                                                                                    }
+                                                                                  }
+                                                                                }
+                                                                              }
+                                                                            }
+                                                                          },
+                                                                          "attr": {
+                                                                            "style": {
+                                                                              "background": "#ffffff"
+                                                                            },
+                                                                            "position": [
+                                                                              145.50000000000273,
+                                                                              -82.5,
+                                                                              3
+                                                                            ]
+                                                                          }
+                                                                        }
+                                                                      }
+                                                                    }
+                                                                  },
+                                                                  "attr": {
+                                                                    "position": [
+                                                                      265.4129943847679,
+                                                                      -39.485974610287144,
+                                                                      1
+                                                                    ],
+                                                                    "style": {
+                                                                      "background": "#ffffff"
+                                                                    }
+                                                                  }
+                                                                }
+                                                              }
+                                                            }
+                                                          },
+                                                          "attr": {
+                                                            "style": {}
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              },
+                                              "attr": {
+                                                "style": {},
+                                                "position": [
+                                                  91.33700561523483,
+                                                  -146.11220311769625,
+                                                  4
+                                                ]
+                                              }
+                                            }
+                                          },
+                                          "attr": {
+                                            "style": {
+                                              "background": "#ffffff"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                },
+                                "2": {
+                                  "title": "elif (queue = 2) // review",
+                                  "id": 10,
+                                  "attr": {
+                                    "style": {},
+                                    "position": [
+                                      79.74664306640489,
+                                      131.6937255859366,
+                                      2
+                                    ]
+                                  },
+                                  "ideas": {
+                                    "1": {
+                                      "title": "_answerRevCard(card, ease)",
+                                      "id": 16,
+                                      "attr": {
+                                        "style": {
+                                          "background": "#ffcc99"
+                                        }
+                                      },
+                                      "ideas": {
+                                        "2": {
+                                          "title": "(impl)",
+                                          "id": 110,
+                                          "ideas": {
+                                            "1": {
+                                              "title": "else // review",
+                                              "id": 79,
+                                              "ideas": {
+                                                "1": {
+                                                  "title": "_rescheduleRev(card, ease)",
+                                                  "id": 80,
+                                                  "attr": {
+                                                    "style": {
+                                                      "background": "#ffcc99"
+                                                    }
+                                                  },
+                                                  "ideas": {
+                                                    "1": {
+                                                      "title": "(impl)",
+                                                      "id": 113,
+                                                      "attr": {
+                                                        "style": {
+                                                          "background": "#ffffff"
+                                                        }
+                                                      },
+                                                      "ideas": {
+                                                        "1": {
+                                                          "title": "setLastInterval()",
+                                                          "id": 159,
+                                                          "ideas": {
+                                                            "1": {
+                                                              "title": "_updateRevIvl(card, ease)",
+                                                              "id": 160,
+                                                              "ideas": {
+                                                                "1": {
+                                                                  "title": "setFactor(Max(\"minIvl\", {-150, 0, 150}[ease - 2]))",
+                                                                  "id": 161,
+                                                                  "ideas": {
+                                                                    "1": {
+                                                                      "title": "setDue(today + interval)",
+                                                                      "id": 162
+                                                                    }
+                                                                  },
+                                                                  "attr": {
+                                                                    "position": [
+                                                                      222.08700561523256,
+                                                                      -3.4212802570031613,
+                                                                      2
+                                                                    ],
+                                                                    "style": {}
+                                                                  }
+                                                                },
+                                                                "2": {
+                                                                  "title": "(impl)",
+                                                                  "id": 163,
+                                                                  "attr": {
+                                                                    "position": [
+                                                                      164.58700561523256,
+                                                                      95.32871974299684,
+                                                                      1
+                                                                    ],
+                                                                    "style": {
+                                                                      "background": "#ffffff"
+                                                                    }
+                                                                  },
+                                                                  "ideas": {
+                                                                    "1": {
+                                                                      "title": "setIvl(_fuzzedIvl(_nextRevIvl(card, ease))",
+                                                                      "id": 164,
+                                                                      "attr": {
+                                                                        "style": {
+                                                                          "background": "#ffcc99"
+                                                                        }
+                                                                      },
+                                                                      "ideas": {
+                                                                        "1": {
+                                                                          "title": "(impl)",
+                                                                          "id": 165,
+                                                                          "attr": {
+                                                                            "style": {
+                                                                              "background": "#ffffff"
+                                                                            }
+                                                                          }
+                                                                        }
+                                                                      }
+                                                                    }
+                                                                  }
+                                                                }
+                                                              },
+                                                              "attr": {
+                                                                "style": {
+                                                                  "background": "#ffcc99"
+                                                                }
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            },
+                                            "0.5": {
+                                              "title": "if (ease = 0) // lapse",
+                                              "id": 78,
+                                              "ideas": {
+                                                "1": {
+                                                  "title": "_rescheduleLapse(card)",
+                                                  "id": 81,
+                                                  "attr": {
+                                                    "style": {
+                                                      "background": "#ffcc99"
+                                                    }
+                                                  },
+                                                  "ideas": {
+                                                    "1": {
+                                                      "title": "(impl)",
+                                                      "id": 109,
+                                                      "ideas": {
+                                                        "1": {
+                                                          "title": "setLastInterval()",
+                                                          "id": 99,
+                                                          "ideas": {
+                                                            "1": {
+                                                              "title": "increaseLapse()",
+                                                              "id": 100,
+                                                              "ideas": {
+                                                                "1": {
+                                                                  "title": "setInterval(_nextLapseIvl(card, conf))",
+                                                                  "id": 101,
+                                                                  "attr": {
+                                                                    "style": {
+                                                                      "background": "#ffcc99"
+                                                                    }
+                                                                  },
+                                                                  "ideas": {
+                                                                    "1": {
+                                                                      "title": "setFactor(Max(\"minInt\", interval - 200))",
+                                                                      "id": 103,
+                                                                      "ideas": {
+                                                                        "1": {
+                                                                          "title": "setDue(today + interval)",
+                                                                          "id": 104,
+                                                                          "ideas": {
+                                                                            "1": {
+                                                                              "title": "if ((_checkLeech(card) & queue == -1) || \"delays\" not set)",
+                                                                              "id": 114,
+                                                                              "ideas": {
+                                                                                "0.5": {
+                                                                                  "title": "(impl)",
+                                                                                  "id": 122,
+                                                                                  "attr": {
+                                                                                    "position": [
+                                                                                      191.41299438476517,
+                                                                                      142.75,
+                                                                                      5
+                                                                                    ],
+                                                                                    "style": {
+                                                                                      "background": "#ffffff"
+                                                                                    }
+                                                                                  },
+                                                                                  "ideas": {
+                                                                                    "1": {
+                                                                                      "title": "checkLeechValSet()",
+                                                                                      "id": 123,
+                                                                                      "ideas": {
+                                                                                        "1": {
+                                                                                          "title": "if (lapses >= leechVal || halfThresholdAfter)",
+                                                                                          "id": 126,
+                                                                                          "ideas": {
+                                                                                            "1": {
+                                                                                              "title": "setLeech()",
+                                                                                              "id": 127,
+                                                                                              "ideas": {
+                                                                                                "1": {
+                                                                                                  "title": "if (\"leechAction\" = 0) // suspend",
+                                                                                                  "id": 128,
+                                                                                                  "ideas": {
+                                                                                                    "1": {
+                                                                                                      "title": "if (ODue != 0)",
+                                                                                                      "id": 129,
+                                                                                                      "ideas": {
+                                                                                                        "1": {
+                                                                                                          "title": "setDue(ODue)",
+                                                                                                          "id": 130,
+                                                                                                          "ideas": {
+                                                                                                            "1": {
+                                                                                                              "title": "endif",
+                                                                                                              "id": 131,
+                                                                                                              "ideas": {
+                                                                                                                "1": {
+                                                                                                                  "title": "setODue(0)",
+                                                                                                                  "id": 132,
+                                                                                                                  "ideas": {
+                                                                                                                    "1": {
+                                                                                                                      "title": "setQueue(-1)",
+                                                                                                                      "id": 133,
+                                                                                                                      "ideas": {
+                                                                                                                        "1": {
+                                                                                                                          "title": "endif",
+                                                                                                                          "id": 135,
+                                                                                                                          "ideas": {
+                                                                                                                            "1": {
+                                                                                                                              "title": "return true",
+                                                                                                                              "id": 136,
+                                                                                                                              "ideas": {
+                                                                                                                                "1": {
+                                                                                                                                  "title": "endif",
+                                                                                                                                  "id": 137,
+                                                                                                                                  "ideas": {
+                                                                                                                                    "1": {
+                                                                                                                                      "title": "return false",
+                                                                                                                                      "id": 138
+                                                                                                                                    }
+                                                                                                                                  },
+                                                                                                                                  "attr": {
+                                                                                                                                    "position": [
+                                                                                                                                      103.74999999999636,
+                                                                                                                                      -73.50000000000182,
+                                                                                                                                      1
+                                                                                                                                    ],
+                                                                                                                                    "style": {}
+                                                                                                                                  }
+                                                                                                                                }
+                                                                                                                              }
+                                                                                                                            }
+                                                                                                                          },
+                                                                                                                          "attr": {
+                                                                                                                            "position": [
+                                                                                                                              102.74999999999955,
+                                                                                                                              -57.5,
+                                                                                                                              1
+                                                                                                                            ],
+                                                                                                                            "style": {}
+                                                                                                                          }
+                                                                                                                        }
+                                                                                                                      }
+                                                                                                                    }
+                                                                                                                  }
+                                                                                                                }
+                                                                                                              }
+                                                                                                            }
+                                                                                                          }
+                                                                                                        }
+                                                                                                      },
+                                                                                                      "attr": {
+                                                                                                        "position": [
+                                                                                                          113,
+                                                                                                          74,
+                                                                                                          1
+                                                                                                        ],
+                                                                                                        "style": {}
+                                                                                                      }
+                                                                                                    }
+                                                                                                  }
+                                                                                                }
+                                                                                              },
+                                                                                              "attr": {
+                                                                                                "position": [
+                                                                                                  180.75,
+                                                                                                  78,
+                                                                                                  1
+                                                                                                ],
+                                                                                                "style": {}
+                                                                                              }
+                                                                                            }
+                                                                                          }
+                                                                                        }
+                                                                                      }
+                                                                                    }
+                                                                                  }
+                                                                                },
+                                                                                "0.25": {
+                                                                                  "title": "return 0",
+                                                                                  "id": 115,
+                                                                                  "ideas": {
+                                                                                    "1": {
+                                                                                      "title": "endif",
+                                                                                      "id": 116,
+                                                                                      "ideas": {
+                                                                                        "1": {
+                                                                                          "title": "if (ODue = 0)",
+                                                                                          "id": 117,
+                                                                                          "ideas": {
+                                                                                            "1": {
+                                                                                              "title": "setODue(getDue())",
+                                                                                              "id": 119,
+                                                                                              "ideas": {
+                                                                                                "1": {
+                                                                                                  "title": "endif",
+                                                                                                  "id": 120,
+                                                                                                  "ideas": {
+                                                                                                    "1": {
+                                                                                                      "title": "setLeft(initialVal)",
+                                                                                                      "id": 139,
+                                                                                                      "ideas": {
+                                                                                                        "1": {
+                                                                                                          "title": "setDue(nextLearnDelay)",
+                                                                                                          "ideas": {
+                                                                                                            "1": {
+                                                                                                              "title": "if (dueToday)",
+                                                                                                              "ideas": {
+                                                                                                                "1": {
+                                                                                                                  "title": "setQueue(1)",
+                                                                                                                  "attr": {
+                                                                                                                    "position": [
+                                                                                                                      145.0870056152321,
+                                                                                                                      -56.693725585937955,
+                                                                                                                      1
+                                                                                                                    ],
+                                                                                                                    "style": {}
+                                                                                                                  },
+                                                                                                                  "ideas": {
+                                                                                                                    "1": {
+                                                                                                                      "title": "if (noRev & noNew & isLrn)",
+                                                                                                                      "ideas": {
+                                                                                                                        "1": {
+                                                                                                                          "title": "makeSureCurCardNotFirst",
+                                                                                                                          "ideas": {
+                                                                                                                            "1": {
+                                                                                                                              "title": "endif",
+                                                                                                                              "attr": {
+                                                                                                                                "position": [
+                                                                                                                                  191.9129943847638,
+                                                                                                                                  59.443725585936136,
+                                                                                                                                  1
+                                                                                                                                ],
+                                                                                                                                "style": {}
+                                                                                                                              },
+                                                                                                                              "id": 155
+                                                                                                                            }
+                                                                                                                          },
+                                                                                                                          "id": 154
+                                                                                                                        }
+                                                                                                                      },
+                                                                                                                      "id": 153
+                                                                                                                    }
+                                                                                                                  },
+                                                                                                                  "id": 152
+                                                                                                                }
+                                                                                                              },
+                                                                                                              "id": 151
+                                                                                                            },
+                                                                                                            "2": {
+                                                                                                              "title": "else // due another day",
+                                                                                                              "attr": {
+                                                                                                                "position": [
+                                                                                                                  171.99999999999955,
+                                                                                                                  56,
+                                                                                                                  1
+                                                                                                                ],
+                                                                                                                "style": {}
+                                                                                                              },
+                                                                                                              "ideas": {
+                                                                                                                "1": {
+                                                                                                                  "title": "setQueue(3) // dayLearnQueue",
+                                                                                                                  "ideas": {
+                                                                                                                    "1": {
+                                                                                                                      "title": "setDue(daysFromToday)",
+                                                                                                                      "ideas": {},
+                                                                                                                      "id": 158
+                                                                                                                    }
+                                                                                                                  },
+                                                                                                                  "id": 157
+                                                                                                                }
+                                                                                                              },
+                                                                                                              "id": 156
+                                                                                                            }
+                                                                                                          },
+                                                                                                          "id": 150,
+                                                                                                          "attr": {
+                                                                                                            "style": {}
+                                                                                                          }
+                                                                                                        }
+                                                                                                      }
+                                                                                                    }
+                                                                                                  }
+                                                                                                }
+                                                                                              }
+                                                                                            }
+                                                                                          }
+                                                                                        }
+                                                                                      }
+                                                                                    }
+                                                                                  },
+                                                                                  "attr": {
+                                                                                    "position": [
+                                                                                      263.91299438476517,
+                                                                                      18.25,
+                                                                                      6
+                                                                                    ],
+                                                                                    "style": {}
+                                                                                  }
+                                                                                }
+                                                                              },
+                                                                              "attr": {
+                                                                                "style": {
+                                                                                  "background": "#ffcc99"
+                                                                                }
+                                                                              }
+                                                                            }
+                                                                          }
+                                                                        }
+                                                                      },
+                                                                      "attr": {
+                                                                        "style": {},
+                                                                        "position": [
+                                                                          258.08700561523483,
+                                                                          -2.168650386971308,
+                                                                          2
+                                                                        ]
+                                                                      }
+                                                                    },
+                                                                    "0.5": {
+                                                                      "title": "(impl)",
+                                                                      "id": 105,
+                                                                      "attr": {
+                                                                        "position": [
+                                                                          121.83700561523483,
+                                                                          -84.27805077942406,
+                                                                          1
+                                                                        ],
+                                                                        "style": {
+                                                                          "background": "#ffffff"
+                                                                        }
+                                                                      },
+                                                                      "ideas": {
+                                                                        "1": {
+                                                                          "title": "return Max(\"minInt\", getInterval() * \"mult\")",
+                                                                          "id": 108
+                                                                        }
+                                                                      }
+                                                                    }
+                                                                  }
+                                                                }
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      },
+                                                      "attr": {
+                                                        "style": {
+                                                          "background": "#ffffff"
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              },
+                                              "attr": {
+                                                "style": {},
+                                                "position": [
+                                                  71.33700561523483,
+                                                  -72.08695506351569,
+                                                  1
+                                                ]
+                                              }
+                                            }
+                                          },
+                                          "attr": {
+                                            "style": {
+                                              "background": "#ffffff"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                },
+                                "1.5": {
+                                  "title": "setMod",
+                                  "id": 72,
+                                  "attr": {
+                                    "position": [
+                                      2669.583648681635,
+                                      -2.5000000000022737,
+                                      3
+                                    ],
+                                    "style": {}
+                                  },
+                                  "ideas": {
+                                    "1": {
+                                      "title": "setUsn",
+                                      "id": 76
+                                    }
+                                  }
+                                }
+                              },
+                              "attr": {
+                                "position": [
+                                  127,
+                                  128,
+                                  1
+                                ],
+                                "style": {}
+                              }
+                            }
+                          },
+                          "attr": {
+                            "style": {}
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "attr": {
+            "style": {}
+          }
+        }
+      },
+      "attr": {
+        "style": {
+          "background": "transparent"
+        }
+      }
+    }
+  },
+  "links": [
+    {
+      "ideaIdFrom": 29,
+      "ideaIdTo": 36,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "ideaIdFrom": 2,
+      "ideaIdTo": 17,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "ideaIdFrom": 72,
+      "ideaIdTo": 65,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "ideaIdFrom": 75,
+      "ideaIdTo": 29,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "ideaIdFrom": 29,
+      "ideaIdTo": 20,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "ideaIdFrom": 71,
+      "ideaIdTo": 65,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "ideaIdFrom": 77,
+      "ideaIdTo": 29,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "ideaIdFrom": 41,
+      "ideaIdTo": 43,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "solid"
+        }
+      }
+    },
+    {
+      "ideaIdFrom": 25,
+      "ideaIdTo": 44,
+      "attr": {
+        "style": {
+          "color": "#FF0000",
+          "lineStyle": "dashed"
+        }
+      }
+    }
+  ]
+}
