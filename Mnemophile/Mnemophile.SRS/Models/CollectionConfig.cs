@@ -4,12 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Mnemophile.Const.SRS;
+using Mnemophile.Utils;
 
 namespace Mnemophile.SRS.Models
 {
+  // TODO: Create attributes for UI preferences
   internal class CollectionConfig
   {
-    public int[] LearningSteps { get; set; }
+    public bool BroadGradingMode { get; set; }
+    public Delay[] LearningSteps { get; set; }
     public int LearningCardPerDay { get; set; }
     public ConstSRS.CardInsertionOption InsertionOption { get; set; }
     public int GraduationEasyInterval { get; set; }
@@ -20,7 +23,11 @@ namespace Mnemophile.SRS.Models
     public float ReviewIntervalModifier { get; set; }
     public int ReviewMaxInterval { get; set; }
     public float ReviewMinEase { get; set; }
-    public int[] LapseSteps { get; set; }
+    public float ReviewHardEaseModifier { get; set; }
+    public float ReviewGoodEaseModifier { get; set; }
+    public float ReviewEasyEaseModifier { get; set; }
+    public Delay[] LapseSteps { get; set; }
+    public float LapseEaseMalus { get; set; }
     public float LapseIntervalFactor { get; set; }
     public int LapseMinInterval { get; set; }
     public int LeechThreshold { get; set; }
@@ -28,8 +35,10 @@ namespace Mnemophile.SRS.Models
 
     public static CollectionConfig Default = new CollectionConfig
     {
+      // Default grading mode is set to four grading options
+      BroadGradingMode = false,
       // Default delays upon review of new card: 1 then 10 minutes (2 reviews)
-      LearningSteps = new[] { 1, 10 },
+      LearningSteps = new Delay[] { 60, 600 },
       // Default maximum number of new card to learn per day
       LearningCardPerDay = 20,
       // Default insertion order of new card
@@ -50,8 +59,16 @@ namespace Mnemophile.SRS.Models
       ReviewMaxInterval = 365 * 20,
       // Default minimum ease: 130%
       ReviewMinEase = 1.3f,
+      // Default reviewing ease modifier from "hard" answer: -15%
+      ReviewHardEaseModifier = -0.15f,
+      // Default reviewing ease modifier from "good" answer: 0%
+      ReviewGoodEaseModifier = 0.0f,
+      // Default reviewing ease modifier from "easy" answer: 15%
+      ReviewEasyEaseModifier = 0.15f,
       // Default delays upon card lapse: 10 minutes (1 review)
-      LapseSteps = new[] { 10 },
+      LapseSteps = new Delay[] { 600 },
+      // Default value substracted from card's ease when lapsing: -20%
+      LapseEaseMalus = -0.2f,
       // Default interval modifier upon card lapse: 0%
       LapseIntervalFactor = 0.0f,
       // Default minimum interval upon graduation from card lapse

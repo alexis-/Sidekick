@@ -6,6 +6,8 @@ namespace Mnemophile.SRS.Models
 {
   public partial class Card : ICard
   {
+    private Card() {}
+
     public Card(int noteId, int eFactor)
     {
       Id = DateTime.Now.UnixTimestamp();
@@ -22,7 +24,7 @@ namespace Mnemophile.SRS.Models
       Lapses = 0;
     }
 
-    public int Id { get; }
+    public int Id { get; private set;  }
     public int NoteId { get; set; }
     public int LastModified { get; set; }
 

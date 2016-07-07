@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Mnemophile.Utils;
 
 namespace Mnemophile.SRS.Models
 {
@@ -23,7 +24,7 @@ namespace Mnemophile.SRS.Models
     /// Either return Config's Lapsing or Learning steps, depending on Card
     /// Lapse value.
     /// </summary>
-    public int[] LearningOrLapsingSteps => Lapses > 0
+    public Delay[] LearningOrLapsingSteps => Lapses > 0
       ? Config.LapseSteps
       : Config.LearningSteps;
 

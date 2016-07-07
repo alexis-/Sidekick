@@ -20,6 +20,12 @@ namespace Mnemophile.SRS.Models
                        ^ (int)CardStateFlag.Due);
 
     /// <summary>
+    /// Bitwise mask to retain main state (New, Learning, Due) while updating
+    /// misc states (Suspended, Buried).
+    /// </summary>
+    const CardStateFlag CardMainStateMask = ~CardMiscStateMask;
+
+    /// <summary>
     /// Bitflags to describe card state. New, Learning and Due are mutually
     /// exclusive ; but may be combined with Suspended or Buried states.
     /// </summary>

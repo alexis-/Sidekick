@@ -41,6 +41,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Impl\GradingOptions.cs" />
     <Compile Include="Impl\SM2Impl.cs" />
     <Compile Include="Models\Card.Access.cs" />
     <Compile Include="Models\Card.Misc.cs" />

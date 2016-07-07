@@ -1,4 +1,7 @@
 ﻿using System;
+using Mnemophile.Const.SRS;
+using Mnemophile.SRS.Impl;
+using Mnemophile.Utils;
 
 namespace Mnemophile.SRS.Models
 {
@@ -12,10 +15,12 @@ namespace Mnemophile.SRS.Models
     /// <summary>
     /// Graduate from learning into due state.
     /// </summary>
-    /// <param name="easy">whether selected ease was 'easy'</param>
+    /// <param name="easy">whether answer was graded 'easy'</param>
     internal void Graduate(bool easy = false)
     {
-      SetDueState();
+      if (IsDue())
+        throw new InvalidOperationException(
+          "Card.Graduate invoked with card 'Due' state");
 
       // Regraduating
       if (Lapses > 0)
@@ -32,6 +37,7 @@ namespace Mnemophile.SRS.Models
       }
 
       SetDueFromInterval();
+      SetDueState();
     }
 
     /// <summary>
@@ -45,17 +51,22 @@ namespace Mnemophile.SRS.Models
       // Set learning mode and first step delay
       if (reset)
       {
+        SetDue(LearningOrLapsingSteps[0]);
         SetLearningState();
-        SetDueInMinutes(LearningOrLapsingSteps[0]);
       }
+
+      else if (IsDue())
+        throw new InvalidOperationException(
+          "Card.UpdateLearningStep invoked with " + nameof(reset)
+          + " parameter 'false' and card 'Due' state");
 
       // Graduate
       else if (IsGraduating())
-          Graduate(); // Graduate
+          Graduate();
 
       // Move on to next step
       else
-        SetDueInMinutes(LearningOrLapsingSteps[GetCurrentLearningStep() + 1]);
+        SetDue(LearningOrLapsingSteps[GetCurrentLearningStep() + 1]);
     }
 
     /// <summary>
@@ -65,7 +76,6 @@ namespace Mnemophile.SRS.Models
     internal bool IsGraduating()
     {
       if (IsDue())
-        // TODO: Log an error here
         return false;
 
       return GetCurrentLearningStep() >= LearningOrLapsingSteps.Length - 1;
@@ -84,7 +94,7 @@ namespace Mnemophile.SRS.Models
 
       for (;
         lastStep < LearningOrLapsingSteps.Length
-        && lastStepValue > LearningOrLapsingSteps[lastStep] * 60; // in second
+        && lastStepValue > LearningOrLapsingSteps[lastStep];
         lastStep++)
         ;
 
@@ -92,7 +102,7 @@ namespace Mnemophile.SRS.Models
     }
 
     /// <summary>
-    /// Switch card State to Learning, while retaining other flags
+    /// Switch card State to Learning, while retaining misc states.
     /// </summary>
     internal void SetLearningState()
     {
@@ -107,9 +117,118 @@ namespace Mnemophile.SRS.Models
     // Due
 
     #region Due
+    /// <summary>
+    /// Process fail-graded answers for due cards.
+    /// </summary>
+    /// <param name="grade">Fail grade</param>
+    internal void Lapse(ConstSRS.Grade grade)
+    {
+      if (grade > ConstSRS.Grade.Fail)
+        throw new ArgumentException(
+          "Card.Lapse invoked with invalid grade", nameof(grade));
+
+      Lapses++;
+
+      // TODO: Handle extended grading options
+      EFactor += GradingOptions.GradeReviewEaseModifiers(grade, Config);
+      UpdateLearningStep(true);
+
+      if (IsLeech())
+        Leech();
+    }
 
     /// <summary>
-    /// Switch card State to Due, while retaining other flags
+    /// Process instances where lapse threshold rules are met and card turns
+    /// into Leech. Take action accordingly to preferences (suspend or delete
+    /// card).
+    /// </summary>
+    internal void Leech()
+    {
+      switch (Config.LeechAction)
+      {
+        case ConstSRS.CardLeechAction.Suspend:
+          SetSuspendedState();
+          break;
+
+        case ConstSRS.CardLeechAction.Delete:
+          // TODO: Delete
+          break;
+      }
+    }
+
+    /// <summary>
+    /// Determines whether lapse threshold rules are met and card leech.
+    /// </summary>
+    /// <returns>Whether card is a leech</returns>
+    internal bool IsLeech()
+    {
+      return Config.LeechThreshold > 0
+        && Lapses >= Config.LeechThreshold
+        && Lapses % (int)Math.Ceiling(Config.LeechThreshold / 2.0f) == 0;
+    }
+
+    /// <summary>
+    /// Process pass-graded answers for due cards.
+    /// </summary>
+    /// <param name="grade">Pass grade</param>
+    internal void Review(ConstSRS.Grade grade)
+    {
+      if (grade < ConstSRS.Grade.Hard)
+        throw new ArgumentException(
+          "Card.Review invoked with invalid grade", nameof(grade));
+
+      // Interval computing must happen prior to EFactor update
+      Interval = ComputeReviewInterval(grade);
+      EFactor += GradingOptions.GradeReviewEaseModifiers(grade, Config);
+
+      SetDueFromInterval();
+    }
+
+    internal int ComputeReviewInterval(ConstSRS.Grade grade)
+    {
+      int daysLate = (DateTime.Now - DateTimeEx.FromUnixTimestamp(Due)).Days;
+      int newInterval = GradingOptions.GradeReviewIntervalFormulas(grade,
+        Config)(Interval, daysLate, EFactor);
+
+      return RandomizeInterval(newInterval);
+    }
+
+    internal int RandomizeInterval(int interval)
+    {
+      int[] rndRange;
+
+      if (interval < 2)
+        return interval;
+
+      if (interval == 2)
+        rndRange = new[] { 2, 3 };
+      else
+      {
+        float rnd;
+
+        if (interval < 7)
+          rnd = Math.Max(1, interval * 0.25f);
+        else if (interval < 30)
+          rnd = Math.Max(2, interval * 0.15f);
+        else
+          rnd = Math.Max(4, interval * 0.05f);
+
+        rndRange = new[] { interval - (int)rnd, interval + (int)rnd };
+      }
+
+      return new Random().Next(rndRange[0], rndRange[1] + 1);
+    }
+
+    /// <summary>
+    /// Sets card State to Suspended, while retaining main state.
+    /// </summary>
+    internal void SetSuspendedState()
+    {
+      State = (State & CardMainStateMask) | CardStateFlag.Suspended;
+    }
+
+    /// <summary>
+    /// Switch card State to Due, while retaining misc states.
     /// </summary>
     internal void SetDueState()
     {
@@ -124,27 +243,21 @@ namespace Mnemophile.SRS.Models
     // Misc
 
     #region Misc
-
+    /// <summary>
+    /// Build Due time from Interval (which unit is days).
+    /// </summary>
     internal void SetDueFromInterval()
     {
-      SetDueInDays(Interval);
+      SetDue(Delay.FromDays(Interval));
     }
 
-    internal void SetDueInMinutes(int minutes)
+    /// <summary>
+    /// Build Due time respectively from given Delay and current review time.
+    /// </summary>
+    /// <param name="delay">The delay</param>
+    internal void SetDue(Delay delay)
     {
-      SetDue(minutes, 0);
-    }
-
-    internal void SetDueInDays(int days)
-    {
-      SetDue(0, days);
-    }
-
-    internal void SetDue(int minutes, int days)
-    {
-      Due = CurrentReviewTime
-            + minutes * 60
-            + days * 24 * 3600;
+      Due = CurrentReviewTime + delay;
     }
     #endregion
   }
