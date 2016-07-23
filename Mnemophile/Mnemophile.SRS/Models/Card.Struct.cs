@@ -4,39 +4,33 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using Mnemophile.Const.SRS;
 
 namespace Mnemophile.SRS.Models
 {
   public partial class Card
   {
     /// <summary>
-    /// Bitwise mask to retain misc states (Suspended, Buried) while updating
-    /// main state (New, Learning, Due).
+    /// Bitwise mask to retain misc states (Suspended, Dismissed) while
+    /// updating main state (New, Learning, Due).
     /// </summary>
-    const CardStateFlag CardMiscStateMask =
-      (CardStateFlag)(int.MaxValue
-                       ^ (int)CardStateFlag.New
-                       ^ (int)CardStateFlag.Learning
-                       ^ (int)CardStateFlag.Due);
+    //const ConstSRS.CardStateFlag CardMiscStateMask =
+    //  (ConstSRS.CardStateFlag)(int.MaxValue
+    //                   ^ (int)ConstSRS.CardStateFlag.New
+    //                   ^ (int)ConstSRS.CardStateFlag.Learning
+    //                   ^ (int)ConstSRS.CardStateFlag.Due);
 
     /// <summary>
     /// Bitwise mask to retain main state (New, Learning, Due) while updating
-    /// misc states (Suspended, Buried).
+    /// misc states (Suspended, Dismissed).
     /// </summary>
-    const CardStateFlag CardMainStateMask = ~CardMiscStateMask;
+    //const ConstSRS.CardStateFlag CardMainStateMask = ~CardMiscStateMask;
 
-    /// <summary>
-    /// Bitflags to describe card state. New, Learning and Due are mutually
-    /// exclusive ; but may be combined with Suspended or Buried states.
-    /// </summary>
-    [Flags]
-    public enum CardStateFlag
+    internal enum CardAction
     {
-      New = 0,
-      Learning = 1,
-      Due = 2,
-      Suspended = 4,
-      Buried = 8,
+      Invalid = -1,
+      Update,
+      Delete
     }
 
     //[StructLayout(LayoutKind.Explicit)]

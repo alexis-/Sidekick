@@ -8,6 +8,49 @@ namespace Mnemophile.Const.SRS
 {
   public static class ConstSRS
   {
+    public enum CardPracticeState : short
+    {
+      Due = 0,
+      New = 1,
+      Learning = 2,
+    }
+
+    [Flags]
+    public enum CardPracticeStateFilterFlag
+    {
+      New = 1,
+      Learning = 2,
+      Due = 4,
+
+      All = New | Learning | Due
+    }
+
+    public static IEnumerable<CardPracticeState> GetPracticeStates(
+      this CardPracticeStateFilterFlag flag)
+    {
+      List<CardPracticeState> states = new List<CardPracticeState>();
+
+      if ((flag & CardPracticeStateFilterFlag.New) ==
+          CardPracticeStateFilterFlag.New)
+        states.Add(CardPracticeState.New);
+      if ((flag & CardPracticeStateFilterFlag.Learning) ==
+          CardPracticeStateFilterFlag.Learning)
+        states.Add(CardPracticeState.Learning);
+      if ((flag & CardPracticeStateFilterFlag.Due) ==
+          CardPracticeStateFilterFlag.Due)
+        states.Add(CardPracticeState.Due);
+
+      return states;
+    }
+
+    [Flags]
+    public enum CardMiscStateFlag : short
+    {
+      None = 0,
+      Suspended = 1,
+      Dismissed = 2,
+    }
+
     public enum Grade
     {
       FailSevere = 0,
@@ -18,7 +61,7 @@ namespace Mnemophile.Const.SRS
       Easy = 5,
     }
 
-    public enum CardInsertionOption
+    public enum CardOrderingOption
     {
       Linear,
       Random,

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Mnemophile.Const.SRS;
+using Mnemophile.SRS.Impl;
 using Mnemophile.Utils;
 
 namespace Mnemophile.SRS.Models
@@ -28,29 +30,75 @@ namespace Mnemophile.SRS.Models
       ? Config.LapseSteps
       : Config.LearningSteps;
 
+    /// <summary>
+    /// Get current lapsing or learning step index.
+    /// In the occurence steps settings changed, closest inferior value
+    /// index is returned.
+    /// Accounts for CardPracticeState offset.
+    /// </summary>
+    /// <returns>Current lapsing or learning index</returns>
+    internal int GetCurrentLearningStep()
+    {
+      if (!IsLearning())
+        throw new InvalidOperationException(
+          "Invalid call for State " + PracticeState);
+
+      return Math.Min(
+        PracticeState - ConstSRS.CardPracticeState.Learning,
+        LearningOrLapsingSteps.Length - 1);
+
+      //int lastStepValue = Due - LastModified;
+      //int lastStep = 0;
+
+      //for (;
+      //  lastStep < LearningOrLapsingSteps.Length
+      //  && lastStepValue > LearningOrLapsingSteps[lastStep];
+      //  lastStep++)
+      //  ;
+
+      //return lastStep;
+    }
+
+    /// <summary>
+    /// Computes review count to graduation.
+    /// Accounts for CardPracticeState offset.
+    /// </summary>
+    /// <returns>Review count to graduation</returns>
+    /// <exception cref="System.InvalidOperationException">Invalid call for State  + PracticeState</exception>
+    internal int GetLearningStepsLeft()
+    {
+      if (!IsLearning())
+        throw new InvalidOperationException(
+          "Invalid call for State " + PracticeState);
+
+      return LearningOrLapsingSteps.Length - GetCurrentLearningStep();
+    }
+
     public bool IsNew()
     {
-      return (State & CardStateFlag.New) == CardStateFlag.New;
+      return PracticeState == ConstSRS.CardPracticeState.New;
     }
 
     public bool IsLearning()
     {
-      return (State & CardStateFlag.Learning) == CardStateFlag.Learning;
+      return PracticeState >= ConstSRS.CardPracticeState.Learning;
     }
 
     public bool IsDue()
     {
-      return (State & CardStateFlag.Due) == CardStateFlag.Due;
+      return PracticeState == ConstSRS.CardPracticeState.Due;
     }
 
-    public bool IsBuried()
+    public bool IsDismissed()
     {
-      return (State & CardStateFlag.Buried) == CardStateFlag.Buried;
+      return (MiscState & ConstSRS.CardMiscStateFlag.Dismissed) ==
+        ConstSRS.CardMiscStateFlag.Dismissed;
     }
 
     public bool IsSuspended()
     {
-      return (State & CardStateFlag.Suspended) == CardStateFlag.Suspended;
+      return (MiscState & ConstSRS.CardMiscStateFlag.Suspended) ==
+        ConstSRS.CardMiscStateFlag.Suspended;
     }
   }
 }

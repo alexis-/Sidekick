@@ -35,11 +35,37 @@
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Attributes\DB\AutoIncrementAttribute.cs" />
+    <Compile Include="Attributes\DB\CollationAttribute.cs" />
+    <Compile Include="Attributes\DB\OrderAttribute.cs" />
+    <Compile Include="Attributes\DB\ColumnAttribute.cs" />
+    <Compile Include="Attributes\DB\DefaultAttribute.cs" />
+    <Compile Include="Attributes\DB\IgnoreAttribute.cs" />
+    <Compile Include="Attributes\DB\IndexedAttribute.cs" />
+    <Compile Include="Attributes\DB\MaxLengthAttribute.cs" />
+    <Compile Include="Attributes\DB\NotNullAttribute.cs" />
+    <Compile Include="Attributes\DB\PrimaryKeyAttribute.cs" />
+    <Compile Include="Attributes\DB\TableAttribute.cs" />
+    <Compile Include="Attributes\DB\UniqueAttribute.cs" />
+    <Compile Include="Attributes\JetBrains.cs" />
+    <Compile Include="Attributes\SRS\SRSSettingsDescriptorAttribute.cs" />
+    <Compile Include="Attributes\SRS\SRSSettingsItem.cs" />
+    <Compile Include="Attributes\SRS\SRSSettingsLocalizedItem.cs" />
+    <Compile Include="Interfaces\DB\IDatabase.cs" />
+    <Compile Include="Interfaces\DB\ITableMapping.cs" />
     <Compile Include="Interfaces\SRS\ICard.cs" />
-    <Compile Include="MyClass.cs" />
+    <Compile Include="Interfaces\SRS\INote.cs" />
+    <Compile Include="Interfaces\SRS\ISRS.cs" />
+    <Compile Include="Interfaces\DB\ITableQuery.cs" />
+    <Compile Include="Interfaces\SRS\IReviewCollection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utils\Collections\AsyncDbListBase.cs" />
     <Compile Include="Utils\DateTimeEx.cs" />
     <Compile Include="Utils\Delay.cs" />
+    <Compile Include="Utils\LazyLoad\Attributes\LazyLoadedAttribute.cs" />
+    <Compile Include="Utils\LazyLoad\Attributes\LazyUnloadedAttribute.cs" />
+    <Compile Include="Utils\LazyLoad\DbLazyLoaded.cs" />
+    <Compile Include="Utils\TastConst.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="xunit.abstractions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
@@ -64,8 +90,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Interfaces\Storage\" />
+    <Content Include="README.txt" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

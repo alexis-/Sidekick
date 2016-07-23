@@ -1,11 +1,16 @@
-﻿namespace Mnemophile.Interfaces.SRS
+﻿using Mnemophile.Const.SRS;
+
+namespace Mnemophile.Interfaces.SRS
 {
   public interface ICard
   {
+    void Answer(ConstSRS.Grade grade);
+    ConstSRS.GradingInfo[] ComputeGrades();
+
     bool IsNew();
     bool IsLearning();
     bool IsDue();
-    bool IsBuried();
+    bool IsDismissed();
     bool IsSuspended();
   }
 }

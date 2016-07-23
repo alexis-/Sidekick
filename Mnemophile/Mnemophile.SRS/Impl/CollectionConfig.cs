@@ -6,19 +6,19 @@ using System.Threading.Tasks;
 using Mnemophile.Const.SRS;
 using Mnemophile.Utils;
 
-namespace Mnemophile.SRS.Models
+namespace Mnemophile.SRS.Impl
 {
   // TODO: Create attributes for UI preferences
   internal class CollectionConfig
   {
     public bool BroadGradingMode { get; set; }
     public Delay[] LearningSteps { get; set; }
-    public int LearningCardPerDay { get; set; }
-    public ConstSRS.CardInsertionOption InsertionOption { get; set; }
+    public int NewCardPerDay { get; set; }
+    public ConstSRS.CardOrderingOption InsertionOption { get; set; }
     public int GraduationEasyInterval { get; set; }
     public int GraduationInterval { get; set; }
     public float GraduationStartingEase { get; set; }
-    public int ReviewCardPerDay { get; set; }
+    public int DueCardPerDay { get; set; }
     public float ReviewEasyBonus { get; set; }
     public float ReviewIntervalModifier { get; set; }
     public int ReviewMaxInterval { get; set; }
@@ -40,9 +40,9 @@ namespace Mnemophile.SRS.Models
       // Default delays upon review of new card: 1 then 10 minutes (2 reviews)
       LearningSteps = new Delay[] { 60, 600 },
       // Default maximum number of new card to learn per day
-      LearningCardPerDay = 20,
+      NewCardPerDay = 20,
       // Default insertion order of new card
-      InsertionOption = ConstSRS.CardInsertionOption.Linear,
+      InsertionOption = ConstSRS.CardOrderingOption.Linear,
       // Default interval after graduation from "easy" answer
       GraduationEasyInterval = 4,
       // Default interval after graduation
@@ -50,7 +50,7 @@ namespace Mnemophile.SRS.Models
       // Default ease (EFactor) after graduation: 250%
       GraduationStartingEase = 2.5f,
       // Default number of review per day
-      ReviewCardPerDay = 100,
+      DueCardPerDay = 100,
       // Default interval bonus factor from "easy" answer: 130%
       ReviewEasyBonus = 1.3f,
       // Default global interval modifier: 100%

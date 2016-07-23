@@ -1,43 +1,44 @@
-﻿using Mnemophile.SRS.Models;
-using Mnemophile.Utils;
+﻿using Mnemophile.Utils;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Mnemophile.Const.SRS;
+using Mnemophile.SRS.Impl;
 
-namespace Mnemophile.SRS.Impl
+namespace Mnemophile.SRS.Models
 {
-  internal static class SM2Impl
+  public partial class Card
   {
-    public static void Answer(this Card card, ConstSRS.Grade grade,
-      bool save = true)
+    public void Answer(ConstSRS.Grade grade)
     {
-      card.CurrentReviewTime = DateTime.Now.UnixTimestamp();
+      Answer(grade, true);
+    }
+
+    internal void Answer(ConstSRS.Grade grade, bool save)
+    {
+      CardAction cardAction = CardAction.Invalid;
+      CurrentReviewTime = DateTime.Now.UnixTimestamp();
 
       // New card
-      if (card.IsNew())
-        card.UpdateLearningStep(true);
+      if (IsNew())
+        UpdateLearningStep(true);
 
       // Handle card learning
-      if (card.IsLearning())
+      if (IsLearning())
         switch (grade)
         {
           case ConstSRS.Grade.FailSevere:
           case ConstSRS.Grade.FailMedium:
           case ConstSRS.Grade.Fail:
             // TODO: If relearning, further decrease ease and interval ?
-            card.UpdateLearningStep(true);
+            cardAction = UpdateLearningStep(true);
             break;
 
           case ConstSRS.Grade.Hard:
           case ConstSRS.Grade.Good:
-            card.UpdateLearningStep();
+            cardAction = UpdateLearningStep();
             break;
 
           case ConstSRS.Grade.Easy:
-            card.Graduate(true);
+            cardAction = Graduate(true);
             break;
         }
 
@@ -48,37 +49,48 @@ namespace Mnemophile.SRS.Impl
           case ConstSRS.Grade.FailSevere:
           case ConstSRS.Grade.FailMedium:
           case ConstSRS.Grade.Fail:
-            card.Lapse(grade);
+            cardAction = Lapse(grade);
             break;
 
           case ConstSRS.Grade.Hard:
           case ConstSRS.Grade.Good:
           case ConstSRS.Grade.Easy:
-            card.Review(grade);
+            cardAction = Review(grade);
             break;
         }
 
       // Update card properties
-      card.Reviews++;
-      card.LastModified = card.CurrentReviewTime;
+      Reviews++;
+      LastModified = CurrentReviewTime;
 
-      if (save)
-        ; // TODO: Save
+      switch (cardAction)
+      {
+        case CardAction.Delete:
+          SM2Impl.Instance.Database.Delete<Card>(Id);
+          break;
+
+        case CardAction.Update:
+          SM2Impl.Instance.Database.Update(this);
+          break;
+
+        default:
+          throw new InvalidOperationException(
+            "Card.Answer ended up in an invalid Card Action state.");
+      }
     }
 
     /// <summary>
     /// Computes all grading options for given card, according to its State.
     /// Card values are unaffected.
     /// </summary>
-    /// <param name="card">Card instance</param>
     /// <returns>Description of all grading options outcomes</returns>
-    public static ConstSRS.GradingInfo[] ComputeGrades(this Card card)
+    public ConstSRS.GradingInfo[] ComputeGrades()
     {
       int currentReviewTime = DateTime.Now.UnixTimestamp();
       ConstSRS.GradingInfo[] gradingInfos;
 
       // Learning grades
-      if (card.IsNew() || card.IsLearning())
+      if (IsNew() || IsLearning())
         gradingInfos = new[] { GradingOptions.GradeFail,
           GradingOptions.GradeGood, GradingOptions.GradeEasy };
 
@@ -91,7 +103,7 @@ namespace Mnemophile.SRS.Impl
       // Compute outcomes of each grade option
       foreach (var gradingInfo in gradingInfos)
       {
-        Card cardClone = card.Clone();
+        Card cardClone = Clone();
 
         cardClone.CurrentReviewTime = currentReviewTime;
         cardClone.Answer(gradingInfo.Grade, false);

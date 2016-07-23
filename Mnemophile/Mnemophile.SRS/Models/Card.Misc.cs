@@ -12,6 +12,8 @@
       {
         Id = this.Id,
         NoteId = this.NoteId,
+        PracticeState = this.PracticeState,
+        MiscState = this.MiscState,
         _eFactor = this.EFactor,
         _interval = this.Interval,
         CurrentReviewTime = this.CurrentReviewTime,
