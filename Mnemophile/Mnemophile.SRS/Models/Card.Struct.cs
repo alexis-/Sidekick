@@ -26,7 +26,7 @@ namespace Mnemophile.SRS.Models
     /// </summary>
     //const ConstSRS.CardStateFlag CardMainStateMask = ~CardMiscStateMask;
 
-    internal enum CardAction
+    public enum CardAction
     {
       Invalid = -1,
       Update,

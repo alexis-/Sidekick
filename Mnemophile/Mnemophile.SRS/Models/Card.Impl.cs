@@ -1,18 +1,30 @@
 ﻿using Mnemophile.Utils;
 using System;
 using Mnemophile.Const.SRS;
+using Mnemophile.Interfaces.DB;
 using Mnemophile.SRS.Impl;
 
 namespace Mnemophile.SRS.Models
 {
   public partial class Card
   {
-    public void Answer(ConstSRS.Grade grade)
+    internal void Dismiss(IDatabase db)
     {
-      Answer(grade, true);
+      MiscState = MiscState | ConstSRS.CardMiscStateFlag.Dismissed;
+
+      Due = Math.Max(Due, DateTime.Today.AddDays(1).ToUnixTimestamp());
+      // TODO: If card is overdue, interval bonus is lost
+      
+      using (db.Lock())
+        db.Update(this);
     }
 
-    internal void Answer(ConstSRS.Grade grade, bool save)
+    internal void Answer(ConstSRS.Grade grade)
+    {
+      Answer(grade, null);
+    }
+
+    internal void Answer(ConstSRS.Grade grade, IDatabase db)
     {
       CardAction cardAction = CardAction.Invalid;
       CurrentReviewTime = DateTime.Now.UnixTimestamp();
@@ -60,23 +72,31 @@ namespace Mnemophile.SRS.Models
         }
 
       // Update card properties
+      MiscState = ConstSRS.CardMiscStateFlag.None;
       Reviews++;
       LastModified = CurrentReviewTime;
 
-      switch (cardAction)
-      {
-        case CardAction.Delete:
-          SM2Impl.Instance.Database.Delete<Card>(Id);
-          break;
+      if (db != null)
+        switch (cardAction)
+        {
+          case CardAction.Delete:
+            PracticeState = ConstSRS.CardPracticeState.Deleted;
 
-        case CardAction.Update:
-          SM2Impl.Instance.Database.Update(this);
-          break;
+            using (db.Lock())
+              db.Delete<Card>(Id);
 
-        default:
-          throw new InvalidOperationException(
-            "Card.Answer ended up in an invalid Card Action state.");
-      }
+            break;
+
+          case CardAction.Update:
+            using (db.Lock())
+              db.Update(this);
+
+            break;
+
+          default:
+            throw new InvalidOperationException(
+              "Card.Answer ended up in an invalid Card Action state.");
+        }
     }
 
     /// <summary>
@@ -106,7 +126,7 @@ namespace Mnemophile.SRS.Models
         Card cardClone = Clone();
 
         cardClone.CurrentReviewTime = currentReviewTime;
-        cardClone.Answer(gradingInfo.Grade, false);
+        cardClone.Answer(gradingInfo.Grade, null);
 
         // TODO: Set gradingInfo.CardValueAftermath
       }

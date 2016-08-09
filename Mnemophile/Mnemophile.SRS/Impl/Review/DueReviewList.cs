@@ -44,21 +44,44 @@ namespace Mnemophile.SRS.Impl.Review
     // Core methods
 
     /// <summary>
-    ///     Available number of cards (capped by user's configured number of
-    ///     due card per day), excluding dismissed ones.
+    ///     Number of cards available for iteration
+    ///     TODO: Check if loading ?
     /// </summary>
-    public int AvailableCount => Objects
-      .Where(c => !DismissedIds.Contains(c.Id))
-      .Take(DueCardPerDay)
-      .Count();
+    public override async Task<int> AvailableCount()
+    {
+      Task waitTask = null;
+
+      lock (LockObject)
+        waitTask = LoadCompletionSource?.Task;
+
+      if (waitTask != null)
+        await waitTask;
+
+      lock (LockObject)
+        return Objects
+          .Skip(Index + 1)
+          .Count();
+    }
 
     /// <summary>
     ///     Computes total review count
     /// </summary>
-    public int ReviewCount => Objects
-      .Where(c => !DismissedIds.Contains(c.Id))
-      .Take(DueCardPerDay)
-      .Sum(c => c.ReviewLeftToday());
+    public override async Task<int> ReviewCount()
+    {
+      Task waitTask = null;
+
+      lock (LockObject)
+        waitTask = LoadCompletionSource?.Task;
+
+      if (waitTask != null)
+        await waitTask;
+
+      lock (LockObject)
+        return Objects
+          .Where(c => !DismissedIds.Contains(c.Id))
+          .Take(DueCardPerDay)
+          .Sum(c => c.ReviewLeftToday());
+    }
 
     private int ReserveSize => Objects.Count - DueCardPerDay - Dismissed;
 
@@ -94,26 +117,37 @@ namespace Mnemophile.SRS.Impl.Review
       int fullLoadCount = Math.Min(totalLoadCount, IncrementalFurtherLoadMax);
       int shallowLoadCount = totalLoadCount - fullLoadCount;
 
-      ITableQuery<Card> tableQuery =
-        Db.Table<Card>()
-          .Take(fullLoadCount)
-          .Where(c => c.PracticeState == ConstSRS.CardPracticeState.Due);
+      int tomorrow = DateTime.Today.AddDays(1).ToUnixTimestamp();
 
-      Objects.AddRange(tableQuery.OrderBy(c => c.Due));
+      using (Db.Lock())
+      {
+        ITableQuery<Card> tableQuery =
+          Db.Table<Card>()
+            .Where(c =>
+                   c.PracticeState == ConstSRS.CardPracticeState.Due
+                   && c.Due < tomorrow)
+            .Take(fullLoadCount);
+
+        Objects.AddRange(tableQuery.OrderBy(c => c.Due));
+      }
 
       FurtherLoadedIndex = Objects.Count - 1;
 
       if (shallowLoadCount > 0 && Objects.Count == fullLoadCount)
       {
-        tableQuery =
-          Db.Table<Card>()
-            .Take(shallowLoadCount)
-            .ShallowLoad(LazyLoader)
-            .Where(c =>
-                   c.PracticeState == ConstSRS.CardPracticeState.Due
-                   && !Objects.Select(o => o.Id).Contains(c.Id));
+        using (Db.Lock())
+        {
+          ITableQuery<Card> tableQuery =
+            Db.Table<Card>()
+              .ShallowLoad(LazyLoader)
+              .Where(c =>
+                     c.PracticeState == ConstSRS.CardPracticeState.Due
+                     && c.Due < tomorrow
+                     && !Objects.Select(o => o.Id).Contains(c.Id))
+              .Take(shallowLoadCount);
 
-        Objects.AddRange(tableQuery.OrderBy(c => c.Due));
+          Objects.AddRange(tableQuery.OrderBy(c => c.Due));
+        }
       }
 
       if (Objects.Count < totalLoadCount)
@@ -132,19 +166,27 @@ namespace Mnemophile.SRS.Impl.Review
     /// <returns>Whether more items were loaded.</returns>
     protected bool DoRegularLoad(bool fullLoad)
     {
+      IEnumerable<Card> dueCards;
       int loadCount = IncrementalLoadMax - ReserveSize;
 
-      ITableQuery<Card> tableQuery =
-        Db.Table<Card>()
-          .Take(loadCount)
-          .Where(c =>
-                 c.PracticeState == ConstSRS.CardPracticeState.Due
-                 && !Objects.Select(o => o.Id).Contains(c.Id));
+      int tomorrow = DateTime.Today.AddDays(1).ToUnixTimestamp();
 
-      if (!fullLoad)
-        tableQuery = tableQuery.ShallowLoad(LazyLoader);
+      using (Db.Lock())
+      {
+        ITableQuery<Card> tableQuery =
+          Db.Table<Card>()
+            .Where(c =>
+                   c.PracticeState == ConstSRS.CardPracticeState.Due
+                   && c.Due < tomorrow
+                   && !Objects.Select(o => o.Id).Contains(c.Id))
+            .Take(loadCount);
 
-      IEnumerable<Card> dueCards = tableQuery.OrderBy(c => c.Due);
+        if (!fullLoad)
+          tableQuery = tableQuery.ShallowLoad(LazyLoader);
+
+        dueCards = tableQuery.OrderBy(c => c.Due);
+      }
+
       int loadedCount = dueCards.Count();
 
       if (loadedCount < loadCount)

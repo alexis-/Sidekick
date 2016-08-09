@@ -15,24 +15,13 @@ namespace Mnemophile.SRS.Impl
     public string Name => "SM2";
     public string Version => "0.1";
 
-    public IDatabase Database { get; }
+    //public IDatabase Database { get; }
     
     public static SM2Impl Instance { get; private set; }
 
-    public static SM2Impl CreateInstance(IDatabase db)
+    public static SM2Impl GetInstance()
     {
-      return Instance ?? new SM2Impl(db);
-    }
-
-    protected SM2Impl(IDatabase db)
-    {
-      Instance = this;
-      Database = db;
-    }
-
-    internal void Test(Card c)
-    {
-      c.Answer(0);
+      return Instance ?? (Instance = new SM2Impl());
     }
 
     public INote CreateNote()

@@ -6,6 +6,8 @@ namespace Mnemophile.Interfaces.DB
 {
   public interface IDatabase
   {
+    IDisposable Lock();
+
     /// <summary>
     ///     Begins a new transaction. Call <see cref="CommitTransaction" /> to
     ///     end the transaction.

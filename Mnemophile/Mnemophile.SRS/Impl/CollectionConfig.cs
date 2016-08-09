@@ -9,7 +9,7 @@ using Mnemophile.Utils;
 namespace Mnemophile.SRS.Impl
 {
   // TODO: Create attributes for UI preferences
-  internal class CollectionConfig
+  public class CollectionConfig
   {
     public bool BroadGradingMode { get; set; }
     public Delay[] LearningSteps { get; set; }

@@ -17,7 +17,7 @@ namespace Mnemophile.Utils.LazyLoad
     protected Dictionary<string, PropertyInfo> PropertyInfoMap;
     protected string PrimaryKeyPropName;
 
-    public DbLazyLoad(IDatabase db)
+    protected DbLazyLoad(IDatabase db)
     {
       ITableMapping tableMapping = db.GetTableMapping<T>();
       PrimaryKeyPropName = tableMapping.GetPrimaryKeyProp();
@@ -78,6 +78,22 @@ namespace Mnemophile.Utils.LazyLoad
     public ITableQuery<T> FurtherLoad(ITableQuery<T> query)
     {
       return query.SelectColumns(LazyLoadedProperties);
+    }
+
+    public void UpdateFromFurtherLoad<TPk>(
+      IEnumerable<T> toUpdateList,
+      IEnumerable<T> furtherLoadedList,
+      Func<T, TPk> keySelector)
+    {
+      Dictionary<TPk, T> toUpdateDictionary =
+        toUpdateList.ToDictionary(keySelector);
+      Dictionary<TPk, T> furtherLoadedDictionary =
+        furtherLoadedList.ToDictionary(keySelector);
+
+      foreach (TPk key in toUpdateDictionary.Keys)
+        UpdateFromFurtherLoad(
+          toUpdateDictionary[key],
+          furtherLoadedDictionary[key]);
     }
 
     public void UpdateFromFurtherLoad(T toUpdate, T furtherLoaded)

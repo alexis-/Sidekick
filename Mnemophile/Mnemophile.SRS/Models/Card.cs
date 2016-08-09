@@ -11,11 +11,11 @@ namespace Mnemophile.SRS.Models
   [Table("Cards")]
   public partial class Card : ICard
   {
-    private Card()
+    public Card()
     {
     }
 
-    public Card(int noteId, string[] data)
+    public Card(int noteId, string data)
     {
       Id = DateTime.Now.UnixTimestamp();
       NoteId = noteId;
@@ -35,7 +35,7 @@ namespace Mnemophile.SRS.Models
     }
 
     [PrimaryKey]
-    public int Id { get; private set; }
+    public int Id { get; set; }
 
     [Indexed]
     public int NoteId { get; set; }
@@ -55,7 +55,7 @@ namespace Mnemophile.SRS.Models
                  ? ConstSRS.CardPracticeState.Learning
                  : (ConstSRS.CardPracticeState)_practiceState;
       }
-      private set { _practiceState = (short)value; }
+      set { _practiceState = (short)value; }
     }
 
     [Indexed]
@@ -88,11 +88,11 @@ namespace Mnemophile.SRS.Models
       set
       {
         string uniStr = Encoding.Unicode.GetString(value, 0, value.Length);
-        Data = JsonConvert.DeserializeObject<string[]>(uniStr);
+        Data = JsonConvert.DeserializeObject<string>(uniStr);
       }
     }
 
     [Ignore]
-    public string[] Data { get; set; }
+    public string Data { get; set; }
   }
 }

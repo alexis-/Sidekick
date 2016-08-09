@@ -10,21 +10,29 @@ using Mnemophile.Utils;
 namespace Mnemophile.SRS.Models
 {
   [Table("Notes")]
-  class Note : INote
+  public class Note : INote
   {
     [PrimaryKey]
-    public int Id { get; }
+    public int Id { get; set;  }
     public int LastModified { get; set; }
+
+    [Ignore]
+    public List<Card> Cards { get; set; }
 
     public Note()
     {
       Id = DateTime.Now.UnixTimestamp();
       LastModified = Id;
+      Cards = new List<Card>();
     }
 
-    public ICard CreateCard(string[] data)
+    public ICard CreateCard(string data)
     {
-      return new Card(Id, data);
+      Card card = new Card(Id, data);
+
+      Cards.Add(card);
+
+      return card;
     }
   }
 }

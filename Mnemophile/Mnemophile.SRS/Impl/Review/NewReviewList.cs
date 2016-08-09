@@ -44,21 +44,44 @@ namespace Mnemophile.SRS.Impl.Review
     // Core methods
 
     /// <summary>
-    ///     Available number of cards (capped by user's configured number of
-    ///     new card per day), excluding dismissed ones.
+    ///     Number of cards available for iteration
+    ///     TODO: Check if loading ?
     /// </summary>
-    public int AvailableCount => Objects
-      .Where(c => !DismissedIds.Contains(c.Id))
-      .Take(NewCardPerDay)
-      .Count();
+    public override async Task<int> AvailableCount()
+    {
+      Task waitTask = null;
+
+      lock (LockObject)
+        waitTask = LoadCompletionSource?.Task;
+
+      if (waitTask != null)
+        await waitTask;
+
+      lock (LockObject)
+        return Objects
+          .Skip(Index + 1)
+          .Count();
+    }
 
     /// <summary>
-    ///     Computes total review count
+    ///     Computes total review count left
     /// </summary>
-    public int ReviewCount => Objects
-      .Where(c => !DismissedIds.Contains(c.Id))
-      .Take(NewCardPerDay)
-      .Sum(c => c.ReviewLeftToday());
+    public override async Task<int> ReviewCount()
+    {
+      Task waitTask = null;
+
+      lock (LockObject)
+        waitTask = LoadCompletionSource?.Task;
+
+      if (waitTask != null)
+        await waitTask;
+
+      lock (LockObject)
+        return Objects
+          .Where(c => !DismissedIds.Contains(c.Id))
+          .Take(NewCardPerDay)
+          .Sum(c => c.IsNew() ? c.ReviewLeftToday() : 0);
+    }
 
     private int ReserveSize => Objects.Count - NewCardPerDay - Dismissed;
 
@@ -94,34 +117,40 @@ namespace Mnemophile.SRS.Impl.Review
       int fullLoadCount = Math.Min(totalLoadCount, IncrementalFurtherLoadMax);
       int shallowLoadCount = totalLoadCount - fullLoadCount;
 
-      ITableQuery<Card> tableQuery =
-        Db.Table<Card>()
-          .Take(fullLoadCount)
-          .Where(c => c.PracticeState == ConstSRS.CardPracticeState.New);
-
-      tableQuery = Random
-                     ? tableQuery.OrderByRand()
-                     : tableQuery.OrderBy(c => c.Due);
-
-      Objects.AddRange(tableQuery);
-
-      FurtherLoadedIndex = Objects.Count - 1;
-
-      if (shallowLoadCount > 0 && Objects.Count == fullLoadCount)
+      using (Db.Lock())
       {
-        tableQuery =
+        ITableQuery<Card> tableQuery =
           Db.Table<Card>()
-            .Take(shallowLoadCount)
-            .ShallowLoad(LazyLoader)
-            .Where(c =>
-                   c.PracticeState == ConstSRS.CardPracticeState.New
-                   && !Objects.Select(o => o.Id).Contains(c.Id));
+            .Where(c => c.PracticeState == ConstSRS.CardPracticeState.New)
+            .Take(fullLoadCount);
 
         tableQuery = Random
                        ? tableQuery.OrderByRand()
                        : tableQuery.OrderBy(c => c.Due);
 
         Objects.AddRange(tableQuery);
+      }
+
+      FurtherLoadedIndex = Objects.Count - 1;
+
+      if (shallowLoadCount > 0 && Objects.Count == fullLoadCount)
+      {
+        using (Db.Lock())
+        {
+          ITableQuery<Card> tableQuery =
+            Db.Table<Card>()
+              .ShallowLoad(LazyLoader)
+              .Where(c =>
+                     c.PracticeState == ConstSRS.CardPracticeState.New
+                     && !Objects.Select(o => o.Id).Contains(c.Id))
+              .Take(shallowLoadCount);
+
+          tableQuery = Random
+                         ? tableQuery.OrderByRand()
+                         : tableQuery.OrderBy(c => c.Due);
+
+          Objects.AddRange(tableQuery);
+        }
       }
 
       if (Objects.Count < totalLoadCount)
@@ -140,23 +169,28 @@ namespace Mnemophile.SRS.Impl.Review
     /// <returns>Whether more items were loaded.</returns>
     protected bool DoRegularLoad(bool fullLoad)
     {
+      IEnumerable<Card> newCards;
       int loadCount = IncrementalLoadMax - ReserveSize;
 
-      ITableQuery<Card> tableQuery =
-        Db.Table<Card>()
-          .Take(loadCount)
-          .Where(c =>
-                 c.PracticeState == ConstSRS.CardPracticeState.New
-                 && !Objects.Select(o => o.Id).Contains(c.Id));
+      using (Db.Lock())
+      {
+        ITableQuery<Card> tableQuery =
+          Db.Table<Card>()
+            .Where(c =>
+                   c.PracticeState == ConstSRS.CardPracticeState.New
+                   && !Objects.Select(o => o.Id).Contains(c.Id))
+            .Take(loadCount);
 
-      if (!fullLoad)
-        tableQuery = tableQuery.ShallowLoad(LazyLoader);
+        if (!fullLoad)
+          tableQuery = tableQuery.ShallowLoad(LazyLoader);
 
-      tableQuery = Random
-                     ? tableQuery.OrderByRand()
-                     : tableQuery.OrderBy(c => c.Due);
+        tableQuery = Random
+                       ? tableQuery.OrderByRand()
+                       : tableQuery.OrderBy(c => c.Due);
 
-      IEnumerable<Card> newCards = tableQuery;
+        newCards = tableQuery;
+      }
+
       int loadedCount = newCards.Count();
 
       if (loadedCount < loadCount)

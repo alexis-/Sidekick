@@ -4,7 +4,6 @@ namespace Mnemophile.Interfaces.SRS
 {
   public interface ICard
   {
-    void Answer(ConstSRS.Grade grade);
     ConstSRS.GradingInfo[] ComputeGrades();
 
     bool IsNew();

@@ -19,7 +19,7 @@ namespace Mnemophile.SRS.Models
     /// </summary>
     /// <param name="interval">new interval value</param>
     /// <returns>Sanitized Interval</returns>
-    private int SanitizeInterval(int interval)
+    public int SanitizeInterval(int interval)
     {
       return Math.Max(1, Math.Min(Config.ReviewMaxInterval,
         (int)(interval * Config.ReviewIntervalModifier)));
@@ -31,7 +31,7 @@ namespace Mnemophile.SRS.Models
     /// </summary>
     /// <param name="eFactor">new EFactor value</param>
     /// <returns>Sanitized EFactor</returns>
-    private float SanitizeEFactor(float eFactor)
+    public float SanitizeEFactor(float eFactor)
     {
       return Math.Max(Config.ReviewMinEase, eFactor);
     }

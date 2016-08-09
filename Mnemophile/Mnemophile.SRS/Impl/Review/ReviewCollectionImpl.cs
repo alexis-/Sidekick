@@ -9,73 +9,168 @@ using Mnemophile.Const.SRS;
 using Mnemophile.Interfaces.DB;
 using Mnemophile.Interfaces.SRS;
 using Mnemophile.SRS.Models;
-using static System.String;
+using Mnemophile.Utils;
 
 namespace Mnemophile.SRS.Impl.Review
 {
-  internal class ReviewCollectionImpl : IReviewCollection
+  public class ReviewCollectionImpl : IReviewCollection
   {
-    private ReviewEnumerator Enumerator { get; }
+    //
+    // Card types lists
+
+    private NewReviewList NewReviewList { get; set; }
+    private LearnReviewList LearnReviewList { get; set; }
+    private DueReviewList DueReviewList { get; set; }
+
+    private ReviewAsyncDbListBase CurrentList { get; set; }
+
+
+    //
+    // Misc
+
+    public IDatabase Db { get; set; }
+    private string CardTableName { get; }
+    private Random Random { get; }
+    private Dictionary<ReviewAsyncDbListBase,
+      Func<Task<bool>>> NextAction { get; }
+
+
 
     //
     // Constructor
 
-    internal ReviewCollectionImpl(IDatabase db, CollectionConfig config)
+    public ReviewCollectionImpl(IDatabase db, CollectionConfig config)
     {
-      Enumerator = new ReviewEnumerator(db, config);
+      Db = db;
+      Random = new Random();
+
+      CardTableName = Db.GetTableMapping<Card>().GetTableName();
+      
+      CurrentList = null;
+      NextAction =
+        new Dictionary<ReviewAsyncDbListBase, Func<Task<bool>>>();
+
+      Initialize(db, config);
     }
+
 
 
     //
     // IReviewCollection implementation
 
-    public IEnumerator<ICard> GetEnumerator()
+    public Task<bool> Initialized { get; set; }
+
+    public ICard Current => CurrentList?.Current;
+
+    public Task<bool> Answer(ConstSRS.Grade grade)
     {
-      return Enumerator;
+      Card card = (Card)Current;
+
+      if (card == null)
+        throw new InvalidOperationException("Card unavailable");
+
+      bool isNewCard = card.IsNew();
+      int noteId = card.NoteId;
+
+      NextAction[CurrentList] = () => CurrentList.MoveNext();
+      CurrentList = null;
+
+      card.Answer(grade, Db);
+
+      // If this was a new card, add to learning list
+      if (isNewCard && card.IsLearning())
+        LearnReviewList.AddManual(card);
+
+      // Dismiss sibling cards
+      Task.Run(() =>
+               {
+                 using (Db.Lock())
+                 {
+                   Db.Query<Card>(
+                     @"UPDATE """ + CardTableName
+                     + @""" SET ""Due"" = ? WHERE ""Due"" < ?"
+                     + @" AND ""NoteId"" = ?",
+                     DateTime.Today.AddDays(1).ToUnixTimestamp(),
+                     DateTime.Today.AddDays(1).ToUnixTimestamp(),
+                     noteId);
+                 }
+               }
+        );
+
+      NewReviewList.DismissSiblings(card);
+      LearnReviewList.DismissSiblings(card);
+      DueReviewList.DismissSiblings(card);
+
+      return DoNext();
     }
 
-    IEnumerator IEnumerable.GetEnumerator()
+    public Task<bool> Dismiss()
     {
-      return GetEnumerator();
-    }
+      Card card = (Card)Current;
 
-    public int Count => CountByState(
-      ConstSRS.CardPracticeStateFilterFlag.All);
+      if (card == null)
+        throw new InvalidOperationException("Card unavailable");
+
+      NextAction[CurrentList] = () => CurrentList.Dismiss();
+      CurrentList = null;
+
+      card.Dismiss(Db);
+
+      return DoNext();
+    }
 
     public int CountByState(ConstSRS.CardPracticeStateFilterFlag state)
     {
       return -1;
     }
-  }
 
-  internal class ReviewEnumerator : IEnumerator<ICard>
-  {
-    private IDatabase Db { get; }
-    private CollectionConfig Config { get; }
 
-    internal ReviewEnumerator(IDatabase db, CollectionConfig config)
+
+    //
+    // Internal
+
+    private void Initialize(IDatabase db, CollectionConfig config)
     {
-      Db = db;
-      Config = config;
+      NewReviewList = new NewReviewList(db, config);
+      LearnReviewList = new LearnReviewList(db);
+      DueReviewList = new DueReviewList(db, config);
+
+      NextAction[NewReviewList] = () => NewReviewList.MoveNext();
+      NextAction[LearnReviewList] = () => LearnReviewList.MoveNext();
+      NextAction[DueReviewList] = () => DueReviewList.MoveNext();
+
+      Initialized = DoNext();
     }
 
-    public bool MoveNext()
+    private async Task<bool> DoNext()
     {
-      throw new NotImplementedException();
+      CurrentList = await GetNextCardSource();
+
+      return CurrentList != null && await NextAction[CurrentList]();
     }
 
-    public void Reset()
+    private async Task<ReviewAsyncDbListBase> GetNextCardSource()
     {
-      throw new NotImplementedException();
-    }
+      // Fix await - makes pre-loading useless
+      int newReviewCount = await NewReviewList.ReviewCount();
+      int learnReviewCount = await LearnReviewList.ReviewCount();
+      int dueReviewCount = await DueReviewList.ReviewCount();
 
-    public ICard Current { get; }
+      int totalReviewCount =
+        newReviewCount + learnReviewCount + dueReviewCount;
 
-    object IEnumerator.Current => Current;
+      int rnd = Random.Next(0, totalReviewCount);
 
-    public void Dispose()
-    {
-      throw new NotImplementedException();
+      if (rnd < newReviewCount)
+        return NewReviewList;
+
+      if (rnd < newReviewCount + learnReviewCount)
+        return LearnReviewList;
+
+      if (rnd < newReviewCount + learnReviewCount + dueReviewCount)
+        return DueReviewList;
+      
+      return null;
     }
   }
 }

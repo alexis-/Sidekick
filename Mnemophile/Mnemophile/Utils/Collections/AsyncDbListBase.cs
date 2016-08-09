@@ -33,14 +33,14 @@ namespace Mnemophile.Utils.Collections
     public T Current
     {
       get { return _current; }
-      private set { _current = OnCurrentChange(_current, value); }
+      protected set { _current = OnCurrentChange(_current, value); }
     }
 
     private int _index;
     public int Index
     {
       get { return _index; }
-      private set { _index = OnIndexChange(_index, value); }
+      protected set { _index = OnIndexChange(_index, value); }
     }
 
     protected IDatabase Db { get; }
@@ -63,9 +63,45 @@ namespace Mnemophile.Utils.Collections
       if (lazyLoad)
         LazyLoader = DbLazyLoad<T>.GetOrCreateInstance(db);
 
-      Index = -1;
+      _index = -1;
+      _current = null;
       Objects = null;
-      Current = null;
+    }
+
+    /// <summary>
+    ///     Manually add an item.
+    /// </summary>
+    /// <param name="item">Object instance</param>
+    /// <param name="sort">
+    ///     Whether to sort list following item addition.
+    /// </param>
+    public virtual void AddManual(T item, bool sort = true)
+    {
+      lock (LockObject)
+      {
+        Objects.Add(item);
+
+        if (sort)
+          Sort();
+      }
+    }
+
+    /// <summary>
+    ///     Manually add items.
+    /// </summary>
+    /// <param name="items">Objects</param>
+    /// <param name="sort">
+    ///     Whether to sort list following items addition.
+    /// </param>
+    public virtual void AddManual(IEnumerable<T> items, bool sort = true)
+    {
+      lock (LockObject)
+      {
+        Objects.AddRange(items);
+
+        if (sort)
+          Sort();
+      }
     }
 
     /// <summary>
@@ -73,7 +109,7 @@ namespace Mnemophile.Utils.Collections
     ///     Load more items asynchronously if needed.
     /// </summary>
     /// <returns>Whether any item is available</returns>
-    public Task<bool> MoveNext()
+    public virtual Task<bool> MoveNext()
     {
       if (!CheckState())
         return TaskConstants.BooleanFalse;
@@ -87,8 +123,9 @@ namespace Mnemophile.Utils.Collections
         // not been reached yet.
         if (Index < Objects.Count - 1
           && (GetMaxIndexLoadThreshold() < 0
-              || (Index < GetMaxIndexLoadThreshold()
-                  && Status != ReviewStatus.MoveNextEndOfStore)
+              || Index < GetMaxIndexLoadThreshold()
+              || (Index >= GetMaxIndexLoadThreshold()
+                  && Status == ReviewStatus.MoveNextEndOfStore)
               ))
         {
           // If new item is not yet fully loaded, return a Task to be awaited
@@ -127,10 +164,10 @@ namespace Mnemophile.Utils.Collections
 
           ret = AsyncMoveNextLoadItems(LoadCompletionSource.Task);
         }
-      }
 
-      // We need not retain old item's reference anymore
-      Current = null;
+        // We need not retain old item's reference anymore
+        //Current = null;
+      }
 
       return ret;
     }
@@ -204,7 +241,8 @@ namespace Mnemophile.Utils.Collections
     /// </summary>
     private void CallLoadMore()
     {
-      if (LoadCompletionSource == null)
+      if (LoadCompletionSource == null
+          && Status != ReviewStatus.MoveNextEndOfStore)
       {
         LoadCompletionSource = new TaskCompletionSource<object>();
 

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Mnemophile.Const.SRS;
+using Mnemophile.Utils;
 
 namespace Mnemophile.SRS.Models
 {
@@ -11,16 +12,22 @@ namespace Mnemophile.SRS.Models
   {
     public int ReviewLeftToday()
     {
+      if (Due >= DateTime.Today.AddDays(1).ToUnixTimestamp())
+        return 0;
+
       switch (PracticeState)
       {
         case ConstSRS.CardPracticeState.New:
-          return LearningOrLapsingSteps.Length;
+          return 1;
           
         case ConstSRS.CardPracticeState.Learning:
           return GetLearningStepsLeft();
 
         case ConstSRS.CardPracticeState.Due:
           return 1;
+
+        case ConstSRS.CardPracticeState.Deleted: // Leech option
+          return 0;
       }
 
       throw new InvalidOperationException("Invalid card state");

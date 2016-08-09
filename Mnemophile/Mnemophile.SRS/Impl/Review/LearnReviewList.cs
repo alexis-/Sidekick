@@ -34,23 +34,69 @@ namespace Mnemophile.SRS.Impl.Review
     // Core methods
 
     /// <summary>
-    ///     Available number of cards (capped by user's configured number of
-    ///     learning card per day), excluding dismissed ones.
+    ///     Number of cards available for iteration
+    ///     TODO: Check if loading ?
     /// </summary>
-    public int AvailableCount => Objects
-      .Count(c => !DismissedIds.Contains(c.Id));
+    public override async Task<int> AvailableCount()
+    {
+      Task waitTask = null;
+
+      lock (LockObject)
+        waitTask = LoadCompletionSource?.Task;
+
+      if (waitTask != null)
+        await waitTask;
+
+      lock (LockObject)
+        return Objects
+          .Skip(Index + 1)
+          .Count();
+    }
+
 
     /// <summary>
-    ///     Computes total review count
+    ///     Computes total review count left
     /// </summary>
-    public int ReviewCount => Objects
-      .Where(c => !DismissedIds.Contains(c.Id))
-      .Sum(c => c.ReviewLeftToday());
+    public override async Task<int> ReviewCount()
+    {
+      Task waitTask = null;
+
+      lock (LockObject)
+        waitTask = LoadCompletionSource?.Task;
+
+      if (waitTask != null)
+        await waitTask;
+
+      lock (LockObject)
+        return Objects
+          .Where(c => !DismissedIds.Contains(c.Id))
+          .Sum(c => c.ReviewLeftToday());
+    }
 
 
 
     //
     // AsyncDbListBase core methods implementation
+
+    /// <summary>
+    ///     Learning cards may be reviewed more than once per day, overrides
+    ///     default behaviour to account for multiple reviews.
+    /// </summary>
+    /// <returns>
+    ///     Whether any item is available
+    /// </returns>
+    public override Task<bool> MoveNext()
+    {
+      if (Current == null || Current.ReviewLeftToday() == 0)
+        return base.MoveNext();
+
+      lock (LockObject)
+        Sort();
+
+      Current = Objects[Index];
+
+      return TaskConstants.BooleanTrue;
+    }
 
     /// <summary>
     ///     Load items.
@@ -75,25 +121,36 @@ namespace Mnemophile.SRS.Impl.Review
     {
       int fullLoadCount = IncrementalFurtherLoadMax;
 
-      ITableQuery<Card> tableQuery =
-        Db.Table<Card>()
-          .Take(fullLoadCount)
-          .Where(c => c.PracticeState == ConstSRS.CardPracticeState.Due);
+      int tomorrow = DateTime.Today.AddDays(1).ToUnixTimestamp();
 
-      Objects.AddRange(tableQuery.OrderBy(c => c.Due));
+      using (Db.Lock())
+      {
+        ITableQuery<Card> tableQuery =
+          Db.Table<Card>()
+            .Where(c =>
+                   c.PracticeState == ConstSRS.CardPracticeState.Learning
+                   && c.Due < tomorrow)
+            .Take(fullLoadCount);
+
+        Objects.AddRange(tableQuery.OrderBy(c => c.Due));
+      }
 
       FurtherLoadedIndex = Objects.Count - 1;
 
       if (Objects.Count == fullLoadCount)
       {
-        tableQuery =
-          Db.Table<Card>()
-            .ShallowLoad(LazyLoader)
-            .Where(c =>
-                   c.PracticeState == ConstSRS.CardPracticeState.Due
-                   && !Objects.Select(o => o.Id).Contains(c.Id));
+        using (Db.Lock())
+        {
+          ITableQuery<Card> tableQuery =
+            Db.Table<Card>()
+              .ShallowLoad(LazyLoader)
+              .Where(c =>
+                     c.PracticeState == ConstSRS.CardPracticeState.Learning
+                     && c.Due < tomorrow
+                     && !Objects.Select(o => o.Id).Contains(c.Id));
 
-        Objects.AddRange(tableQuery.OrderBy(c => c.Due));
+          Objects.AddRange(tableQuery.OrderBy(c => c.Due));
+        }
       }
       
       Status = ReviewStatus.MoveNextEndOfStore;
@@ -108,7 +165,13 @@ namespace Mnemophile.SRS.Impl.Review
     /// </summary>
     protected override void Sort()
     {
-      Objects.Sort(Index + 1, Objects.Count - Index - 1, Comparer);
+      int shift = (Current == null || Current.ReviewLeftToday() == 0)
+                    ? 1
+                    : 0;
+      Objects.Sort(
+        Index + shift,
+        Objects.Count - Index - shift,
+        Comparer);
     }
 
 

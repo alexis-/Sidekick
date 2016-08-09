@@ -37,10 +37,10 @@ namespace Mnemophile.SRS.Impl
       {
         case ConstSRS.Grade.Hard:
           return (lastInterval, delay, eFactor) => Math.Max(lastInterval + 1,
-            (int)((lastInterval + delay * 0.25f) * 1.2f));
+            (int)Math.Floor((lastInterval + delay * 0.25f) * 1.2f));
         case ConstSRS.Grade.Good:
           return (lastInterval, delay, eFactor) => Math.Max(lastInterval + 1,
-            (int)((lastInterval + delay * 0.5f) * eFactor));
+            (int)Math.Floor((lastInterval + delay * 0.5f) * eFactor));
         case ConstSRS.Grade.Easy:
           return (lastInterval, delay, eFactor) => Math.Max(lastInterval + 1,
             (int)((lastInterval + delay) * eFactor * config.ReviewEasyBonus));

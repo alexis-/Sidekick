@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Mnemophile.Attributes.DB;
 using Mnemophile.Const.SRS;
 using Mnemophile.SRS.Impl;
 using Mnemophile.Utils;
@@ -14,18 +15,21 @@ namespace Mnemophile.SRS.Models
     /// <summary>
     /// Configuration inherited by current Card
     /// </summary>
+    [Ignore]
     internal CollectionConfig Config => CollectionConfig.Default;
 
     /// <summary>
     /// Used in reviewing card process. Store time of review, from which
     /// other values will be computed (Due, Steps, ...)
     /// </summary>
-    internal int CurrentReviewTime { get; set; }
+    [Ignore]
+    public int CurrentReviewTime { get; set; }
 
     /// <summary>
     /// Either return Config's Lapsing or Learning steps, depending on Card
     /// Lapse value.
     /// </summary>
+    [Ignore]
     public Delay[] LearningOrLapsingSteps => Lapses > 0
       ? Config.LapseSteps
       : Config.LearningSteps;
@@ -37,14 +41,14 @@ namespace Mnemophile.SRS.Models
     /// Accounts for CardPracticeState offset.
     /// </summary>
     /// <returns>Current lapsing or learning index</returns>
-    internal int GetCurrentLearningStep()
+    public int GetCurrentLearningIndex()
     {
       if (!IsLearning())
         throw new InvalidOperationException(
           "Invalid call for State " + PracticeState);
 
       return Math.Min(
-        PracticeState - ConstSRS.CardPracticeState.Learning,
+        _practiceState - (short)ConstSRS.CardPracticeState.Learning,
         LearningOrLapsingSteps.Length - 1);
 
       //int lastStepValue = Due - LastModified;
@@ -65,13 +69,13 @@ namespace Mnemophile.SRS.Models
     /// </summary>
     /// <returns>Review count to graduation</returns>
     /// <exception cref="System.InvalidOperationException">Invalid call for State  + PracticeState</exception>
-    internal int GetLearningStepsLeft()
+    public int GetLearningStepsLeft()
     {
       if (!IsLearning())
         throw new InvalidOperationException(
           "Invalid call for State " + PracticeState);
 
-      return LearningOrLapsingSteps.Length - GetCurrentLearningStep();
+      return LearningOrLapsingSteps.Length - GetCurrentLearningIndex();
     }
 
     public bool IsNew()
@@ -81,7 +85,7 @@ namespace Mnemophile.SRS.Models
 
     public bool IsLearning()
     {
-      return PracticeState >= ConstSRS.CardPracticeState.Learning;
+      return PracticeState == ConstSRS.CardPracticeState.Learning;
     }
 
     public bool IsDue()

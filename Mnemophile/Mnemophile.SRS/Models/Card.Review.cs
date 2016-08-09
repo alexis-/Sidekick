@@ -16,7 +16,7 @@ namespace Mnemophile.SRS.Models
     /// Graduate from learning into due state.
     /// </summary>
     /// <param name="easy">whether answer was graded 'easy'</param>
-    internal CardAction Graduate(bool easy = false)
+    public CardAction Graduate(bool easy = false)
     {
       if (IsDue())
         throw new InvalidOperationException(
@@ -48,7 +48,7 @@ namespace Mnemophile.SRS.Models
     /// </summary>
     /// <param name="reset">if true, set learning state and lapsing or
     /// learning first step.</param>
-    internal CardAction UpdateLearningStep(bool reset = false)
+    public CardAction UpdateLearningStep(bool reset = false)
     {
       // Set learning mode and first step delay
       if (reset)
@@ -77,12 +77,12 @@ namespace Mnemophile.SRS.Models
     /// Determines whether current lapsing or learning step is graduating.
     /// </summary>
     /// <returns>Whether current step is graduating</returns>
-    internal bool IsGraduating()
+    public bool IsGraduating()
     {
       if (IsDue())
         return false;
 
-      return GetCurrentLearningStep() >= LearningOrLapsingSteps.Length - 1;
+      return GetCurrentLearningIndex() >= LearningOrLapsingSteps.Length - 1;
     }
 
     /// <summary>
@@ -90,17 +90,17 @@ namespace Mnemophile.SRS.Models
     /// Accounts for CardPracticeState offset.
     /// </summary>
     /// <returns>New step index</returns>
-    internal int IncreaseLearningStep()
+    public int IncreaseLearningStep()
     {
-      PracticeState++;
+      _practiceState++;
 
-      return GetCurrentLearningStep();
+      return GetCurrentLearningIndex();
     }
 
     /// <summary>
     /// Switch card State to Learning, while retaining misc states.
     /// </summary>
-    internal void SetLearningState()
+    public void SetLearningState()
     {
       PracticeState = ConstSRS.CardPracticeState.Learning;
     }
@@ -117,7 +117,7 @@ namespace Mnemophile.SRS.Models
     /// Process fail-graded answers for due cards.
     /// </summary>
     /// <param name="grade">Fail grade</param>
-    internal CardAction Lapse(ConstSRS.Grade grade)
+    public CardAction Lapse(ConstSRS.Grade grade)
     {
       if (grade > ConstSRS.Grade.Fail)
         throw new ArgumentException(
@@ -140,7 +140,7 @@ namespace Mnemophile.SRS.Models
     /// into Leech. Take action accordingly to preferences (suspend or delete
     /// card).
     /// </summary>
-    internal CardAction Leech()
+    public CardAction Leech()
     {
       switch (Config.LeechAction)
       {
@@ -160,7 +160,7 @@ namespace Mnemophile.SRS.Models
     /// Determines whether lapse threshold rules are met and card leech.
     /// </summary>
     /// <returns>Whether card is a leech</returns>
-    internal bool IsLeech()
+    public bool IsLeech()
     {
       return Config.LeechThreshold > 0
         && Lapses >= Config.LeechThreshold
@@ -171,7 +171,7 @@ namespace Mnemophile.SRS.Models
     /// Process pass-graded answers for due cards.
     /// </summary>
     /// <param name="grade">Pass grade</param>
-    internal CardAction Review(ConstSRS.Grade grade)
+    public CardAction Review(ConstSRS.Grade grade)
     {
       if (grade < ConstSRS.Grade.Hard)
         throw new ArgumentException(
@@ -186,16 +186,16 @@ namespace Mnemophile.SRS.Models
       return CardAction.Update;
     }
 
-    internal int ComputeReviewInterval(ConstSRS.Grade grade)
+    public int ComputeReviewInterval(ConstSRS.Grade grade)
     {
       int daysLate = (DateTime.Now - DateTimeEx.FromUnixTimestamp(Due)).Days;
       int newInterval = GradingOptions.GradeReviewIntervalFormulas(grade,
         Config)(Interval, daysLate, EFactor);
 
-      return RandomizeInterval(newInterval);
+      return Math.Max(RandomizeInterval(newInterval), Interval + 1);
     }
 
-    internal int RandomizeInterval(int interval)
+    public int RandomizeInterval(int interval)
     {
       int[] rndRange;
 
@@ -224,7 +224,7 @@ namespace Mnemophile.SRS.Models
     /// <summary>
     /// Sets card State to Suspended, while retaining main state.
     /// </summary>
-    internal void SetSuspendedState()
+    public void SetSuspendedState()
     {
       MiscState |= ConstSRS.CardMiscStateFlag.Suspended;
     }
@@ -232,7 +232,7 @@ namespace Mnemophile.SRS.Models
     /// <summary>
     /// Switch card State to Due, while retaining misc states.
     /// </summary>
-    internal void SetDueState()
+    public void SetDueState()
     {
       PracticeState = ConstSRS.CardPracticeState.Due;
     }
@@ -248,7 +248,7 @@ namespace Mnemophile.SRS.Models
     /// <summary>
     /// Build Due time from Interval (which unit is days).
     /// </summary>
-    internal void SetDueFromInterval()
+    public void SetDueFromInterval()
     {
       SetDue(Delay.FromDays(Interval));
     }
@@ -257,7 +257,7 @@ namespace Mnemophile.SRS.Models
     /// Build Due time respectively from given Delay and current review time.
     /// </summary>
     /// <param name="delay">The delay</param>
-    internal void SetDue(Delay delay)
+    public void SetDue(Delay delay)
     {
       Due = CurrentReviewTime + delay;
     }

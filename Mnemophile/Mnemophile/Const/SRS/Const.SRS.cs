@@ -10,6 +10,7 @@ namespace Mnemophile.Const.SRS
   {
     public enum CardPracticeState : short
     {
+      Deleted = -1,
       Due = 0,
       New = 1,
       Learning = 2,

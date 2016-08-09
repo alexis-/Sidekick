@@ -7,15 +7,35 @@ using Mnemophile.Const.SRS;
 
 namespace Mnemophile.Interfaces.SRS
 {
-  public interface IReviewCollection : IEnumerable<ICard>
+  public interface IReviewCollection
   {
     /// <summary>
-    ///     Total count of cards to be reviewed, regardless of state.
+    ///     Waitable Task to check whether ReviewCollection is ready.
+    ///     ReviewCollection should be initialized before calling other any
+    ///     other method.
     /// </summary>
     /// <value>
-    ///     Review card count.
+    ///     True if ReviewCollection is initialized and ready.
+    ///     False if no card is available for review.
     /// </value>
-    int Count { get; }
+    Task<bool> Initialized { get; }
+
+    /// <summary>
+    ///     Answer current card and fetch next one.
+    /// </summary>
+    /// <returns>Whether any cards are available</returns>
+    Task<bool> Answer(ConstSRS.Grade grade);
+
+    /// <summary>
+    ///     Dismiss current card and fetch next one.
+    /// </summary>
+    /// <returns>Whether any cards are available</returns>
+    Task<bool> Dismiss();
+
+    /// <summary>
+    ///     Last fetched card.
+    /// </summary>
+    ICard Current { get; }
 
     /// <summary>
     ///     State-dependent counts of cards to be reviewed.
