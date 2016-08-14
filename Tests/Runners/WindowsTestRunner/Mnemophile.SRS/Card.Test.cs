@@ -62,7 +62,7 @@ namespace Mnemophile.SRS.Tests
         Config,
         cardCount, 0, 1, 0, 30);
 
-      Card card = new Card();
+      Card card = new Card(Config);
 
       Config.LearningSteps.Count().Should().BeGreaterThan(1);
 
@@ -92,8 +92,23 @@ namespace Mnemophile.SRS.Tests
         }
 
         card.UpdateLearningStep();
-        card.PracticeState.Should().Be(ConstSRS.CardPracticeState.Due);
+        card.IsDue().Should().Be(true);
       }
+    }
+
+    [Fact]
+    public void Lapse()
+    {
+      Card card = CardGenerator.MakeCard(
+        Config,
+        ConstSRS.CardPracticeState.Due,
+        DateTime.Now.AddSeconds(60).ToUnixTimestamp(),
+        2.5f, 1);
+
+      card.Answer(ConstSRS.Grade.Fail);
+      card.IsLearning().Should().Be(true);
+      card.Lapses.Should().Be(1);
+      card.IsLeech().Should().Be(false);
     }
 
     [Fact]
@@ -101,6 +116,7 @@ namespace Mnemophile.SRS.Tests
     {
       // In time, 250% ease, 1d ivl
       Card card = CardGenerator.MakeCard(
+        Config,
         ConstSRS.CardPracticeState.Due,
         DateTime.Now.AddSeconds(60).ToUnixTimestamp(),
         2.5f, 1);
@@ -109,6 +125,7 @@ namespace Mnemophile.SRS.Tests
 
       // In time, 250% ease, 2d ivl
       card = CardGenerator.MakeCard(
+        Config,
         ConstSRS.CardPracticeState.Due,
         DateTime.Now.AddSeconds(60).ToUnixTimestamp(),
         2.5f, 2);
@@ -131,35 +148,6 @@ namespace Mnemophile.SRS.Tests
         card.ComputeReviewInterval(ConstSRS.Grade.Easy)
             .Should().BeInRange(easyMin, easyMax);
       }
-    }
-
-    private void GetCollectionPracticeStates(
-      IEnumerable<Note> notes, out int newCards, out int learnCards,
-      out int lapsingCards, out int dueCards)
-    {
-      newCards = notes.Sum(n => n.Cards.Count(c => c.IsNew()));
-      learnCards = notes.Sum(
-        n => n.Cards.Count(c => c.IsLearning() && c.Lapses == 0));
-      lapsingCards = notes.Sum(
-        n => n.Cards.Count(c => c.IsLearning() && c.Lapses > 0));
-      dueCards = notes.Sum(
-        n => n.Cards.Count(c => c.IsDue()));
-    }
-
-    private int ComputeTotalReviewCount(
-      IEnumerable<Note> notes, CollectionConfig config)
-    {
-      notes.Max(n => n.Cards.Count).Should().Be(1);
-
-      int newCards, learnCards, lapsingCards, dueCards;
-      GetCollectionPracticeStates(notes,
-        out newCards, out learnCards, out lapsingCards, out dueCards);
-
-      return
-        newCards + newCards * config.LearningSteps.Length
-        + learnCards * config.LearningSteps.Length
-        + lapsingCards * config.LapseSteps.Length
-        + dueCards;
     }
   }
 }

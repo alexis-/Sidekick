@@ -8,6 +8,6 @@ namespace Mnemophile.Interfaces.SRS
 {
   public interface INote
   {
-     ICard CreateCard(string data);
+     //ICard CreateCard(string data);
   }
 }

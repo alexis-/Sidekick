@@ -3,6 +3,7 @@ using System.Text;
 using Mnemophile.Attributes.DB;
 using Mnemophile.Const.SRS;
 using Mnemophile.Interfaces.SRS;
+using Mnemophile.SRS.Impl;
 using Mnemophile.Utils;
 using Newtonsoft.Json;
 
@@ -15,9 +16,15 @@ namespace Mnemophile.SRS.Models
     {
     }
 
-    public Card(int noteId, string data)
+    public Card(CollectionConfig config)
+      : this(config, -1, null)
+    {
+    }
+
+    public Card(CollectionConfig config, int noteId, string data)
     {
       Id = DateTime.Now.UnixTimestamp();
+      Config = config;
       NoteId = noteId;
       LastModified = Id;
 

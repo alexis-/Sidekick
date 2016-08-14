@@ -61,6 +61,7 @@
     <Compile Include="Impl\SM2.Impl.cs" />
     <Compile Include="Models\Card.cs" />
     <Compile Include="Models\Note.cs" />
+    <Compile Include="Models\ReviewLog.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

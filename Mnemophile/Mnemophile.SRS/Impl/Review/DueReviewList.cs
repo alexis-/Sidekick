@@ -24,7 +24,7 @@ namespace Mnemophile.SRS.Impl.Review
     //
     // Properties
 
-    private int DueCardPerDay { get; }
+    private int DueCardsLeft { get; }
     private IComparer<Card> Comparer { get; }
 
 
@@ -32,9 +32,9 @@ namespace Mnemophile.SRS.Impl.Review
     //
     // Constructor
 
-    public DueReviewList(IDatabase db, CollectionConfig config) : base(db)
+    public DueReviewList(IDatabase db, int dueCardsLeft) : base(db)
     {
-      DueCardPerDay = config.DueCardPerDay;
+      DueCardsLeft = dueCardsLeft;
       Comparer = ReviewComparers.DueComparer;
     }
 
@@ -52,7 +52,8 @@ namespace Mnemophile.SRS.Impl.Review
       Task waitTask = null;
 
       lock (LockObject)
-        waitTask = LoadCompletionSource?.Task;
+        if (Objects.Count == 0)
+          waitTask = LoadCompletionSource?.Task;
 
       if (waitTask != null)
         await waitTask;
@@ -79,11 +80,11 @@ namespace Mnemophile.SRS.Impl.Review
       lock (LockObject)
         return Objects
           .Where(c => !DismissedIds.Contains(c.Id))
-          .Take(DueCardPerDay)
+          .Take(DueCardsLeft)
           .Sum(c => c.ReviewLeftToday());
     }
 
-    private int ReserveSize => Objects.Count - DueCardPerDay - Dismissed;
+    private int ReserveSize => Objects.Count - DueCardsLeft - Dismissed;
 
 
 
@@ -113,7 +114,7 @@ namespace Mnemophile.SRS.Impl.Review
     /// <returns>Whether any item was loaded.</returns>
     protected bool DoFirstLoad()
     {
-      int totalLoadCount = DueCardPerDay + IncrementalLoadMax;
+      int totalLoadCount = DueCardsLeft + IncrementalLoadMax;
       int fullLoadCount = Math.Min(totalLoadCount, IncrementalFurtherLoadMax);
       int shallowLoadCount = totalLoadCount - fullLoadCount;
 
@@ -224,12 +225,12 @@ namespace Mnemophile.SRS.Impl.Review
     }
 
     /// <summary>
-    ///     Keep at least <see cref="DueCardPerDay" /> active cards in list
+    ///     Keep at least <see cref="DueCardsLeft" /> active cards in list
     /// </summary>
     /// <returns></returns>
     protected override int GetMaxIndexLoadThreshold()
     {
-      return Index + 1 + Objects.Count - DueCardPerDay - Dismissed;
+      return Index + 1 + Objects.Count - DueCardsLeft - Dismissed;
     }
 
     protected override int GetFurtherLoadedIndex()
@@ -239,7 +240,7 @@ namespace Mnemophile.SRS.Impl.Review
 
     protected override int GetNextLoadThreshold()
     {
-      return Index + 1 + Objects.Count - DueCardPerDay - Dismissed
+      return Index + 1 + Objects.Count - DueCardsLeft - Dismissed
              - IncrementalLoadMin;
     }
   }

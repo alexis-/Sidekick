@@ -62,7 +62,8 @@ namespace Mnemophile.SRS.Impl.Review
       Task waitTask = null;
 
       lock (LockObject)
-        waitTask = LoadCompletionSource?.Task;
+        if (Objects.Count == 0)
+          waitTask = LoadCompletionSource?.Task;
 
       if (waitTask != null)
         await waitTask;

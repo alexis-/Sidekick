@@ -48,7 +48,7 @@ namespace Mnemophile.SRS.Tests.Helpers
 
       NewCount = (int)(newRatio / totalRatio * count);
       LearnCount = (int)(learnRatio / totalRatio * count);
-      DueCount = (int)(dueRatio / totalRatio * count);
+      DueCount = count - NewCount - LearnCount;
       LapseCount = (int)Math.Min(
         lapsePercent / 100.0f * (DueCount + LearnCount),
         DueCount + LearnCount);
@@ -64,7 +64,7 @@ namespace Mnemophile.SRS.Tests.Helpers
 
     public Card Generate(int noteId = -1)
     {
-      Card card = new Card(noteId, Fixture.Create<string>());
+      Card card = new Card(Config, noteId, Fixture.Create<string>());
 
       return Generate(card);
     }
@@ -194,6 +194,7 @@ namespace Mnemophile.SRS.Tests.Helpers
     // Misc helper
 
     public static Card MakeCard(
+      CollectionConfig config,
       ConstSRS.CardPracticeState state,
       int due = -1,
       float eFactor = 2.5f,
@@ -201,7 +202,7 @@ namespace Mnemophile.SRS.Tests.Helpers
       int reviews = 0,
       int lapses = 0)
     {
-      return new Card()
+      return new Card(config)
       {
         PracticeState = state,
         Due = due == -1 ? DateTime.Now.AddSeconds(60).ToUnixTimestamp() : due,

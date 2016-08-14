@@ -16,7 +16,7 @@ namespace Mnemophile.SRS.Models
     /// Configuration inherited by current Card
     /// </summary>
     [Ignore]
-    internal CollectionConfig Config => CollectionConfig.Default;
+    internal CollectionConfig Config { get; set; }
 
     /// <summary>
     /// Used in reviewing card process. Store time of review, from which

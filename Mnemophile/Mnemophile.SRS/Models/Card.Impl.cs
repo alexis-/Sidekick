@@ -8,7 +8,7 @@ namespace Mnemophile.SRS.Models
 {
   public partial class Card
   {
-    internal void Dismiss(IDatabase db)
+    public void Dismiss(IDatabase db)
     {
       MiscState = MiscState | ConstSRS.CardMiscStateFlag.Dismissed;
 
@@ -19,12 +19,12 @@ namespace Mnemophile.SRS.Models
         db.Update(this);
     }
 
-    internal void Answer(ConstSRS.Grade grade)
+    public void Answer(ConstSRS.Grade grade)
     {
       Answer(grade, null);
     }
 
-    internal void Answer(ConstSRS.Grade grade, IDatabase db)
+    public void Answer(ConstSRS.Grade grade, IDatabase db)
     {
       CardAction cardAction = CardAction.Invalid;
       CurrentReviewTime = DateTime.Now.UnixTimestamp();
@@ -75,6 +75,8 @@ namespace Mnemophile.SRS.Models
       MiscState = ConstSRS.CardMiscStateFlag.None;
       Reviews++;
       LastModified = CurrentReviewTime;
+
+
 
       if (db != null)
         switch (cardAction)

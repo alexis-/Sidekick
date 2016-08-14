@@ -15,6 +15,8 @@ namespace Mnemophile.SRS.Impl.Review
 {
   public class ReviewCollectionImpl : IReviewCollection
   {
+    const int MaxEvalTime = 60;
+
     //
     // Card types lists
 
@@ -33,15 +35,22 @@ namespace Mnemophile.SRS.Impl.Review
     private Random Random { get; }
     private Dictionary<ReviewAsyncDbListBase,
       Func<Task<bool>>> NextAction { get; }
+    
+    private int EvalStartTime { get; set; }
+    private int LastEval { get; set; }
+    private bool FakeLog { get; }
 
 
 
     //
     // Constructor
 
-    public ReviewCollectionImpl(IDatabase db, CollectionConfig config)
+    public ReviewCollectionImpl(IDatabase db, CollectionConfig config,
+      bool fakeLog = false)
     {
       Db = db;
+      FakeLog = fakeLog;
+      LastEval = -1;
       Random = new Random();
 
       CardTableName = Db.GetTableMapping<Card>().GetTableName();
@@ -49,8 +58,8 @@ namespace Mnemophile.SRS.Impl.Review
       CurrentList = null;
       NextAction =
         new Dictionary<ReviewAsyncDbListBase, Func<Task<bool>>>();
-
-      Initialize(db, config);
+      
+      Initialized = Initialize(db, config);
     }
 
 
@@ -64,12 +73,33 @@ namespace Mnemophile.SRS.Impl.Review
 
     public Task<bool> Answer(ConstSRS.Grade grade)
     {
+      // Card sanity check
       Card card = (Card)Current;
 
       if (card == null)
         throw new InvalidOperationException("Card unavailable");
 
-      bool isNewCard = card.IsNew();
+
+      //
+      // Compute evaluation time & create review log
+
+      int evalTime = Math.Min(
+        DateTime.Now.ToUnixTimestamp() - EvalStartTime,
+        MaxEvalTime);
+      
+      ReviewLog log = new ReviewLog(
+        EvalStartTime, card.Id, card.Due, card.PracticeState,
+        card.Interval, card.EFactor);
+
+      if (FakeLog && LastEval > 0)
+        log.Id = Math.Max(LastEval + 1, EvalStartTime);
+
+      LastEval = log.Id;
+
+
+      //
+      // Answer
+
       int noteId = card.NoteId;
 
       NextAction[CurrentList] = () => CurrentList.MoveNext();
@@ -77,15 +107,25 @@ namespace Mnemophile.SRS.Impl.Review
 
       card.Answer(grade, Db);
 
+      log.CompleteReview(
+        grade, card.Due, card.PracticeState,
+        card.Interval, card.EFactor, evalTime);
+
       // If this was a new card, add to learning list
-      if (isNewCard && card.IsLearning())
+      if (log.LastState == ConstSRS.CardPracticeState.New
+        && log.NewState == ConstSRS.CardPracticeState.Learning)
         LearnReviewList.AddManual(card);
 
-      // Dismiss sibling cards
+
+      //
+      // Dismiss sibling cards & insert review log
+
       Task.Run(() =>
                {
                  using (Db.Lock())
                  {
+                   Db.Insert(log);
+
                    Db.Query<Card>(
                      @"UPDATE """ + CardTableName
                      + @""" SET ""Due"" = ? WHERE ""Due"" < ?"
@@ -129,24 +169,52 @@ namespace Mnemophile.SRS.Impl.Review
     //
     // Internal
 
-    private void Initialize(IDatabase db, CollectionConfig config)
+    private async Task<bool> Initialize(IDatabase db, CollectionConfig config)
     {
-      NewReviewList = new NewReviewList(db, config);
+      int newToday, dueToday;
+      ComputeSessionInfos(config, out newToday, out dueToday);
+
+      NewReviewList = new NewReviewList(db, config, newToday);
       LearnReviewList = new LearnReviewList(db);
-      DueReviewList = new DueReviewList(db, config);
+      DueReviewList = new DueReviewList(db, dueToday);
 
       NextAction[NewReviewList] = () => NewReviewList.MoveNext();
       NextAction[LearnReviewList] = () => LearnReviewList.MoveNext();
       NextAction[DueReviewList] = () => DueReviewList.MoveNext();
 
-      Initialized = DoNext();
+      return await DoNext();
+    }
+
+    private void ComputeSessionInfos(
+      CollectionConfig config, out int newToday, out int dueToday)
+    {
+      int todayStart = DateTime.Today.ToUnixTimestamp();
+      int todayEnd = DateTime.Today.AddDays(1).ToUnixTimestamp();
+
+      IEnumerable<ReviewLog> logs =
+        Db.Table<ReviewLog>()
+          .Where(l =>
+                 l.Id >= todayStart && l.Id < todayEnd
+                 && l.LastState != ConstSRS.CardPracticeState.Learning)
+          .SelectColumns(nameof(ReviewLog.Id), nameof(ReviewLog.LastState));
+
+      int newReviewedToday = logs.Count(l =>
+                            l.LastState == ConstSRS.CardPracticeState.New);
+      int dueReviewedToday = logs.Count() - newReviewedToday;
+
+      newToday = config.NewCardPerDay - newReviewedToday;
+      dueToday = config.DueCardPerDay - dueReviewedToday;
     }
 
     private async Task<bool> DoNext()
     {
       CurrentList = await GetNextCardSource();
 
-      return CurrentList != null && await NextAction[CurrentList]();
+      var ret = CurrentList != null && await NextAction[CurrentList]();
+
+      EvalStartTime = DateTime.Now.ToUnixTimestamp();
+
+      return ret;
     }
 
     private async Task<ReviewAsyncDbListBase> GetNextCardSource()

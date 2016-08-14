@@ -78,6 +78,7 @@ namespace Mnemophile.SRS.Impl.Review
       lock (LockObject)
       {
         int noteId = card.NoteId;
+        int cardId = card.Id;
 
         List<int> cardIndices = new List<int>();
         int cardIndex = Index + 1;
@@ -87,7 +88,9 @@ namespace Mnemophile.SRS.Impl.Review
 
         // Find siblings indices
         while ((cardIndex =
-                Objects.FindIndex(cardIndex + 1, c => c.NoteId == noteId)) > 0)
+                Objects.FindIndex(
+                  cardIndex + 1,
+                  c => c.NoteId == noteId && c.Id != cardId)) > 0)
           cardIndices.Add(cardIndex);
 
         // No siblings

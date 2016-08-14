@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Mnemophile.Attributes.DB;
 using Mnemophile.Interfaces.SRS;
+using Mnemophile.SRS.Impl;
 using Mnemophile.Utils;
 
 namespace Mnemophile.SRS.Models
@@ -26,9 +27,9 @@ namespace Mnemophile.SRS.Models
       Cards = new List<Card>();
     }
 
-    public ICard CreateCard(string data)
+    public ICard CreateCard(CollectionConfig config, string data)
     {
-      Card card = new Card(Id, data);
+      Card card = new Card(config, Id, data);
 
       Cards.Add(card);
 

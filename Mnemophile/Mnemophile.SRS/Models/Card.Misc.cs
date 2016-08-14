@@ -12,6 +12,7 @@
       {
         Id = this.Id,
         NoteId = this.NoteId,
+        Config = this.Config,
         PracticeState = this.PracticeState,
         MiscState = this.MiscState,
         _eFactor = this.EFactor,
