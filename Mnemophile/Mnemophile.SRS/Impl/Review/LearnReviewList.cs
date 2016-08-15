@@ -37,41 +37,36 @@ namespace Mnemophile.SRS.Impl.Review
     ///     Number of cards available for iteration
     ///     TODO: Check if loading ?
     /// </summary>
-    public override async Task<int> AvailableCount()
+    public override int AvailableCount()
     {
-      Task waitTask = null;
-
       lock (LockObject)
-        waitTask = LoadCompletionSource?.Task;
+      {
+        if (Objects.Count == 0 && LoadCompletionSource != null
+          && (Status == ReviewStatus.New || Status == ReviewStatus.MoveNext))
+          throw new InvalidOperationException();
 
-      if (waitTask != null)
-        await waitTask;
-
-      lock (LockObject)
         return Objects
           .Skip(Index + 1)
           .Count();
+      }
     }
 
 
     /// <summary>
     ///     Computes total review count left
     /// </summary>
-    public override async Task<int> ReviewCount()
+    public override int ReviewCount()
     {
-      Task waitTask = null;
-
       lock (LockObject)
-        if (Objects.Count == 0)
-          waitTask = LoadCompletionSource?.Task;
+      {
+        if (Objects.Count == 0 && LoadCompletionSource != null
+          && (Status == ReviewStatus.New || Status == ReviewStatus.MoveNext))
+          throw new InvalidOperationException();
 
-      if (waitTask != null)
-        await waitTask;
-
-      lock (LockObject)
         return Objects
           .Where(c => !DismissedIds.Contains(c.Id))
           .Sum(c => c.ReviewLeftToday());
+      }
     }
 
 
@@ -111,7 +106,8 @@ namespace Mnemophile.SRS.Impl.Review
     {
       bool firstLoad = Objects.Count == 0;
 
-      return firstLoad && DoFirstLoad();
+      lock (LockObject)
+        return firstLoad && DoFirstLoad();
     }
 
     /// <summary>
@@ -129,7 +125,7 @@ namespace Mnemophile.SRS.Impl.Review
         ITableQuery<Card> tableQuery =
           Db.Table<Card>()
             .Where(c =>
-                   c.PracticeState == ConstSRS.CardPracticeState.Learning
+                   c.PracticeState >= ConstSRS.CardPracticeState.Learning
                    && c.Due < tomorrow)
             .Take(fullLoadCount);
 
@@ -146,7 +142,7 @@ namespace Mnemophile.SRS.Impl.Review
             Db.Table<Card>()
               .ShallowLoad(LazyLoader)
               .Where(c =>
-                     c.PracticeState == ConstSRS.CardPracticeState.Learning
+                     c.PracticeState >= ConstSRS.CardPracticeState.Learning
                      && c.Due < tomorrow
                      && !Objects.Select(o => o.Id).Contains(c.Id));
 

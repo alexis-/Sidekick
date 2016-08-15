@@ -32,8 +32,7 @@ namespace Mnemophile.SRS.Impl.Review
     }
 
     /// <summary>
-    ///     Random comparer implementation. Used sorting new cards when
-    ///     random option is selected.
+    ///     Random comparer implementation.
     /// </summary>
     /// <seealso cref="IComparer{Card}" />
     private class RandomComparerImpl : IComparer<Card>

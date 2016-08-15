@@ -19,9 +19,6 @@ namespace Mnemophile.SRS.Models
       {
         case ConstSRS.CardPracticeState.New:
           return 1;
-          
-        case ConstSRS.CardPracticeState.Learning:
-          return GetLearningStepsLeft();
 
         case ConstSRS.CardPracticeState.Due:
           return 1;
@@ -29,6 +26,9 @@ namespace Mnemophile.SRS.Models
         case ConstSRS.CardPracticeState.Deleted: // Leech option
           return 0;
       }
+
+      if (IsLearning())
+        return GetLearningStepsLeft();
 
       throw new InvalidOperationException("Invalid card state");
     }

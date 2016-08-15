@@ -70,8 +70,8 @@ namespace Mnemophile.SRS.Models
     
     public int LastDue { get; set; }
     public int NewDue { get; set; }
-    public ConstSRS.CardPracticeState LastState { get; set; }
-    public ConstSRS.CardPracticeState NewState { get; set; }
+    public short LastState { get; set; }
+    public short NewState { get; set; }
     public int LastInterval { get; set; }
     public int NewInterval { get; set; }
     public float LastEFactor { get; set; }

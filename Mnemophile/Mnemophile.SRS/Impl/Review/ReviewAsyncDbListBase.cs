@@ -41,11 +41,24 @@ namespace Mnemophile.SRS.Impl.Review
 
       Initialize(true);
     }
-    
+
 
 
     // 
     // Core methods
+
+    /// <summary>
+    /// Returns waitable task for list initialization
+    /// </summary>
+    /// <returns>Waitable Task</returns>
+    public Task Initialized()
+    {
+      if (Objects.Count > 0)
+        return TaskConstants.Completed;
+
+      lock (LockObject)
+        return LoadCompletionSource?.Task ?? TaskConstants.Completed;
+    }
 
     /// <summary>
     ///     Dismiss current item and calls
@@ -147,8 +160,8 @@ namespace Mnemophile.SRS.Impl.Review
       Objects[idx2] = tmp;
     }
 
-    public abstract Task<int> AvailableCount();
-    public abstract Task<int> ReviewCount();
+    public abstract int AvailableCount();
+    public abstract int ReviewCount();
 
     /// <summary>
     ///     Dismissed item count

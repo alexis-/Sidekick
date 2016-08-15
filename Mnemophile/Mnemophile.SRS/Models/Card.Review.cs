@@ -92,7 +92,7 @@ namespace Mnemophile.SRS.Models
     /// <returns>New step index</returns>
     public int IncreaseLearningStep()
     {
-      _practiceState++;
+      PracticeState++;
 
       return GetCurrentLearningIndex();
     }

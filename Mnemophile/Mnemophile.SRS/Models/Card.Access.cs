@@ -47,20 +47,10 @@ namespace Mnemophile.SRS.Models
         throw new InvalidOperationException(
           "Invalid call for State " + PracticeState);
 
+      // Account for possible config changes
       return Math.Min(
-        _practiceState - (short)ConstSRS.CardPracticeState.Learning,
+        PracticeState - ConstSRS.CardPracticeState.Learning,
         LearningOrLapsingSteps.Length - 1);
-
-      //int lastStepValue = Due - LastModified;
-      //int lastStep = 0;
-
-      //for (;
-      //  lastStep < LearningOrLapsingSteps.Length
-      //  && lastStepValue > LearningOrLapsingSteps[lastStep];
-      //  lastStep++)
-      //  ;
-
-      //return lastStep;
     }
 
     /// <summary>
@@ -85,7 +75,7 @@ namespace Mnemophile.SRS.Models
 
     public bool IsLearning()
     {
-      return PracticeState == ConstSRS.CardPracticeState.Learning;
+      return PracticeState >= ConstSRS.CardPracticeState.Learning;
     }
 
     public bool IsDue()

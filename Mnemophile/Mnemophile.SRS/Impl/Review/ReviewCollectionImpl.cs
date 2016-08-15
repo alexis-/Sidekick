@@ -112,8 +112,7 @@ namespace Mnemophile.SRS.Impl.Review
         card.Interval, card.EFactor, evalTime);
 
       // If this was a new card, add to learning list
-      if (log.LastState == ConstSRS.CardPracticeState.New
-        && log.NewState == ConstSRS.CardPracticeState.Learning)
+      if (log.LastState == ConstSRS.CardPracticeState.New)
         LearnReviewList.AddManual(card);
 
 
@@ -129,10 +128,10 @@ namespace Mnemophile.SRS.Impl.Review
                    Db.Query<Card>(
                      @"UPDATE """ + CardTableName
                      + @""" SET ""Due"" = ? WHERE ""Due"" < ?"
-                     + @" AND ""NoteId"" = ?",
+                     + @" AND ""NoteId"" = ? AND ""Id"" <> ?",
                      DateTime.Today.AddDays(1).ToUnixTimestamp(),
                      DateTime.Today.AddDays(1).ToUnixTimestamp(),
-                     noteId);
+                     noteId, card.Id);
                  }
                }
         );
@@ -161,7 +160,21 @@ namespace Mnemophile.SRS.Impl.Review
 
     public int CountByState(ConstSRS.CardPracticeStateFilterFlag state)
     {
-      return -1;
+      int ret = 0;
+
+      if ((state & ConstSRS.CardPracticeStateFilterFlag.Due) ==
+          ConstSRS.CardPracticeStateFilterFlag.Due)
+        ret += DueReviewList.ReviewCount();
+
+      if ((state & ConstSRS.CardPracticeStateFilterFlag.Learning) ==
+          ConstSRS.CardPracticeStateFilterFlag.Learning)
+        ret += LearnReviewList.ReviewCount();
+
+      if ((state & ConstSRS.CardPracticeStateFilterFlag.New) ==
+          ConstSRS.CardPracticeStateFilterFlag.New)
+        ret += NewReviewList.ReviewCount();
+
+      return ret;
     }
 
 
@@ -182,6 +195,10 @@ namespace Mnemophile.SRS.Impl.Review
       NextAction[LearnReviewList] = () => LearnReviewList.MoveNext();
       NextAction[DueReviewList] = () => DueReviewList.MoveNext();
 
+      await NewReviewList.Initialized();
+      await LearnReviewList.Initialized();
+      await DueReviewList.Initialized();
+
       return await DoNext();
     }
 
@@ -195,8 +212,10 @@ namespace Mnemophile.SRS.Impl.Review
         Db.Table<ReviewLog>()
           .Where(l =>
                  l.Id >= todayStart && l.Id < todayEnd
-                 && l.LastState != ConstSRS.CardPracticeState.Learning)
-          .SelectColumns(nameof(ReviewLog.Id), nameof(ReviewLog.LastState));
+                 && (l.LastState == ConstSRS.CardPracticeState.New
+                     || l.LastState == ConstSRS.CardPracticeState.Due))
+          .SelectColumns(nameof(ReviewLog.LastState))
+          .ToList();
 
       int newReviewedToday = logs.Count(l =>
                             l.LastState == ConstSRS.CardPracticeState.New);
@@ -206,23 +225,39 @@ namespace Mnemophile.SRS.Impl.Review
       dueToday = config.DueCardPerDay - dueReviewedToday;
     }
 
-    private async Task<bool> DoNext()
+    private Task<bool> DoNext()
     {
-      CurrentList = await GetNextCardSource();
+      CurrentList = GetNextCardSource();
 
-      var ret = CurrentList != null && await NextAction[CurrentList]();
+      if (CurrentList == null)
+        return TaskConstants.BooleanFalse;
+
+      Task<bool> nextAction = NextAction[CurrentList]();
+
+      if (nextAction.IsCompleted)
+      {
+        EvalStartTime = DateTime.Now.ToUnixTimestamp();
+        return nextAction;
+      }
+
+      return WaitNextAction(nextAction);
+    }
+
+    private async Task<bool> WaitNextAction(Task<bool> nextAction)
+    {
+      bool ret = await nextAction;
 
       EvalStartTime = DateTime.Now.ToUnixTimestamp();
 
       return ret;
     }
 
-    private async Task<ReviewAsyncDbListBase> GetNextCardSource()
+    private ReviewAsyncDbListBase GetNextCardSource()
     {
-      // Fix await - makes pre-loading useless
-      int newReviewCount = await NewReviewList.ReviewCount();
-      int learnReviewCount = await LearnReviewList.ReviewCount();
-      int dueReviewCount = await DueReviewList.ReviewCount();
+      // TODO: Fix await - makes pre-loading useless
+      int newReviewCount = NewReviewList.ReviewCount();
+      int learnReviewCount = LearnReviewList.ReviewCount();
+      int dueReviewCount = DueReviewList.ReviewCount();
 
       int totalReviewCount =
         newReviewCount + learnReviewCount + dueReviewCount;

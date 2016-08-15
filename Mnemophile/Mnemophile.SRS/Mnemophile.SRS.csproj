@@ -47,10 +47,8 @@
     <Compile Include="Impl\Review\NewReviewList.cs" />
     <Compile Include="Impl\Review\ReviewAsyncDbListBase.cs" />
     <Compile Include="Impl\Review\ReviewComparers.cs" />
-    <Compile Include="Internal\Attributes\LazyLoadedAttribute.cs" />
-    <Compile Include="Internal\Attributes\LazyUnloadedAttribute.cs" />
-    <Compile Include="Internal\ReviewList.cs" />
     <Compile Include="Impl\Review\ReviewCollectionImpl.cs" />
+    <Compile Include="Impl\Review\ReviewSession.cs" />
     <Compile Include="Models\Card.Impl.cs" />
     <Compile Include="Models\Card.Access.cs" />
     <Compile Include="Models\Card.Misc.cs" />

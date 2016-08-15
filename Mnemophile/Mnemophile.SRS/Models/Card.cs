@@ -52,18 +52,8 @@ namespace Mnemophile.SRS.Models
     [Indexed]
     public int Due { get; set; }
 
-    private short _practiceState;
     [Indexed]
-    public ConstSRS.CardPracticeState PracticeState
-    {
-      get
-      {
-        return _practiceState >= (short)ConstSRS.CardPracticeState.Learning
-                 ? ConstSRS.CardPracticeState.Learning
-                 : (ConstSRS.CardPracticeState)_practiceState;
-      }
-      set { _practiceState = (short)value; }
-    }
+    public short PracticeState { get; set; }
 
     [Indexed]
     public ConstSRS.CardMiscStateFlag MiscState { get; private set; }

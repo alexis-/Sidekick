@@ -47,7 +47,7 @@ namespace Mnemophile.SRS.Tests
         grades.Should()
               .NotBeNull()
               .And
-              .HaveCount(gradesCount[(short)card.PracticeState]);
+              .HaveCount(gradesCount[card.PracticeState]);
       }
     }
 
@@ -97,13 +97,55 @@ namespace Mnemophile.SRS.Tests
     }
 
     [Fact]
-    public void Lapse()
+    public void FailCard()
+    {
+      Card card = CardGenerator.MakeCard(
+        Config,
+        ConstSRS.CardPracticeState.New,
+        DateTime.Now.AddSeconds(60).ToUnixTimestamp(),
+        2.5f, 1);
+
+      // Ensure setting
+      int learningSteps = Config.LearningSteps.Length;
+
+      learningSteps.Should().BeGreaterThan(1);
+      card.IsNew().Should().Be(true);
+
+      // Correct answer
+      card.Answer(ConstSRS.Grade.Good);
+
+      card.IsLearning().Should().Be(true);
+      card.GetCurrentLearningIndex().Should().Be(1);
+      card.GetLearningStepsLeft().Should().Be(learningSteps - 1);
+
+      // Fail
+      card.Answer(ConstSRS.Grade.Fail);
+
+      // Answer until graduation
+      for (int i = 0; i < learningSteps; i++)
+      {
+        card.IsLearning().Should().Be(true);
+        card.GetCurrentLearningIndex().Should().Be(i);
+        card.GetLearningStepsLeft().Should().Be(learningSteps - i);
+
+        card.Answer(ConstSRS.Grade.Good);
+      }
+
+      card.IsDue().Should().Be(true);
+      card.Due.Should().BeGreaterOrEqualTo(
+        DateTime.Today.AddDays(1).ToUnixTimestamp());
+    }
+
+    [Fact]
+    public void LapseCard()
     {
       Card card = CardGenerator.MakeCard(
         Config,
         ConstSRS.CardPracticeState.Due,
         DateTime.Now.AddSeconds(60).ToUnixTimestamp(),
         2.5f, 1);
+      
+      card.IsDue().Should().Be(true);
 
       card.Answer(ConstSRS.Grade.Fail);
       card.IsLearning().Should().Be(true);

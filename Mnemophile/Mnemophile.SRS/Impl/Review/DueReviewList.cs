@@ -47,41 +47,36 @@ namespace Mnemophile.SRS.Impl.Review
     ///     Number of cards available for iteration
     ///     TODO: Check if loading ?
     /// </summary>
-    public override async Task<int> AvailableCount()
+    public override int AvailableCount()
     {
-      Task waitTask = null;
-
       lock (LockObject)
-        if (Objects.Count == 0)
-          waitTask = LoadCompletionSource?.Task;
+      {
+        if (Objects.Count == 0 && LoadCompletionSource != null
+          && (Status == ReviewStatus.New || Status == ReviewStatus.MoveNext))
+          throw new InvalidOperationException();
 
-      if (waitTask != null)
-        await waitTask;
-
-      lock (LockObject)
         return Objects
           .Skip(Index + 1)
           .Count();
+      }
     }
 
     /// <summary>
     ///     Computes total review count
     /// </summary>
-    public override async Task<int> ReviewCount()
+    public override int ReviewCount()
     {
-      Task waitTask = null;
-
       lock (LockObject)
-        waitTask = LoadCompletionSource?.Task;
+      {
+        if (Objects.Count == 0 && LoadCompletionSource != null
+          && (Status == ReviewStatus.New || Status == ReviewStatus.MoveNext))
+          throw new InvalidOperationException();
 
-      if (waitTask != null)
-        await waitTask;
-
-      lock (LockObject)
         return Objects
           .Where(c => !DismissedIds.Contains(c.Id))
           .Take(DueCardsLeft)
           .Sum(c => c.ReviewLeftToday());
+      }
     }
 
     private int ReserveSize => Objects.Count - DueCardsLeft - Dismissed;
@@ -103,7 +98,8 @@ namespace Mnemophile.SRS.Impl.Review
     {
       bool firstLoad = Objects.Count == 0;
 
-      return firstLoad
+      lock (LockObject)
+        return firstLoad
                ? DoFirstLoad()
                : DoRegularLoad(fullLoad);
     }

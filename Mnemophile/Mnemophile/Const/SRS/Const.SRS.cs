@@ -8,12 +8,56 @@ namespace Mnemophile.Const.SRS
 {
   public static class ConstSRS
   {
-    public enum CardPracticeState : short
+    public struct CardPracticeState
     {
-      Deleted = -1,
-      Due = 0,
-      New = 1,
-      Learning = 2,
+      //
+      // Attribute & Constructor
+      private readonly short _value;
+
+      public CardPracticeState(short state)
+      {
+        _value = state;
+      }
+
+
+      //
+      // States
+
+      public const short Deleted = -1,
+                         Due = 0,
+                         New = 1,
+                         Learning = 2;
+
+
+      //
+      // Core methods
+
+      public override bool Equals(object obj)
+      {
+        CardPracticeState otherObj = (CardPracticeState)obj;
+
+        return otherObj._value == this._value;
+      }
+
+      public bool Equals(CardPracticeState other)
+      {
+        return _value == other._value;
+      }
+
+      public override int GetHashCode()
+      {
+        return _value.GetHashCode();
+      }
+
+      public static implicit operator short(CardPracticeState state)
+      {
+        return state._value;
+      }
+
+      public static implicit operator CardPracticeState(short state)
+      {
+        return new CardPracticeState(state);
+      }
     }
 
     [Flags]

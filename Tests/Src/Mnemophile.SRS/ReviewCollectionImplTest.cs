@@ -64,7 +64,6 @@ namespace Mnemophile.SRS.Tests
 
         @continue = await reviewCollection.Answer(ConstSRS.Grade.Good);
       }
-      
     }
 
     [Fact]
@@ -156,7 +155,7 @@ namespace Mnemophile.SRS.Tests
       int itExpected = ComputeTotalReviewCount(
         notes, config, grade);
 
-      // Create revie collection and dismiss all
+      // Create review collection and answer all
       ReviewCollectionImpl reviewCollection = new ReviewCollectionImpl(
         db, config, true);
       bool @continue = await reviewCollection.Initialized;
@@ -180,6 +179,160 @@ namespace Mnemophile.SRS.Tests
 
       @continue.Should().Be(false);
       reviewCollection.Current.Should().BeNull();
+    }
+
+    [Fact]
+    public async void ReviewCount()
+    {
+      // Create context
+      CardTestDb db = new CardTestDb();
+      CollectionConfig config = CollectionConfig.Default;
+
+      int newCardCount = config.NewCardPerDay * 2;
+      int dueCardCount = config.DueCardPerDay * 2;
+      int cardCount = newCardCount + dueCardCount;
+
+      IEnumerable<Note> notes = new CollectionGenerator(
+        new CardGenerator(
+          new Fixture(),
+          new TimeGenerator(),
+          config,
+          cardCount,
+          newCardCount, 0, dueCardCount, 0),
+        db, cardCount, 1).Generate();
+
+      // Ensure context
+      notes.Count().Should().Be(cardCount);
+      notes.Sum(n => n.Cards.Count).Should().Be(cardCount);
+      notes.Max(n => n.Cards.Count).Should().Be(1);
+      notes.Min(n => n.Cards.Count).Should().Be(1);
+      notes.Any(n => n.Cards.Any(c => c.Lapses > 0)).Should().Be(false);
+      notes.Sum(n => n.Cards.Count(
+        c => c.PracticeState == ConstSRS.CardPracticeState.New))
+           .Should().Be(newCardCount);
+      notes.Sum(n => n.Cards.Count(
+        c => c.PracticeState == ConstSRS.CardPracticeState.Due))
+           .Should().Be(dueCardCount);
+
+      // Compute expected results
+      int itCount = 0;
+      int itDueCount = 0;
+      int itNewCount = 0;
+      int itLearnCount = 0;
+
+      HashSet<int> learnIds = new HashSet<int>();
+
+      int itExpected = ComputeTotalReviewCount(
+        notes, config, ConstSRS.Grade.Good);
+
+      int newCardGoal1 = config.NewCardPerDay / 2;
+      int dueCardGoal1 = config.DueCardPerDay / 2;
+
+
+      // 1
+      // Create review collection and answer first batch
+      ReviewCollectionImpl reviewCollection = new ReviewCollectionImpl(
+        db, config, true);
+      bool @continue = await reviewCollection.Initialized;
+
+      @continue.Should().Be(true);
+
+      while (@continue)
+      {
+        // Sanity card check
+        ICard card = reviewCollection.Current;
+        card.Should().NotBeNull();
+
+        // Check learn cards
+        if (card.IsLearning())
+        {
+          learnIds.Contains(((Card)card).Id).Should().Be(false);
+          learnIds.Add(((Card)card).Id);
+        }
+
+        // Update counters
+        itCount++;
+
+        if (card.IsNew())
+          itNewCount++;
+        else if (card.IsDue())
+          itDueCount++;
+        else
+          itLearnCount++;
+
+        // Answer
+        @continue = await reviewCollection.Answer(ConstSRS.Grade.Good);
+
+        int dueLeft = reviewCollection.CountByState(
+          ConstSRS.CardPracticeStateFilterFlag.Due);
+        int newLeft = reviewCollection.CountByState(
+          ConstSRS.CardPracticeStateFilterFlag.New);
+
+        @continue = @continue && dueLeft > dueCardGoal1;
+        @continue = @continue && newLeft > newCardGoal1;
+
+        // Assert
+        newLeft.Should().Be(config.NewCardPerDay - itNewCount);
+        dueLeft.Should().Be(config.DueCardPerDay - itDueCount);
+      }
+
+      itCount.Should().BeLessThan(itExpected);
+      
+      // 2
+      // Create review collection and answer first batch
+      reviewCollection = new ReviewCollectionImpl(db, config, true);
+      @continue = await reviewCollection.Initialized;
+
+      @continue.Should().Be(true);
+
+      while (@continue)
+      {
+        // Sanity card check
+        ICard card = reviewCollection.Current;
+        card.Should().NotBeNull();
+
+        // Check learn cards
+        if (card.IsLearning())
+        {
+          learnIds.Contains(((Card)card).Id).Should().Be(false);
+          learnIds.Add(((Card)card).Id);
+        }
+
+        // Update counters
+        itCount++;
+
+        bool learn = false;
+
+        if (card.IsNew())
+          itNewCount++;
+        else if (card.IsDue())
+          itDueCount++;
+        else
+        {
+          itLearnCount++;
+          learn = true;
+        }
+
+        // Answer
+        @continue = await reviewCollection.Answer(ConstSRS.Grade.Good);
+
+        int dueLeft = reviewCollection.CountByState(
+          ConstSRS.CardPracticeStateFilterFlag.Due);
+        int newLeft = reviewCollection.CountByState(
+          ConstSRS.CardPracticeStateFilterFlag.New);
+
+
+        if (learn)
+          card.IsLearning().Should().Be(false);
+        // Assert
+        newLeft.Should().Be(config.NewCardPerDay - itNewCount);
+        dueLeft.Should().Be(config.DueCardPerDay - itDueCount);
+      }
+
+      itNewCount.Should().Be(config.NewCardPerDay);
+      itDueCount.Should().Be(config.DueCardPerDay);
+      itLearnCount.Should().Be(config.NewCardPerDay);
+      itCount.Should().Be(itExpected);
     }
 
     private void GetCollectionPracticeStates(
@@ -215,12 +368,6 @@ namespace Mnemophile.SRS.Tests
         + (grade == ConstSRS.Grade.Easy
         ? lapsingCards : lapsingCards * config.LapseSteps.Length)
         + dueCards;
-    }
-
-    [Fact]
-    public void ReviewCountPerDay()
-    {
-      
     }
   }
 }
