@@ -1,0 +1,6 @@
+[submodule "C:\\Work\\Mnemophile\\Libs\\UniversalWPF\\"]
+	path = C:\\Work\\Mnemophile\\Libs\\UniversalWPF\\
+	url = https://github.com/Artemigos/UniversalWPF.git
+[submodule "C:\\Work\\Mnemophile\\Libs\\SQLite.Net-PCL"]
+	path = C:\\Work\\Mnemophile\\Libs\\SQLite.Net-PCL
+	url = https://github.com/alexis-/SQLite.Net-PCL.git
