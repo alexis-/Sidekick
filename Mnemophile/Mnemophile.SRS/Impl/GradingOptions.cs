@@ -49,52 +49,46 @@ namespace Mnemophile.SRS.Impl
       throw new ArgumentException("Invalid grade option", nameof(grade));
     }
 
-    internal static ConstSRS.GradingInfo GradeFailSevere =
+    internal static ConstSRS.GradingInfo GradeFailSevere =>
       new ConstSRS.GradingInfo
     {
       Grade = ConstSRS.Grade.FailSevere,
-      Label = "Fail (Severe)",
-      Description = ""
+      LocalizableText = "SpacedRepetition_Grade_FailSevere"
     };
 
-    internal static ConstSRS.GradingInfo GradeFailMedium =
+    internal static ConstSRS.GradingInfo GradeFailMedium =>
       new ConstSRS.GradingInfo
     {
       Grade = ConstSRS.Grade.FailMedium,
-      Label = "Fail (Medium)",
-      Description = ""
+      LocalizableText = "SpacedRepetition_Grade_FailMedium"
     };
 
-    internal static ConstSRS.GradingInfo GradeFail =
+    internal static ConstSRS.GradingInfo GradeFail =>
       new ConstSRS.GradingInfo
     {
       Grade = ConstSRS.Grade.Fail,
-      Label = "Fail",
-      Description = ""
+      LocalizableText = "SpacedRepetition_Grade_Fail"
     };
 
-    internal static ConstSRS.GradingInfo GradeHard =
+    internal static ConstSRS.GradingInfo GradeHard =>
       new ConstSRS.GradingInfo
     {
       Grade = ConstSRS.Grade.Hard,
-      Label = "Hard",
-      Description = ""
+      LocalizableText = "SpacedRepetition_Grade_Hard"
     };
 
-    internal static ConstSRS.GradingInfo GradeGood =
+    internal static ConstSRS.GradingInfo GradeGood =>
       new ConstSRS.GradingInfo
     {
       Grade = ConstSRS.Grade.Good,
-      Label = "Good",
-      Description = ""
+      LocalizableText = "SpacedRepetition_Grade_Good"
     };
 
-    internal static ConstSRS.GradingInfo GradeEasy =
+    internal static ConstSRS.GradingInfo GradeEasy =>
       new ConstSRS.GradingInfo
     {
       Grade = ConstSRS.Grade.Easy,
-      Label = "Easy",
-      Description = ""
+      LocalizableText = "SpacedRepetition_Grade_Easy"
     };
   }
 }

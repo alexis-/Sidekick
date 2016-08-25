@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Catel.Services;
+using Catel.Services.Models;
 using Mnemophile.Interfaces.DB;
 using Mnemophile.Interfaces.SRS;
 using Mnemophile.SRS.Models;
@@ -27,6 +29,14 @@ namespace Mnemophile.SRS.Impl
     public INote CreateNote()
     {
       return new Note();
+    }
+
+    public ILanguageSource GetLanguageSource()
+    {
+      return new LanguageResourceSource(
+        "Mnemophile.SRS",
+        "Mnemophile.SRS.Properties",
+        "Resources");
     }
   }
 }

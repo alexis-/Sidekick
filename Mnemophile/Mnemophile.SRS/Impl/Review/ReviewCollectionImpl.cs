@@ -184,46 +184,24 @@ namespace Mnemophile.SRS.Impl.Review
 
     private async Task<bool> Initialize(IDatabase db, CollectionConfig config)
     {
-      int newToday, dueToday;
-      ComputeSessionInfos(config, out newToday, out dueToday);
+      ReviewSession reviewSession = new ReviewSession(Db, config);
 
-      NewReviewList = new NewReviewList(db, config, newToday);
+      NewReviewList = new NewReviewList(db, config, reviewSession.New);
       LearnReviewList = new LearnReviewList(db);
-      DueReviewList = new DueReviewList(db, dueToday);
+      DueReviewList = new DueReviewList(db, reviewSession.Due);
 
       NextAction[NewReviewList] = () => NewReviewList.MoveNext();
       NextAction[LearnReviewList] = () => LearnReviewList.MoveNext();
       NextAction[DueReviewList] = () => DueReviewList.MoveNext();
 
-      await NewReviewList.Initialized();
-      await LearnReviewList.Initialized();
-      await DueReviewList.Initialized();
+      Task.WaitAll(
+        NewReviewList.Initialized(),
+        LearnReviewList.Initialized(),
+        DueReviewList.Initialized());
 
       return await DoNext();
     }
-
-    private void ComputeSessionInfos(
-      CollectionConfig config, out int newToday, out int dueToday)
-    {
-      int todayStart = DateTime.Today.ToUnixTimestamp();
-      int todayEnd = DateTime.Today.AddDays(1).ToUnixTimestamp();
-
-      IEnumerable<ReviewLog> logs =
-        Db.Table<ReviewLog>()
-          .Where(l =>
-                 l.Id >= todayStart && l.Id < todayEnd
-                 && (l.LastState == ConstSRS.CardPracticeState.New
-                     || l.LastState == ConstSRS.CardPracticeState.Due))
-          .SelectColumns(nameof(ReviewLog.LastState))
-          .ToList();
-
-      int newReviewedToday = logs.Count(l =>
-                            l.LastState == ConstSRS.CardPracticeState.New);
-      int dueReviewedToday = logs.Count() - newReviewedToday;
-
-      newToday = config.NewCardPerDay - newReviewedToday;
-      dueToday = config.DueCardPerDay - dueReviewedToday;
-    }
+    
 
     private Task<bool> DoNext()
     {

@@ -13,7 +13,9 @@ namespace SQLite.Net.Bridge
   {
     public SQLiteConnectionWithLockBridge(
       [NotNull] ISQLitePlatform sqlitePlatform,
-      [NotNull] string databasePath, bool storeDateTimeAsTicks = true,
+      [NotNull] string databasePath,
+      IColumnInformationProvider columnInformationProvider = null,
+      bool storeDateTimeAsTicks = true,
       [CanBeNull] IBlobSerializer serializer = null,
       [CanBeNull] IDictionary<string, TableMapping> tableMappings = null,
       [CanBeNull] IDictionary<Type, string> extraTypeMappings = null,
@@ -25,12 +27,14 @@ namespace SQLite.Net.Bridge
         tableMappings,
         extraTypeMappings)
     {
-      ColumnInformationProvider = new ColumnInformationProviderBridge();
+      ColumnInformationProvider =
+        columnInformationProvider ?? new ColumnInformationProviderBridge();
     }
 
     public SQLiteConnectionWithLockBridge(
       [NotNull] ISQLitePlatform sqlitePlatform,
       string databasePath, SQLiteOpenFlags openFlags,
+      IColumnInformationProvider columnInformationProvider = null,
       bool storeDateTimeAsTicks = true,
       [CanBeNull] IBlobSerializer serializer = null,
       [CanBeNull] IDictionary<string, TableMapping> tableMappings = null,
@@ -44,7 +48,8 @@ namespace SQLite.Net.Bridge
         tableMappings,
         extraTypeMappings)
     {
-      ColumnInformationProvider = new ColumnInformationProviderBridge();
+      ColumnInformationProvider =
+        columnInformationProvider ?? new ColumnInformationProviderBridge();
     }
 
     public void CommitTransaction()

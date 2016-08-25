@@ -51,6 +51,7 @@
     <Compile Include="Attributes\SRS\SRSSettingsLocalizedItem.cs" />
     <Compile Include="Interfaces\DB\IDatabase.cs" />
     <Compile Include="Interfaces\DB\ITableMapping.cs" />
+    <Compile Include="Base\SRS\BaseCard.cs" />
     <Compile Include="Interfaces\SRS\ICard.cs" />
     <Compile Include="Interfaces\SRS\INote.cs" />
     <Compile Include="Interfaces\SRS\ISRS.cs" />
@@ -71,6 +72,14 @@
   <ItemGroup>
     <Content Include="README.txt" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Reference Include="Catel.Core, Version=4.5.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Catel.Core.4.5.2\lib\portable-net45+sl5+wp8+win8+wpa81+MonoAndroid16+MonoTouch40\Catel.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
 </Project>

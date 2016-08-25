@@ -245,6 +245,41 @@ namespace Mnemophile.SRS.Models
     // Misc
 
     #region Misc
+
+#if false
+    public static int ComputeReviewCount( // TODO: This may be useful at some point
+      ConstSRS.CardPracticeState state,
+      CollectionConfig config, ConstSRS.Grade grade)
+    {
+      switch (state)
+      {
+        case ConstSRS.CardPracticeState.New:
+          return grade == ConstSRS.Grade.Easy
+                   ? 1
+                   : config.LearningSteps.Length;
+
+        case ConstSRS.CardPracticeState.Due:
+          return grade == ConstSRS.Grade.Easy
+                   ? 1
+                   : config.LearningSteps.Length;
+
+        case ConstSRS.CardPracticeState.Learning:
+          return grade == ConstSRS.Grade.Easy
+                   ? 1
+                   : config.LearningSteps.Length;
+      }
+      /*
+        (grade == ConstSRS.Grade.Easy
+        ? newCards : newCards * config.LearningSteps.Length)
+        + (grade == ConstSRS.Grade.Easy
+        ? learnCards : learnCards * config.LearningSteps.Length)
+        + (grade == ConstSRS.Grade.Easy
+        ? lapsingCards : lapsingCards * config.LapseSteps.Length)
+        + dueCards;
+      */
+    }
+#endif
+
     /// <summary>
     /// Build Due time from Interval (which unit is days).
     /// </summary>

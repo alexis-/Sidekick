@@ -33,7 +33,7 @@ namespace Mnemophile.SRS.Impl
     public int LeechThreshold { get; set; }
     public ConstSRS.CardLeechAction LeechAction { get; set; }
 
-    public static CollectionConfig Default = new CollectionConfig
+    public static CollectionConfig Default => new CollectionConfig
     {
       // Default grading mode is set to four grading options
       BroadGradingMode = false,

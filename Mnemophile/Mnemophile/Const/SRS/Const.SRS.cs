@@ -8,13 +8,16 @@ namespace Mnemophile.Const.SRS
 {
   public static class ConstSRS
   {
+    //
+    // Card states
+
     public struct CardPracticeState
     {
       //
       // Attribute & Constructor
       private readonly short _value;
 
-      public CardPracticeState(short state)
+      private CardPracticeState(short state)
       {
         _value = state;
       }
@@ -70,24 +73,6 @@ namespace Mnemophile.Const.SRS
       All = New | Learning | Due
     }
 
-    public static IEnumerable<CardPracticeState> GetPracticeStates(
-      this CardPracticeStateFilterFlag flag)
-    {
-      List<CardPracticeState> states = new List<CardPracticeState>();
-
-      if ((flag & CardPracticeStateFilterFlag.New) ==
-          CardPracticeStateFilterFlag.New)
-        states.Add(CardPracticeState.New);
-      if ((flag & CardPracticeStateFilterFlag.Learning) ==
-          CardPracticeStateFilterFlag.Learning)
-        states.Add(CardPracticeState.Learning);
-      if ((flag & CardPracticeStateFilterFlag.Due) ==
-          CardPracticeStateFilterFlag.Due)
-        states.Add(CardPracticeState.Due);
-
-      return states;
-    }
-
     [Flags]
     public enum CardMiscStateFlag : short
     {
@@ -96,15 +81,77 @@ namespace Mnemophile.Const.SRS
       Dismissed = 2,
     }
 
-    public enum Grade
+
+
+    //
+    // Answer grades
+
+    public struct Grade
     {
-      FailSevere = 0,
-      FailMedium = 1,
-      Fail = 2,
-      Hard = 3,
-      Good = 4,
-      Easy = 5,
+      //
+      // Attribute & Constructor
+      private readonly int _value;
+
+      private Grade(int grade)
+      {
+        _value = grade;
+      }
+
+
+      //
+      // Grades
+
+      public const int FailSevere = 0,
+                       FailMedium = 1,
+                       Fail = 2,
+                       Hard = 3,
+                       Good = 4,
+                       Easy = 5;
+
+
+      //
+      // Core methods
+
+      public override bool Equals(object obj)
+      {
+        Grade otherObj = (Grade)obj;
+
+        return otherObj._value == this._value;
+      }
+
+      public bool Equals(Grade other)
+      {
+        return _value == other._value;
+      }
+
+      public override int GetHashCode()
+      {
+        return _value.GetHashCode();
+      }
+
+      public static implicit operator int(Grade grade)
+      {
+        return grade._value;
+      }
+
+      public static implicit operator Grade(int grade)
+      {
+        return new Grade(grade);
+      }
     }
+
+    public struct GradingInfo
+    {
+      public Grade Grade { get; set; }
+      public string LocalizableText { get; set; }
+      public DateTime NextReview { get; set; }
+      public string[] CardValuesAftermath { get; set; }
+    }
+
+
+
+    //
+    // Misc
 
     public enum CardOrderingOption
     {
@@ -116,14 +163,6 @@ namespace Mnemophile.Const.SRS
     {
       Suspend,
       Delete,
-    }
-
-    public struct GradingInfo
-    {
-      public Grade Grade { get; set; }
-      public string Label { get; set; }
-      public string Description { get; set; }
-      public string[] CardValuesAftermath { get; set; }
     }
   }
 }

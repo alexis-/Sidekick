@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Text;
 using Mnemophile.Attributes.DB;
+using Mnemophile.Base.SRS;
 using Mnemophile.Const.SRS;
-using Mnemophile.Interfaces.SRS;
 using Mnemophile.SRS.Impl;
 using Mnemophile.Utils;
 using Newtonsoft.Json;
@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 namespace Mnemophile.SRS.Models
 {
   [Table("Cards")]
-  public partial class Card : ICard
+  public partial class Card : BaseCard
   {
     public Card()
     {

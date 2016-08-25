@@ -3,14 +3,19 @@ using Mnemophile.Tests;
 using PCLStorage;
 using SQLite.Net;
 using SQLite.Net.Bridge;
+using SQLite.Net.Interop;
 
 namespace Mnemophile.Tests
 {
   public class TestDb : SQLiteConnectionWithLockBridge
   {
-    public TestDb(IContractResolver contractResolver = null) : base(
+    public TestDb(
+      IColumnInformationProvider columnInformationProvider = null,
+      IContractResolver contractResolver = null)
+      : base(
       new SQLitePlatformTest(),
       CreateTemporaryDatabase(),
+      columnInformationProvider,
       resolver: contractResolver)
     {
     }

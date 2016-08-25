@@ -68,28 +68,28 @@ namespace Mnemophile.SRS.Models
       return LearningOrLapsingSteps.Length - GetCurrentLearningIndex();
     }
 
-    public bool IsNew()
+    public override bool IsNew()
     {
       return PracticeState == ConstSRS.CardPracticeState.New;
     }
 
-    public bool IsLearning()
+    public override bool IsLearning()
     {
       return PracticeState >= ConstSRS.CardPracticeState.Learning;
     }
 
-    public bool IsDue()
+    public override bool IsDue()
     {
       return PracticeState == ConstSRS.CardPracticeState.Due;
     }
 
-    public bool IsDismissed()
+    public override bool IsDismissed()
     {
       return (MiscState & ConstSRS.CardMiscStateFlag.Dismissed) ==
         ConstSRS.CardMiscStateFlag.Dismissed;
     }
 
-    public bool IsSuspended()
+    public override bool IsSuspended()
     {
       return (MiscState & ConstSRS.CardMiscStateFlag.Suspended) ==
         ConstSRS.CardMiscStateFlag.Suspended;

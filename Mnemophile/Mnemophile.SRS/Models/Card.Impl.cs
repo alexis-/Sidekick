@@ -106,7 +106,7 @@ namespace Mnemophile.SRS.Models
     /// Card values are unaffected.
     /// </summary>
     /// <returns>Description of all grading options outcomes</returns>
-    public ConstSRS.GradingInfo[] ComputeGrades()
+    public override ConstSRS.GradingInfo[] ComputeGrades()
     {
       int currentReviewTime = DateTime.Now.UnixTimestamp();
       ConstSRS.GradingInfo[] gradingInfos;
@@ -123,13 +123,15 @@ namespace Mnemophile.SRS.Models
           GradingOptions.GradeEasy };
 
       // Compute outcomes of each grade option
-      foreach (var gradingInfo in gradingInfos)
+      for (int i = 0; i < gradingInfos.Length; i++)
       {
+        ConstSRS.GradingInfo gradingInfo = gradingInfos[i];
         Card cardClone = Clone();
 
         cardClone.CurrentReviewTime = currentReviewTime;
         cardClone.Answer(gradingInfo.Grade, null);
 
+        gradingInfo.NextReview = DateTimeEx.FromUnixTimestamp(cardClone.Due);
         // TODO: Set gradingInfo.CardValueAftermath
       }
 

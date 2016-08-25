@@ -1,6 +1,17 @@
 # top-most EditorConfig file
 root = true
 
+[*]
+end_of_line = CRLF
+
 [*.cs]
 indent_size = 2
 indent_style = space
+
+[*.xaml]
+indent_style = space
+indent_size = 2
+
+[*.xml]
+indent_style = space
+indent_size = 2

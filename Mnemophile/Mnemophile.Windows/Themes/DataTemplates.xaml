@@ -1,0 +1,38 @@
+﻿<ResourceDictionary
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:metro="clr-namespace:MahApps.Metro;assembly=MahApps.Metro"
+  xmlns:localDataTemplates="clr-namespace:Mnemophile.Windows.Views.DataTemplates"
+  xmlns:settingsViews="clr-namespace:Mnemophile.Windows.Views.Settings"
+  xmlns:settingsViewModels="clr-namespace:Mnemophile.Windows.ViewModels.Settings"
+  xmlns:spacedRepetitionViews="clr-namespace:Mnemophile.Windows.Views.SpacedRepetition"
+  xmlns:spacedRepetitionViewModels="clr-namespace:Mnemophile.MVVM.ViewModels.SpacedRepetition;assembly=Mnemophile.MVVM"
+  xmlns:viewModels="clr-namespace:Mnemophile.Windows.ViewModels"
+  xmlns:views="clr-namespace:Mnemophile.Windows.Views">
+
+
+  <!--Settings-->
+  <DataTemplate DataType="{x:Type viewModels:SettingsViewModel}">
+    <views:SettingsView />
+  </DataTemplate>
+  <DataTemplate DataType="{x:Type settingsViewModels:SettingsThemeViewModel}">
+    <settingsViews:SettingsThemeView />
+  </DataTemplate>
+
+
+  <!--Spaced Repetition-->
+  <DataTemplate DataType="{x:Type spacedRepetitionViewModels:CollectionViewModel}">
+    <spacedRepetitionViews:CollectionView />
+  </DataTemplate>
+  
+
+  <!--Data templates-->
+  <DataTemplate DataType="{x:Type metro:Accent}">
+    <localDataTemplates:ThemeDTView />
+  </DataTemplate>
+  
+  <DataTemplate DataType="{x:Type metro:AppTheme}">
+    <localDataTemplates:ThemeDTView />
+  </DataTemplate>
+
+</ResourceDictionary>
