@@ -13,7 +13,9 @@
            Style="{DynamicResource TitleStyle}"
            Grid.Row="0" />
     
-    <spacedRepetition:CardAnswerButtonsView Grid.Row="1" />
+    <spacedRepetition:CardAnswerButtonsView
+      Gradings="{Binding Gradings, Mode=OneWay}"
+      Grid.Row="1" />
     
   </Grid>
 </catel:UserControl>

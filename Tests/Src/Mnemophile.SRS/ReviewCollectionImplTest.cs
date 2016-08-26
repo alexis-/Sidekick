@@ -5,13 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Mnemophile.Attributes.DB;
-using Mnemophile.Const.SRS;
+using Mnemophile.Const.SpacedRepetition;
 using Mnemophile.Interfaces.DB;
-using Mnemophile.Interfaces.SRS;
-using Mnemophile.SRS.Impl;
-using Mnemophile.SRS.Impl.Review;
-using Mnemophile.SRS.Models;
-using Mnemophile.SRS.Tests.Helpers;
+using Mnemophile.Interfaces.SpacedRepetition;
+using Mnemophile.SpacedRepetition.Impl;
+using Mnemophile.SpacedRepetition.Impl.Review;
+using Mnemophile.SpacedRepetition.Models;
 using Mnemophile.Tests;
 using Mnemophile.Utils;
 using Mnemophile.Utils.LazyLoad;
@@ -20,7 +19,7 @@ using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.Xunit2;
 using Xunit;
 
-namespace Mnemophile.SRS.Tests
+namespace Mnemophile.SpacedRepetition.Tests
 {
   public class ReviewCollectionImplTest
   {
@@ -62,7 +61,7 @@ namespace Mnemophile.SRS.Tests
         currentCard.Should().NotBeNull();
         currentCard.Data.Should().NotBeNull();
 
-        @continue = await reviewCollection.Answer(ConstSRS.Grade.Good);
+        @continue = await reviewCollection.Answer(ConstSpacedRepetition.Grade.Good);
       }
     }
 
@@ -124,15 +123,17 @@ namespace Mnemophile.SRS.Tests
     }
 
     [Theory]
-    [InlineData(1, ConstSRS.Grade.Good), InlineData(2, ConstSRS.Grade.Good),
-      InlineData(5, ConstSRS.Grade.Good), InlineData(10, ConstSRS.Grade.Good),
-      InlineData(20, ConstSRS.Grade.Good),
-      InlineData(50, ConstSRS.Grade.Good)]
-    [InlineData(1, ConstSRS.Grade.Easy), InlineData(10, ConstSRS.Grade.Easy),
-      InlineData(20, ConstSRS.Grade.Easy),
-      InlineData(50, ConstSRS.Grade.Easy)]
-    public async void AnswerCard(int cardCount, ConstSRS.Grade grade)
+    [InlineData(1, ConstSpacedRepetition.Grade.Good), InlineData(2, ConstSpacedRepetition.Grade.Good),
+      InlineData(5, ConstSpacedRepetition.Grade.Good), InlineData(10, ConstSpacedRepetition.Grade.Good),
+      InlineData(20, ConstSpacedRepetition.Grade.Good),
+      InlineData(50, ConstSpacedRepetition.Grade.Good)]
+    [InlineData(1, ConstSpacedRepetition.Grade.Easy), InlineData(10, ConstSpacedRepetition.Grade.Easy),
+      InlineData(20, ConstSpacedRepetition.Grade.Easy),
+      InlineData(50, ConstSpacedRepetition.Grade.Easy)]
+    public async void AnswerCard(int cardCount, int gradeValue)
     {
+      ConstSpacedRepetition.Grade grade = gradeValue;
+
       // Create context
       CardTestDb db = new CardTestDb();
       CollectionConfig config = CollectionConfig.Default;
@@ -208,10 +209,10 @@ namespace Mnemophile.SRS.Tests
       notes.Min(n => n.Cards.Count).Should().Be(1);
       notes.Any(n => n.Cards.Any(c => c.Lapses > 0)).Should().Be(false);
       notes.Sum(n => n.Cards.Count(
-        c => c.PracticeState == ConstSRS.CardPracticeState.New))
+        c => c.PracticeState == ConstSpacedRepetition.CardPracticeState.New))
            .Should().Be(newCardCount);
       notes.Sum(n => n.Cards.Count(
-        c => c.PracticeState == ConstSRS.CardPracticeState.Due))
+        c => c.PracticeState == ConstSpacedRepetition.CardPracticeState.Due))
            .Should().Be(dueCardCount);
 
       // Compute expected results
@@ -223,7 +224,7 @@ namespace Mnemophile.SRS.Tests
       HashSet<int> learnIds = new HashSet<int>();
 
       int itExpected = ComputeTotalReviewCount(
-        notes, config, ConstSRS.Grade.Good);
+        notes, config, ConstSpacedRepetition.Grade.Good);
 
       int newCardGoal1 = config.NewCardPerDay / 2;
       int dueCardGoal1 = config.DueCardPerDay / 2;
@@ -261,12 +262,12 @@ namespace Mnemophile.SRS.Tests
           itLearnCount++;
 
         // Answer
-        @continue = await reviewCollection.Answer(ConstSRS.Grade.Good);
+        @continue = await reviewCollection.Answer(ConstSpacedRepetition.Grade.Good);
 
         int dueLeft = reviewCollection.CountByState(
-          ConstSRS.CardPracticeStateFilterFlag.Due);
+          ConstSpacedRepetition.CardPracticeStateFilterFlag.Due);
         int newLeft = reviewCollection.CountByState(
-          ConstSRS.CardPracticeStateFilterFlag.New);
+          ConstSpacedRepetition.CardPracticeStateFilterFlag.New);
 
         @continue = @continue && dueLeft > dueCardGoal1;
         @continue = @continue && newLeft > newCardGoal1;
@@ -314,12 +315,12 @@ namespace Mnemophile.SRS.Tests
         }
 
         // Answer
-        @continue = await reviewCollection.Answer(ConstSRS.Grade.Good);
+        @continue = await reviewCollection.Answer(ConstSpacedRepetition.Grade.Good);
 
         int dueLeft = reviewCollection.CountByState(
-          ConstSRS.CardPracticeStateFilterFlag.Due);
+          ConstSpacedRepetition.CardPracticeStateFilterFlag.Due);
         int newLeft = reviewCollection.CountByState(
-          ConstSRS.CardPracticeStateFilterFlag.New);
+          ConstSpacedRepetition.CardPracticeStateFilterFlag.New);
 
 
         if (learn)
@@ -349,7 +350,7 @@ namespace Mnemophile.SRS.Tests
     }
 
     private int ComputeTotalReviewCount(
-      IEnumerable<Note> notes, CollectionConfig config, ConstSRS.Grade grade)
+      IEnumerable<Note> notes, CollectionConfig config, ConstSpacedRepetition.Grade grade)
     {
       notes.Max(n => n.Cards.Count).Should().Be(1);
 
@@ -361,11 +362,11 @@ namespace Mnemophile.SRS.Tests
       dueCards = Math.Min(dueCards, config.DueCardPerDay);
 
       return
-        (grade == ConstSRS.Grade.Easy
+        (grade == ConstSpacedRepetition.Grade.Easy
         ? newCards : newCards * config.LearningSteps.Length)
-        + (grade == ConstSRS.Grade.Easy
+        + (grade == ConstSpacedRepetition.Grade.Easy
         ? learnCards : learnCards * config.LearningSteps.Length)
-        + (grade == ConstSRS.Grade.Easy
+        + (grade == ConstSpacedRepetition.Grade.Easy
         ? lapsingCards : lapsingCards * config.LapseSteps.Length)
         + dueCards;
     }

@@ -52,11 +52,11 @@
     <Compile Include="Interfaces\DB\IDatabase.cs" />
     <Compile Include="Interfaces\DB\ITableMapping.cs" />
     <Compile Include="Base\SRS\BaseCard.cs" />
-    <Compile Include="Interfaces\SRS\ICard.cs" />
-    <Compile Include="Interfaces\SRS\INote.cs" />
-    <Compile Include="Interfaces\SRS\ISRS.cs" />
+    <Compile Include="Interfaces\SpacedRepetition\ICard.cs" />
+    <Compile Include="Interfaces\SpacedRepetition\INote.cs" />
+    <Compile Include="Interfaces\SpacedRepetition\ISpacedRepetition.cs" />
     <Compile Include="Interfaces\DB\ITableQuery.cs" />
-    <Compile Include="Interfaces\SRS\IReviewCollection.cs" />
+    <Compile Include="Interfaces\SpacedRepetition\IReviewCollection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\Collections\AsyncDbListBase.cs" />
     <Compile Include="Utils\DateTimeEx.cs" />
@@ -67,7 +67,7 @@
     <Compile Include="Utils\TastConst.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Const\SRS\Const.SRS.cs" />
+    <Compile Include="Const\SpacedRepetition\Const.SRS.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="README.txt" />

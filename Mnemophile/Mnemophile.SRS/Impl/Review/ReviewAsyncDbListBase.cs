@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Mnemophile.Interfaces.DB;
-using Mnemophile.SRS.Models;
+using Mnemophile.SpacedRepetition.Models;
 using Mnemophile.Utils;
 using Mnemophile.Utils.Collections;
 using Mnemophile.Utils.LazyLoad;
 
-namespace Mnemophile.SRS.Impl.Review
+namespace Mnemophile.SpacedRepetition.Impl.Review
 {
   internal abstract class ReviewAsyncDbListBase : AsyncDbListBase<Card>
   {

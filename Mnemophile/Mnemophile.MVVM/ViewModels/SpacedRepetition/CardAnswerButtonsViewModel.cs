@@ -1,15 +1,15 @@
 ﻿using Catel.Fody;
 using Catel.MVVM;
-using Mnemophile.Const.SRS;
+using Mnemophile.Const.SpacedRepetition;
 
 namespace Mnemophile.MVVM.ViewModels.SpacedRepetition
 {
   public class CardAnswerButtonsViewModel : ViewModelBase
   {
-    public ConstSRS.GradingInfo[] GradingInfos { get; set; }
+    public ConstSpacedRepetition.GradingInfo[] GradingInfos { get; set; }
 
     public CardAnswerButtonsViewModel(
-      [NotNull]ConstSRS.GradingInfo[] gradingInfos)
+      [NotNull]ConstSpacedRepetition.GradingInfo[] gradingInfos)
     {
       GradingInfos = gradingInfos;
     }

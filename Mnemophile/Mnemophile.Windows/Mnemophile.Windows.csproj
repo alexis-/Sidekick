@@ -84,6 +84,10 @@
       <HintPath>..\..\packages\PCLStorage.1.0.2\lib\net45\PCLStorage.Abstractions.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Ploeh.AutoFixture, Version=3.50.1.0, Culture=neutral, PublicKeyToken=b24654c590009d4f, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\AutoFixture.3.50.1\lib\net40\Ploeh.AutoFixture.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="SQLite.Net">
@@ -138,6 +142,7 @@
     <Compile Include="ViewModels\MnemoShellViewModel.cs" />
     <Compile Include="ViewModels\Settings\SettingsThemeViewModel.cs" />
     <Compile Include="ViewModels\SettingsViewModel.cs" />
+    <Compile Include="ViewModels\Settings\SettingsSpacedRepetitionViewModel.cs" />
     <Compile Include="Views\DataTemplates\ThemeDTView.xaml.cs">
       <DependentUpon>ThemeDTView.xaml</DependentUpon>
     </Compile>
@@ -153,6 +158,9 @@
     </Compile>
     <Compile Include="Views\SettingsView.xaml.cs">
       <DependentUpon>SettingsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Settings\SettingsSpacedRepetitionView.xaml.cs">
+      <DependentUpon>SettingsSpacedRepetitionView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\SpacedRepetition\CardAnswerButtonsView.xaml.cs">
       <DependentUpon>CardAnswerButtonsView.xaml</DependentUpon>
@@ -187,6 +195,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Tests\Mnemophile.SpacedRepetition.Tests\Mnemophile.SpacedRepetition.Tests.csproj">
+      <Project>{E39765B1-C8E4-455F-A9BE-85FE038B03FF}</Project>
+      <Name>Mnemophile.SpacedRepetition.Tests</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Mnemophile.MVVM\Mnemophile.MVVM.csproj">
       <Project>{8ff533cc-7198-4a6f-816f-ff24e551f2f3}</Project>
       <Name>Mnemophile.MVVM</Name>
@@ -267,6 +279,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\SettingsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Settings\SettingsSpacedRepetitionView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

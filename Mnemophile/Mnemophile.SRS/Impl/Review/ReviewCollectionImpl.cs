@@ -5,13 +5,13 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Mnemophile.Attributes.DB;
-using Mnemophile.Const.SRS;
+using Mnemophile.Const.SpacedRepetition;
 using Mnemophile.Interfaces.DB;
-using Mnemophile.Interfaces.SRS;
-using Mnemophile.SRS.Models;
+using Mnemophile.Interfaces.SpacedRepetition;
+using Mnemophile.SpacedRepetition.Models;
 using Mnemophile.Utils;
 
-namespace Mnemophile.SRS.Impl.Review
+namespace Mnemophile.SpacedRepetition.Impl.Review
 {
   public class ReviewCollectionImpl : IReviewCollection
   {
@@ -54,7 +54,7 @@ namespace Mnemophile.SRS.Impl.Review
       Random = new Random();
 
       CardTableName = Db.GetTableMapping<Card>().GetTableName();
-      
+
       CurrentList = null;
       NextAction =
         new Dictionary<ReviewAsyncDbListBase, Func<Task<bool>>>();
@@ -71,7 +71,7 @@ namespace Mnemophile.SRS.Impl.Review
 
     public ICard Current => CurrentList?.Current;
 
-    public Task<bool> Answer(ConstSRS.Grade grade)
+    public Task<bool> Answer(ConstSpacedRepetition.Grade grade)
     {
       // Card sanity check
       Card card = (Card)Current;
@@ -112,7 +112,7 @@ namespace Mnemophile.SRS.Impl.Review
         card.Interval, card.EFactor, evalTime);
 
       // If this was a new card, add to learning list
-      if (log.LastState == ConstSRS.CardPracticeState.New)
+      if (log.LastState == ConstSpacedRepetition.CardPracticeState.New)
         LearnReviewList.AddManual(card);
 
 
@@ -158,20 +158,20 @@ namespace Mnemophile.SRS.Impl.Review
       return DoNext();
     }
 
-    public int CountByState(ConstSRS.CardPracticeStateFilterFlag state)
+    public int CountByState(ConstSpacedRepetition.CardPracticeStateFilterFlag state)
     {
       int ret = 0;
 
-      if ((state & ConstSRS.CardPracticeStateFilterFlag.Due) ==
-          ConstSRS.CardPracticeStateFilterFlag.Due)
+      if ((state & ConstSpacedRepetition.CardPracticeStateFilterFlag.Due) ==
+          ConstSpacedRepetition.CardPracticeStateFilterFlag.Due)
         ret += DueReviewList.ReviewCount();
 
-      if ((state & ConstSRS.CardPracticeStateFilterFlag.Learning) ==
-          ConstSRS.CardPracticeStateFilterFlag.Learning)
+      if ((state & ConstSpacedRepetition.CardPracticeStateFilterFlag.Learning) ==
+          ConstSpacedRepetition.CardPracticeStateFilterFlag.Learning)
         ret += LearnReviewList.ReviewCount();
 
-      if ((state & ConstSRS.CardPracticeStateFilterFlag.New) ==
-          ConstSRS.CardPracticeStateFilterFlag.New)
+      if ((state & ConstSpacedRepetition.CardPracticeStateFilterFlag.New) ==
+          ConstSpacedRepetition.CardPracticeStateFilterFlag.New)
         ret += NewReviewList.ReviewCount();
 
       return ret;
@@ -194,10 +194,14 @@ namespace Mnemophile.SRS.Impl.Review
       NextAction[LearnReviewList] = () => LearnReviewList.MoveNext();
       NextAction[DueReviewList] = () => DueReviewList.MoveNext();
 
-      Task.WaitAll(
+      await Task.WhenAll(
         NewReviewList.Initialized(),
         LearnReviewList.Initialized(),
         DueReviewList.Initialized());
+
+      //await NewReviewList.Initialized();
+      //await LearnReviewList.Initialized();
+      //await DueReviewList.Initialized();
 
       return await DoNext();
     }

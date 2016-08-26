@@ -1,57 +1,57 @@
 ﻿using System;
-using Mnemophile.Const.SRS;
+using Mnemophile.Const.SpacedRepetition;
 using Xamarin.Forms;
 
 namespace Mnemophile.MVVM.SpacedRepetition
 {
   public static class GradeEx
   {
-    public static Color GetColor(this ConstSRS.Grade grade)
+    public static Color GetColor(this ConstSpacedRepetition.Grade grade)
     {
       switch (grade)
       {
-        case ConstSRS.Grade.FailSevere:
+        case ConstSpacedRepetition.Grade.FailSevere:
           return Color.Black;
 
-        case ConstSRS.Grade.FailMedium:
+        case ConstSpacedRepetition.Grade.FailMedium:
           return Color.Black;
 
-        case ConstSRS.Grade.Fail:
+        case ConstSpacedRepetition.Grade.Fail:
           return Color.FromHex("#FFDC143C"); // Crimson
 
-        case ConstSRS.Grade.Hard:
+        case ConstSpacedRepetition.Grade.Hard:
           return Color.FromHex("#FF9ACD32"); // YellowGreen
 
-        case ConstSRS.Grade.Good:
+        case ConstSpacedRepetition.Grade.Good:
           return Color.FromHex("#FF1E90FF"); // DodgerBlue
 
-        case ConstSRS.Grade.Easy:
+        case ConstSpacedRepetition.Grade.Easy:
           return Color.FromHex("FFA500"); // Orange
       }
 
       throw new InvalidOperationException("Invalid grade");
     }
 
-    //public static string GetLocalizableText(this ConstSRS.Grade grade)
+    //public static string GetLocalizableText(this ConstSpacedRepetition.Grade grade)
     //{
     //  switch (grade)
     //  {
-    //    case ConstSRS.Grade.FailSevere:
+    //    case ConstSpacedRepetition.Grade.FailSevere:
     //      return "SpacedRepetition_Grade_FailSevere";
 
-    //    case ConstSRS.Grade.FailMedium:
+    //    case ConstSpacedRepetition.Grade.FailMedium:
     //      return "SpacedRepetition_Grade_FailMedium";
 
-    //    case ConstSRS.Grade.Fail:
+    //    case ConstSpacedRepetition.Grade.Fail:
     //      return "SpacedRepetition_Grade_Fail";
 
-    //    case ConstSRS.Grade.Hard:
+    //    case ConstSpacedRepetition.Grade.Hard:
     //      return "SpacedRepetition_Grade_Hard";
 
-    //    case ConstSRS.Grade.Good:
+    //    case ConstSpacedRepetition.Grade.Good:
     //      return "SpacedRepetition_Grade_Good";
 
-    //    case ConstSRS.Grade.Easy:
+    //    case ConstSpacedRepetition.Grade.Easy:
     //      return "SpacedRepetition_Grade_Easy";
     //  }
 

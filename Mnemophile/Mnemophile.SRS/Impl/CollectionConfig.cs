@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Mnemophile.Const.SRS;
+using Mnemophile.Const.SpacedRepetition;
 using Mnemophile.Utils;
 
-namespace Mnemophile.SRS.Impl
+namespace Mnemophile.SpacedRepetition.Impl
 {
   // TODO: Create attributes for UI preferences
   public class CollectionConfig
@@ -14,7 +14,7 @@ namespace Mnemophile.SRS.Impl
     public bool BroadGradingMode { get; set; }
     public Delay[] LearningSteps { get; set; }
     public int NewCardPerDay { get; set; }
-    public ConstSRS.CardOrderingOption InsertionOption { get; set; }
+    public ConstSpacedRepetition.CardOrderingOption InsertionOption { get; set; }
     public int GraduationEasyInterval { get; set; }
     public int GraduationInterval { get; set; }
     public float GraduationStartingEase { get; set; }
@@ -31,7 +31,7 @@ namespace Mnemophile.SRS.Impl
     public float LapseIntervalFactor { get; set; }
     public int LapseMinInterval { get; set; }
     public int LeechThreshold { get; set; }
-    public ConstSRS.CardLeechAction LeechAction { get; set; }
+    public ConstSpacedRepetition.CardLeechAction LeechAction { get; set; }
 
     public static CollectionConfig Default => new CollectionConfig
     {
@@ -42,7 +42,7 @@ namespace Mnemophile.SRS.Impl
       // Default maximum number of new card to learn per day
       NewCardPerDay = 20,
       // Default insertion order of new card
-      InsertionOption = ConstSRS.CardOrderingOption.Linear,
+      InsertionOption = ConstSpacedRepetition.CardOrderingOption.Linear,
       // Default interval after graduation from "easy" answer
       GraduationEasyInterval = 4,
       // Default interval after graduation
@@ -76,7 +76,7 @@ namespace Mnemophile.SRS.Impl
       // Default lapse threshold upon which card fall into leech state
       LeechThreshold = 8,
       // Default leech action
-      LeechAction = ConstSRS.CardLeechAction.Suspend
+      LeechAction = ConstSpacedRepetition.CardLeechAction.Suspend
     };
   }
 }

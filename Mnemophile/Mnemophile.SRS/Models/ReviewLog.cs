@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Mnemophile.Attributes.DB;
-using Mnemophile.Const.SRS;
+using Mnemophile.Const.SpacedRepetition;
 
-namespace Mnemophile.SRS.Models
+namespace Mnemophile.SpacedRepetition.Models
 {
   [Table("ReviewsLogs")]
   public class ReviewLog
@@ -15,7 +15,7 @@ namespace Mnemophile.SRS.Models
 
     public ReviewLog(
       int id, int cardId,
-      int lastDue, ConstSRS.CardPracticeState lastState,
+      int lastDue, ConstSpacedRepetition.CardPracticeState lastState,
       int lastInterval, float lastEFactor)
     {
       Id = id;
@@ -28,10 +28,10 @@ namespace Mnemophile.SRS.Models
 
     public ReviewLog(
       int id, int cardId,
-      ConstSRS.Grade grade,
+      ConstSpacedRepetition.Grade grade,
       int lastDue, int newDue,
-      ConstSRS.CardPracticeState lastState,
-      ConstSRS.CardPracticeState newState,
+      ConstSpacedRepetition.CardPracticeState lastState,
+      ConstSpacedRepetition.CardPracticeState newState,
       int lastInterval, int newInterval,
       float lastEFactor, float newEFactor,
       int evalTime)
@@ -51,8 +51,8 @@ namespace Mnemophile.SRS.Models
     }
 
     public void CompleteReview(
-      ConstSRS.Grade grade,
-      int newDue, ConstSRS.CardPracticeState newState, int newInterval,
+      ConstSpacedRepetition.Grade grade,
+      int newDue, ConstSpacedRepetition.CardPracticeState newState, int newInterval,
       float newEFactor, int evalTime)
     {
       Grade = grade;
@@ -66,7 +66,7 @@ namespace Mnemophile.SRS.Models
     public int Id { get; set; }
     public int CardId { get; set; }
 
-    public ConstSRS.Grade Grade { get; set; }
+    public int Grade { get; set; }
     
     public int LastDue { get; set; }
     public int NewDue { get; set; }

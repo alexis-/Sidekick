@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Mnemophile.Const.SRS
+namespace Mnemophile.Const.SpacedRepetition
 {
-  public static class ConstSRS
+  public static class ConstSpacedRepetition
   {
     //
     // Card states

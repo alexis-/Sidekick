@@ -1,4 +1,4 @@
-﻿namespace Mnemophile.SRS.Models
+﻿namespace Mnemophile.SpacedRepetition.Models
 {
   public partial class Card
   {

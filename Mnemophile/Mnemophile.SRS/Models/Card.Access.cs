@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Mnemophile.Attributes.DB;
-using Mnemophile.Const.SRS;
-using Mnemophile.SRS.Impl;
+using Mnemophile.Const.SpacedRepetition;
+using Mnemophile.SpacedRepetition.Impl;
 using Mnemophile.Utils;
 
-namespace Mnemophile.SRS.Models
+namespace Mnemophile.SpacedRepetition.Models
 {
   public partial class Card
   {
@@ -49,7 +49,7 @@ namespace Mnemophile.SRS.Models
 
       // Account for possible config changes
       return Math.Min(
-        PracticeState - ConstSRS.CardPracticeState.Learning,
+        PracticeState - ConstSpacedRepetition.CardPracticeState.Learning,
         LearningOrLapsingSteps.Length - 1);
     }
 
@@ -70,29 +70,29 @@ namespace Mnemophile.SRS.Models
 
     public override bool IsNew()
     {
-      return PracticeState == ConstSRS.CardPracticeState.New;
+      return PracticeState == ConstSpacedRepetition.CardPracticeState.New;
     }
 
     public override bool IsLearning()
     {
-      return PracticeState >= ConstSRS.CardPracticeState.Learning;
+      return PracticeState >= ConstSpacedRepetition.CardPracticeState.Learning;
     }
 
     public override bool IsDue()
     {
-      return PracticeState == ConstSRS.CardPracticeState.Due;
+      return PracticeState == ConstSpacedRepetition.CardPracticeState.Due;
     }
 
     public override bool IsDismissed()
     {
-      return (MiscState & ConstSRS.CardMiscStateFlag.Dismissed) ==
-        ConstSRS.CardMiscStateFlag.Dismissed;
+      return (MiscState & ConstSpacedRepetition.CardMiscStateFlag.Dismissed) ==
+        ConstSpacedRepetition.CardMiscStateFlag.Dismissed;
     }
 
     public override bool IsSuspended()
     {
-      return (MiscState & ConstSRS.CardMiscStateFlag.Suspended) ==
-        ConstSRS.CardMiscStateFlag.Suspended;
+      return (MiscState & ConstSpacedRepetition.CardMiscStateFlag.Suspended) ==
+        ConstSpacedRepetition.CardMiscStateFlag.Suspended;
     }
   }
 }

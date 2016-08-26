@@ -1,11 +1,33 @@
-﻿using System;
+﻿// 
+// The MIT License (MIT)
+// Copyright (c) 2016 Incogito
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the "Software"),
+// to deal in the Software without restriction, including without limitation
+// the rights to use, copy, modify, merge, publish, distribute, sublicense,
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
+
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using Catel.IoC;
 using Catel.Services;
-using Mnemophile.Const.SRS;
+using Mnemophile.Const.SpacedRepetition;
 using Mnemophile.MVVM.SpacedRepetition;
 using Mnemophile.MVVM.ViewModels.SpacedRepetition;
 using Mnemophile.Windows.Utils;
@@ -18,8 +40,20 @@ namespace Mnemophile.Windows.Views.SpacedRepetition
   /// </summary>
   public partial class CardAnswerButtonsView : UserControl
   {
+    #region Fields
+
+    //
+    // Fields
+
     private readonly ILanguageService _languageService;
     private object _lastBuiltView = null;
+
+    #endregion
+
+    #region Constructors
+
+    //
+    // Constructor
 
     public CardAnswerButtonsView()
     {
@@ -30,9 +64,49 @@ namespace Mnemophile.Windows.Views.SpacedRepetition
       InitializeComponent();
     }
 
+    #endregion
+
+    #region Properties
+
+    //
+    // Properties
+
+    public ConstSpacedRepetition.GradingInfo[] Gradings
+    {
+      get
+      {
+        return (ConstSpacedRepetition.GradingInfo[])
+               GetValue(MapCenterProperty);
+      }
+      set { SetValue(MapCenterProperty, value); }
+    }
+
+    public static readonly DependencyProperty MapCenterProperty =
+      DependencyProperty.Register(
+        "Gradings",
+        typeof(ConstSpacedRepetition.GradingInfo[]),
+        typeof(CardAnswerButtonsView),
+        new PropertyMetadata(
+          null,
+          (sender, e) =>
+          {
+            CardAnswerButtonsView @this = sender as CardAnswerButtonsView;
+
+            if (@this?.Gradings != null)
+              @this.SetValue(DataContextProperty, @this.Gradings);
+          })
+        );
+
+    #endregion
+
+    #region Methods
+
+    //
+    // Methods
+
     /// <summary>
     /// Called a new card is displayed, thus resulting in a new set of
-    /// <see cref="ConstSRS.GradingInfo" /> and thus changing ViewModel.
+    /// <see cref="ConstSpacedRepetition.GradingInfo" /> and thus changing ViewModel.
     /// </summary>
     protected override void OnViewModelChanged()
     {
@@ -78,14 +152,15 @@ namespace Mnemophile.Windows.Views.SpacedRepetition
 
       for (int i = 0; i < elementCount; i++)
       {
-        ConstSRS.GradingInfo gradingInfo = viewModel.GradingInfos[i];
+        UIElement element =
+          (i % 2 == 0)
+          // Button (Even)
+          ? (UIElement)BuildButton(viewModel.GradingInfos[i / 2])
+          // Separator (Odd)
+          : BuildSeparator();
 
-        UIElement element = i % 2 == 0
-          ? (UIElement)BuildButton(gradingInfo)   // Button (Even)
-          : BuildSeparator();                     // Separator (Odd)
-
-        Grid.SetColumn(element, i);               // Grid.Column="{i}"
-        grid.Children.Add(element);               // Add UIElement to Grid
+        Grid.SetColumn(element, i); // Grid.Column="{i}"
+        grid.Children.Add(element); // Add UIElement to Grid
       }
 
       return grid;
@@ -106,8 +181,8 @@ namespace Mnemophile.Windows.Views.SpacedRepetition
           new ColumnDefinition()
           {
             Width = (i % 2 == 0)
-              ? new GridLength(1, GridUnitType.Star)
-              : new GridLength(1)
+                      ? new GridLength(1, GridUnitType.Star)
+                      : new GridLength(1)
           });
 
       return grid;
@@ -118,9 +193,9 @@ namespace Mnemophile.Windows.Views.SpacedRepetition
     /// </summary>
     /// <param name="gradingInfo">Grading info</param>
     /// <returns>Setup Button</returns>
-    private Button BuildButton(ConstSRS.GradingInfo gradingInfo)
+    private Button BuildButton(ConstSpacedRepetition.GradingInfo gradingInfo)
     {
-      ConstSRS.Grade grade = gradingInfo.Grade;
+      ConstSpacedRepetition.Grade grade = gradingInfo.Grade;
 
       Button button = new Button();
 
@@ -150,5 +225,7 @@ namespace Mnemophile.Windows.Views.SpacedRepetition
 
       return rectangle;
     }
+
+    #endregion
   }
 }

@@ -8,8 +8,9 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Mnemophile.Windows.Properties {
+namespace Mnemophile.MVVM.Properties {
     using System;
+    using System.Reflection;
     
     
     /// <summary>
@@ -39,7 +40,7 @@ namespace Mnemophile.Windows.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Mnemophile.Windows.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Mnemophile.MVVM.Properties.Resources", typeof(Resources).GetTypeInfo().Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,56 +62,11 @@ namespace Mnemophile.Windows.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Mnemophile.
+        ///   Looks up a localized string similar to Loading collection review.
         /// </summary>
-        internal static string App_Title {
+        internal static string SpacedRepetition_Review_Loading {
             get {
-                return ResourceManager.GetString("App_Title", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Spaced Repetition.
-        /// </summary>
-        internal static string Settings_SpacedRepetition_Header {
-            get {
-                return ResourceManager.GetString("Settings_SpacedRepetition_Header", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Choose your application theme accent color..
-        /// </summary>
-        internal static string Settings_Theme_AccentDescriptionLbl {
-            get {
-                return ResourceManager.GetString("Settings_Theme_AccentDescriptionLbl", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Appearance.
-        /// </summary>
-        internal static string Settings_Theme_Header {
-            get {
-                return ResourceManager.GetString("Settings_Theme_Header", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Choose your application theme..
-        /// </summary>
-        internal static string Settings_Theme_ThemeDescriptionLbl {
-            get {
-                return ResourceManager.GetString("Settings_Theme_ThemeDescriptionLbl", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Application Theme.
-        /// </summary>
-        internal static string Settings_Theme_ThemeLbl {
-            get {
-                return ResourceManager.GetString("Settings_Theme_ThemeLbl", resourceCulture);
+                return ResourceManager.GetString("SpacedRepetition_Review_Loading", resourceCulture);
             }
         }
     }

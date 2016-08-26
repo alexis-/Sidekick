@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Mnemophile.Const.SRS;
+using Mnemophile.Const.SpacedRepetition;
 
-namespace Mnemophile.Interfaces.SRS
+namespace Mnemophile.Interfaces.SpacedRepetition
 {
   public interface IReviewCollection
   {
@@ -24,7 +24,7 @@ namespace Mnemophile.Interfaces.SRS
     ///     Answer current card and fetch next one.
     /// </summary>
     /// <returns>Whether any cards are available</returns>
-    Task<bool> Answer(ConstSRS.Grade grade);
+    Task<bool> Answer(ConstSpacedRepetition.Grade grade);
 
     /// <summary>
     ///     Dismiss current card and fetch next one.
@@ -44,6 +44,6 @@ namespace Mnemophile.Interfaces.SRS
     /// <returns>
     ///     State-dependent card count.
     /// </returns>
-    int CountByState(ConstSRS.CardPracticeStateFilterFlag state);
+    int CountByState(ConstSpacedRepetition.CardPracticeStateFilterFlag state);
   }
 }

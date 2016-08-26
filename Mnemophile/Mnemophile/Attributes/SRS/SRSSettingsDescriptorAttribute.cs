@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Mnemophile.Attributes.SRS
+namespace Mnemophile.Attributes.SpacedRepetition
 {
   [AttributeUsage(AttributeTargets.Class)]
-  public class SRSSettingsDescriptorAttribute : Attribute
+  public class SpacedRepetitionSettingsDescriptorAttribute : Attribute
   {
-    public SRSSettingsDescriptorAttribute() {}
+    public SpacedRepetitionSettingsDescriptorAttribute() {}
   }
 }

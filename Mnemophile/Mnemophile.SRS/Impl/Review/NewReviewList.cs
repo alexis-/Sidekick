@@ -2,14 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Mnemophile.Const.SRS;
+using Mnemophile.Const.SpacedRepetition;
 using Mnemophile.Interfaces.DB;
-using Mnemophile.SRS.Models;
+using Mnemophile.SpacedRepetition.Models;
 using Mnemophile.Utils;
 using Mnemophile.Utils.Collections;
 using Mnemophile.Utils.LazyLoad;
 
-namespace Mnemophile.SRS.Impl.Review
+namespace Mnemophile.SpacedRepetition.Impl.Review
 {
   internal class NewReviewList : ReviewAsyncDbListBase
   {
@@ -36,7 +36,7 @@ namespace Mnemophile.SRS.Impl.Review
       int newCardsLeft) : base(db)
     {
       NewCardsLeft = newCardsLeft;
-      Random = config.InsertionOption == ConstSRS.CardOrderingOption.Random;
+      Random = config.InsertionOption == ConstSpacedRepetition.CardOrderingOption.Random;
     }
 
 
@@ -119,7 +119,7 @@ namespace Mnemophile.SRS.Impl.Review
       {
         ITableQuery<Card> tableQuery =
           Db.Table<Card>()
-            .Where(c => c.PracticeState == ConstSRS.CardPracticeState.New)
+            .Where(c => c.PracticeState == ConstSpacedRepetition.CardPracticeState.New)
             .Take(fullLoadCount);
 
         tableQuery = Random
@@ -139,7 +139,7 @@ namespace Mnemophile.SRS.Impl.Review
             Db.Table<Card>()
               .ShallowLoad(LazyLoader)
               .Where(c =>
-                     c.PracticeState == ConstSRS.CardPracticeState.New
+                     c.PracticeState == ConstSpacedRepetition.CardPracticeState.New
                      && !Objects.Select(o => o.Id).Contains(c.Id))
               .Take(shallowLoadCount);
 
@@ -175,7 +175,7 @@ namespace Mnemophile.SRS.Impl.Review
         ITableQuery<Card> tableQuery =
           Db.Table<Card>()
             .Where(c =>
-                   c.PracticeState == ConstSRS.CardPracticeState.New
+                   c.PracticeState == ConstSpacedRepetition.CardPracticeState.New
                    && !Objects.Select(o => o.Id).Contains(c.Id))
             .Take(loadCount);
 

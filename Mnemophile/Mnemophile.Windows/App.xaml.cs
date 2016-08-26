@@ -45,6 +45,11 @@ namespace Mnemophile.Windows
           "Mnemophile.Windows",
           "Mnemophile.Windows.Properties",
           "Resources"));
+      languageService.RegisterLanguageSource(
+        new LanguageResourceSource(
+          "Mnemophile.MVVM",
+          "Mnemophile.MVVM.Properties",
+          "Resources"));
 
 
       //

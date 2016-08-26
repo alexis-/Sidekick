@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Mnemophile.Const.SRS;
+using Mnemophile.Const.SpacedRepetition;
 using Mnemophile.Utils;
 
-namespace Mnemophile.SRS.Models
+namespace Mnemophile.SpacedRepetition.Models
 {
   partial class Card
   {
@@ -17,13 +17,13 @@ namespace Mnemophile.SRS.Models
 
       switch (PracticeState)
       {
-        case ConstSRS.CardPracticeState.New:
+        case ConstSpacedRepetition.CardPracticeState.New:
           return 1;
 
-        case ConstSRS.CardPracticeState.Due:
+        case ConstSpacedRepetition.CardPracticeState.Due:
           return 1;
 
-        case ConstSRS.CardPracticeState.Deleted: // Leech option
+        case ConstSpacedRepetition.CardPracticeState.Deleted: // Leech option
           return 0;
       }
 

@@ -4,14 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Catel.Data;
-using Mnemophile.Const.SRS;
-using Mnemophile.Interfaces.SRS;
+using Mnemophile.Const.SpacedRepetition;
+using Mnemophile.Interfaces.SpacedRepetition;
 
-namespace Mnemophile.Base.SRS
+namespace Mnemophile.Base.SpacedRepetition
 {
   public abstract class BaseCard : ModelBase, ICard
   {
-    public abstract ConstSRS.GradingInfo[] ComputeGrades();
+    public abstract ConstSpacedRepetition.GradingInfo[] ComputeGrades();
     public abstract bool IsNew();
     public abstract bool IsLearning();
     public abstract bool IsDue();

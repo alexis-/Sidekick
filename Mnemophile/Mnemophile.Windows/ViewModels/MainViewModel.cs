@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Catel.IoC;
 using Catel.MVVM;
 using Catel.Reflection;
 using Catel.Services;
@@ -12,23 +13,38 @@ namespace Mnemophile.Windows.ViewModels
 {
   public class MainViewModel : ViewModelBase
   {
+    #region Constructors
+    //
+    // Constructors
     public MainViewModel(ILanguageService languageService)
     {
       Title = languageService.GetString("App_Title");
 
       // VM
-      CurrentModel = new CollectionViewModel();
+      CurrentModel =
+        TypeFactory.Default.CreateInstance<CollectionViewModel>();
 
       // Commands
       ShowSettings = new Command(OnShowSettingsExecute);
     }
 
+    #endregion
+
+
+
+    #region Properties
+    //
+    // Properties
+
     public ViewModelBase CurrentModel { get; set; }
 
-    //
-    // Commands
+    #endregion
+
+
 
     #region Commands
+    //
+    // Commands
 
     public Command ShowSettings { get; set; }
 

@@ -1,9 +1,9 @@
 ﻿using System;
-using Mnemophile.Const.SRS;
-using Mnemophile.SRS.Impl;
+using Mnemophile.Const.SpacedRepetition;
+using Mnemophile.SpacedRepetition.Impl;
 using Mnemophile.Utils;
 
-namespace Mnemophile.SRS.Models
+namespace Mnemophile.SpacedRepetition.Models
 {
   public partial class Card
   {
@@ -102,7 +102,7 @@ namespace Mnemophile.SRS.Models
     /// </summary>
     public void SetLearningState()
     {
-      PracticeState = ConstSRS.CardPracticeState.Learning;
+      PracticeState = ConstSpacedRepetition.CardPracticeState.Learning;
     }
     #endregion
 
@@ -117,9 +117,9 @@ namespace Mnemophile.SRS.Models
     /// Process fail-graded answers for due cards.
     /// </summary>
     /// <param name="grade">Fail grade</param>
-    public CardAction Lapse(ConstSRS.Grade grade)
+    public CardAction Lapse(ConstSpacedRepetition.Grade grade)
     {
-      if (grade > ConstSRS.Grade.Fail)
+      if (grade > ConstSpacedRepetition.Grade.Fail)
         throw new ArgumentException(
           "Card.Lapse invoked with invalid grade", nameof(grade));
 
@@ -144,11 +144,11 @@ namespace Mnemophile.SRS.Models
     {
       switch (Config.LeechAction)
       {
-        case ConstSRS.CardLeechAction.Suspend:
+        case ConstSpacedRepetition.CardLeechAction.Suspend:
           SetSuspendedState();
           return CardAction.Update;
 
-        case ConstSRS.CardLeechAction.Delete:
+        case ConstSpacedRepetition.CardLeechAction.Delete:
           return CardAction.Delete;
       }
 
@@ -171,9 +171,9 @@ namespace Mnemophile.SRS.Models
     /// Process pass-graded answers for due cards.
     /// </summary>
     /// <param name="grade">Pass grade</param>
-    public CardAction Review(ConstSRS.Grade grade)
+    public CardAction Review(ConstSpacedRepetition.Grade grade)
     {
-      if (grade < ConstSRS.Grade.Hard)
+      if (grade < ConstSpacedRepetition.Grade.Hard)
         throw new ArgumentException(
           "Card.Review invoked with invalid grade", nameof(grade));
 
@@ -186,7 +186,7 @@ namespace Mnemophile.SRS.Models
       return CardAction.Update;
     }
 
-    public int ComputeReviewInterval(ConstSRS.Grade grade)
+    public int ComputeReviewInterval(ConstSpacedRepetition.Grade grade)
     {
       int daysLate = (DateTime.Now - DateTimeEx.FromUnixTimestamp(Due)).Days;
       int newInterval = GradingOptions.GradeReviewIntervalFormulas(grade,
@@ -226,7 +226,7 @@ namespace Mnemophile.SRS.Models
     /// </summary>
     public void SetSuspendedState()
     {
-      MiscState |= ConstSRS.CardMiscStateFlag.Suspended;
+      MiscState |= ConstSpacedRepetition.CardMiscStateFlag.Suspended;
     }
 
     /// <summary>
@@ -234,7 +234,7 @@ namespace Mnemophile.SRS.Models
     /// </summary>
     public void SetDueState()
     {
-      PracticeState = ConstSRS.CardPracticeState.Due;
+      PracticeState = ConstSpacedRepetition.CardPracticeState.Due;
     }
     #endregion
 
@@ -248,32 +248,32 @@ namespace Mnemophile.SRS.Models
 
 #if false
     public static int ComputeReviewCount( // TODO: This may be useful at some point
-      ConstSRS.CardPracticeState state,
-      CollectionConfig config, ConstSRS.Grade grade)
+      ConstSpacedRepetition.CardPracticeState state,
+      CollectionConfig config, ConstSpacedRepetition.Grade grade)
     {
       switch (state)
       {
-        case ConstSRS.CardPracticeState.New:
-          return grade == ConstSRS.Grade.Easy
+        case ConstSpacedRepetition.CardPracticeState.New:
+          return grade == ConstSpacedRepetition.Grade.Easy
                    ? 1
                    : config.LearningSteps.Length;
 
-        case ConstSRS.CardPracticeState.Due:
-          return grade == ConstSRS.Grade.Easy
+        case ConstSpacedRepetition.CardPracticeState.Due:
+          return grade == ConstSpacedRepetition.Grade.Easy
                    ? 1
                    : config.LearningSteps.Length;
 
-        case ConstSRS.CardPracticeState.Learning:
-          return grade == ConstSRS.Grade.Easy
+        case ConstSpacedRepetition.CardPracticeState.Learning:
+          return grade == ConstSpacedRepetition.Grade.Easy
                    ? 1
                    : config.LearningSteps.Length;
       }
       /*
-        (grade == ConstSRS.Grade.Easy
+        (grade == ConstSpacedRepetition.Grade.Easy
         ? newCards : newCards * config.LearningSteps.Length)
-        + (grade == ConstSRS.Grade.Easy
+        + (grade == ConstSpacedRepetition.Grade.Easy
         ? learnCards : learnCards * config.LearningSteps.Length)
-        + (grade == ConstSRS.Grade.Easy
+        + (grade == ConstSpacedRepetition.Grade.Easy
         ? lapsingCards : lapsingCards * config.LapseSteps.Length)
         + dueCards;
       */

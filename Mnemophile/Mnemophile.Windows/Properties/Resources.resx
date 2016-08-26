@@ -137,4 +137,7 @@
     <value>Application Theme</value>
     <comment>Settings Theme Panel, Theme Label</comment>
   </data>
+  <data name="Settings_SpacedRepetition_Header" xml:space="preserve">
+    <value>Spaced Repetition</value>
+  </data>
 </root>

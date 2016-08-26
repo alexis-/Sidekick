@@ -1,18 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FluentAssertions;
-using Mnemophile.Const.SRS;
-using Mnemophile.Interfaces.DB;
-using Mnemophile.SRS.Impl;
-using Mnemophile.SRS.Models;
+using Mnemophile.Const.SpacedRepetition;
+using Mnemophile.SpacedRepetition.Impl;
+using Mnemophile.SpacedRepetition.Models;
 using Mnemophile.Utils;
 using Ploeh.AutoFixture;
-using Xunit;
 
-namespace Mnemophile.SRS.Tests.Helpers
+namespace Mnemophile.SpacedRepetition.Tests
 {
   public class CardGenerator
   {
@@ -75,21 +70,21 @@ namespace Mnemophile.SRS.Tests.Helpers
       card.LastModified = Math.Max(card.Id, TimeGenerator.RandomTime());
 
       bool lapsing;
-      ConstSRS.CardPracticeState state;
+      ConstSpacedRepetition.CardPracticeState state;
 
       ComputeNextCardType(out state, out lapsing);
 
       switch (state)
       {
-        case ConstSRS.CardPracticeState.Due:
+        case ConstSpacedRepetition.CardPracticeState.Due:
           DueCount--;
           return SetupDueCard(card, lapsing);
 
-        case ConstSRS.CardPracticeState.Learning:
+        case ConstSpacedRepetition.CardPracticeState.Learning:
           LearnCount--;
           return SetupLearningCard(card, lapsing);
 
-        case ConstSRS.CardPracticeState.New:
+        case ConstSpacedRepetition.CardPracticeState.New:
           NewCount--;
           return SetupNewCard(card);
       }
@@ -98,7 +93,7 @@ namespace Mnemophile.SRS.Tests.Helpers
     }
 
     private void ComputeNextCardType(
-      out ConstSRS.CardPracticeState state,
+      out ConstSpacedRepetition.CardPracticeState state,
       out bool lapsing)
     {
       int total = DueCount + LearnCount + NewCount;
@@ -109,17 +104,17 @@ namespace Mnemophile.SRS.Tests.Helpers
       int rnd = Random.Next(0, total);
 
       if (rnd < DueCount)
-        state = ConstSRS.CardPracticeState.Due;
+        state = ConstSpacedRepetition.CardPracticeState.Due;
       
       else if (rnd < DueCount + LearnCount)
-        state = ConstSRS.CardPracticeState.Learning;
+        state = ConstSpacedRepetition.CardPracticeState.Learning;
 
       else
-        state = ConstSRS.CardPracticeState.New;
+        state = ConstSpacedRepetition.CardPracticeState.New;
 
       if (LapseCount > 0
-          && (state == ConstSRS.CardPracticeState.Due
-              || state == ConstSRS.CardPracticeState.Learning))
+          && (state == ConstSpacedRepetition.CardPracticeState.Due
+              || state == ConstSpacedRepetition.CardPracticeState.Learning))
       {
         int lapseTotal = DueCount + LearnCount;
 
@@ -134,26 +129,26 @@ namespace Mnemophile.SRS.Tests.Helpers
 
     private Card SetupDueCard(Card card, bool lapsing)
     {
-      card.PracticeState = ConstSRS.CardPracticeState.Due;
+      card.PracticeState = ConstSpacedRepetition.CardPracticeState.Due;
       card.Due = Math.Max(card.Id, TimeGenerator.RandomTime());
 
       if (lapsing)
         SetupLapse(card);
       
-      SetupSRSDatas(card);
+      SetupSpacedRepetitionDatas(card);
 
       return card;
     }
 
     private Card SetupLearningCard(Card card, bool lapsing)
     {
-      card.PracticeState = ConstSRS.CardPracticeState.Learning;
+      card.PracticeState = ConstSpacedRepetition.CardPracticeState.Learning;
       card.Due = TimeGenerator.RandomTime(card.LearningOrLapsingSteps.Last());
 
       if (lapsing)
       {
         SetupLapse(card);
-        SetupSRSDatas(card);
+        SetupSpacedRepetitionDatas(card);
       }
 
       return card;
@@ -161,13 +156,13 @@ namespace Mnemophile.SRS.Tests.Helpers
 
     private Card SetupNewCard(Card card)
     {
-      card.PracticeState = ConstSRS.CardPracticeState.New;
-      card.Due = Math.Max(card.Id, TimeGenerator.RandomTime());
+      card.PracticeState = ConstSpacedRepetition.CardPracticeState.New;
+      card.Due = 0; //Math.Max(card.Id, TimeGenerator.RandomTime());
 
       return card;
     }
 
-    private void SetupSRSDatas(Card card)
+    private void SetupSpacedRepetitionDatas(Card card)
     {
       card.EFactor = RandomEFactor();
       card.Interval = Math.Max(
@@ -195,7 +190,7 @@ namespace Mnemophile.SRS.Tests.Helpers
 
     public static Card MakeCard(
       CollectionConfig config,
-      ConstSRS.CardPracticeState state,
+      ConstSpacedRepetition.CardPracticeState state,
       int due = -1,
       float eFactor = 2.5f,
       int interval = 1,

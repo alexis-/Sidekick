@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Text;
 using Mnemophile.Attributes.DB;
-using Mnemophile.Base.SRS;
-using Mnemophile.Const.SRS;
-using Mnemophile.SRS.Impl;
+using Mnemophile.Base.SpacedRepetition;
+using Mnemophile.Const.SpacedRepetition;
+using Mnemophile.SpacedRepetition.Impl;
 using Mnemophile.Utils;
 using Newtonsoft.Json;
 
-namespace Mnemophile.SRS.Models
+namespace Mnemophile.SpacedRepetition.Models
 {
   [Table("Cards")]
   public partial class Card : BaseCard
@@ -29,8 +29,8 @@ namespace Mnemophile.SRS.Models
       LastModified = Id;
 
       Due = 0;
-      PracticeState = ConstSRS.CardPracticeState.New;
-      MiscState = ConstSRS.CardMiscStateFlag.None;
+      PracticeState = ConstSpacedRepetition.CardPracticeState.New;
+      MiscState = ConstSpacedRepetition.CardMiscStateFlag.None;
 
       _eFactor = 0;
       _interval = 0;
@@ -56,7 +56,7 @@ namespace Mnemophile.SRS.Models
     public short PracticeState { get; set; }
 
     [Indexed]
-    public ConstSRS.CardMiscStateFlag MiscState { get; private set; }
+    public ConstSpacedRepetition.CardMiscStateFlag MiscState { get; private set; }
 
     private float _eFactor;
     public float EFactor

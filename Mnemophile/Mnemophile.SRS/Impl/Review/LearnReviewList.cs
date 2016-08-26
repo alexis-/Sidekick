@@ -2,14 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Mnemophile.Const.SRS;
+using Mnemophile.Const.SpacedRepetition;
 using Mnemophile.Interfaces.DB;
-using Mnemophile.SRS.Models;
+using Mnemophile.SpacedRepetition.Models;
 using Mnemophile.Utils;
 using Mnemophile.Utils.Collections;
 using Mnemophile.Utils.LazyLoad;
 
-namespace Mnemophile.SRS.Impl.Review
+namespace Mnemophile.SpacedRepetition.Impl.Review
 {
   internal class LearnReviewList : ReviewAsyncDbListBase
   {
@@ -125,7 +125,7 @@ namespace Mnemophile.SRS.Impl.Review
         ITableQuery<Card> tableQuery =
           Db.Table<Card>()
             .Where(c =>
-                   c.PracticeState >= ConstSRS.CardPracticeState.Learning
+                   c.PracticeState >= ConstSpacedRepetition.CardPracticeState.Learning
                    && c.Due < tomorrow)
             .Take(fullLoadCount);
 
@@ -142,7 +142,7 @@ namespace Mnemophile.SRS.Impl.Review
             Db.Table<Card>()
               .ShallowLoad(LazyLoader)
               .Where(c =>
-                     c.PracticeState >= ConstSRS.CardPracticeState.Learning
+                     c.PracticeState >= ConstSpacedRepetition.CardPracticeState.Learning
                      && c.Due < tomorrow
                      && !Objects.Select(o => o.Id).Contains(c.Id));
 

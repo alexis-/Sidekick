@@ -2,14 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Mnemophile.Const.SRS;
+using Mnemophile.Const.SpacedRepetition;
 using Mnemophile.Interfaces.DB;
-using Mnemophile.SRS.Models;
+using Mnemophile.SpacedRepetition.Models;
 using Mnemophile.Utils;
 using Mnemophile.Utils.Collections;
 using Mnemophile.Utils.LazyLoad;
 
-namespace Mnemophile.SRS.Impl.Review
+namespace Mnemophile.SpacedRepetition.Impl.Review
 {
   internal class DueReviewList : ReviewAsyncDbListBase
   {
@@ -121,7 +121,7 @@ namespace Mnemophile.SRS.Impl.Review
         ITableQuery<Card> tableQuery =
           Db.Table<Card>()
             .Where(c =>
-                   c.PracticeState == ConstSRS.CardPracticeState.Due
+                   c.PracticeState == ConstSpacedRepetition.CardPracticeState.Due
                    && c.Due < tomorrow)
             .Take(fullLoadCount);
 
@@ -138,7 +138,7 @@ namespace Mnemophile.SRS.Impl.Review
             Db.Table<Card>()
               .ShallowLoad(LazyLoader)
               .Where(c =>
-                     c.PracticeState == ConstSRS.CardPracticeState.Due
+                     c.PracticeState == ConstSpacedRepetition.CardPracticeState.Due
                      && c.Due < tomorrow
                      && !Objects.Select(o => o.Id).Contains(c.Id))
               .Take(shallowLoadCount);
@@ -173,7 +173,7 @@ namespace Mnemophile.SRS.Impl.Review
         ITableQuery<Card> tableQuery =
           Db.Table<Card>()
             .Where(c =>
-                   c.PracticeState == ConstSRS.CardPracticeState.Due
+                   c.PracticeState == ConstSpacedRepetition.CardPracticeState.Due
                    && c.Due < tomorrow
                    && !Objects.Select(o => o.Id).Contains(c.Id))
             .Take(loadCount);

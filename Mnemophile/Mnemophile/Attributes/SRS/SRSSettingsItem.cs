@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Mnemophile.Attributes.SRS
+namespace Mnemophile.Attributes.SpacedRepetition
 {
   [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-  public class SRSSettingsItem : Attribute
+  public class SpacedRepetitionSettingsItem : Attribute
   {
-    public SRSSettingsItem(int categoryIndex)
+    public SpacedRepetitionSettingsItem(int categoryIndex)
     {
       CategoryIndex = categoryIndex;
     }

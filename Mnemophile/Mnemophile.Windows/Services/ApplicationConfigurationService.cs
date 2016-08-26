@@ -24,14 +24,14 @@ namespace Mnemophile.Windows.Services
     private T GetValue<T>(string key, T defaultValue)
     {
       return _configurationService.GetValue(
-        ConfigurationContainer.Roaming,
+        ConfigurationContainer.Local,
         key, defaultValue);
     }
 
     private void SetValue<T>(string key, T value)
     {
       _configurationService.SetValue(
-        ConfigurationContainer.Roaming,
+        ConfigurationContainer.Local,
         key, value);
     }
 

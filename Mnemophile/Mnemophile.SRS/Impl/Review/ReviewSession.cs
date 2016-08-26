@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Mnemophile.Const.SRS;
+using Mnemophile.Const.SpacedRepetition;
 using Mnemophile.Interfaces.DB;
-using Mnemophile.SRS.Models;
+using Mnemophile.SpacedRepetition.Models;
 using Mnemophile.Utils;
 
-namespace Mnemophile.SRS.Impl.Review
+namespace Mnemophile.SpacedRepetition.Impl.Review
 {
   public class ReviewSession
   {
@@ -30,13 +30,13 @@ namespace Mnemophile.SRS.Impl.Review
         db.Table<ReviewLog>()
           .Where(l =>
                  l.Id >= todayStart && l.Id < todayEnd
-                 && (l.LastState == ConstSRS.CardPracticeState.New
-                     || l.LastState == ConstSRS.CardPracticeState.Due))
+                 && (l.LastState == ConstSpacedRepetition.CardPracticeState.New
+                     || l.LastState == ConstSpacedRepetition.CardPracticeState.Due))
           .SelectColumns(nameof(ReviewLog.LastState))
           .ToList();
 
       int newReviewedToday = logs.Count(l =>
-                            l.LastState == ConstSRS.CardPracticeState.New);
+                            l.LastState == ConstSpacedRepetition.CardPracticeState.New);
       int dueReviewedToday = logs.Count() - newReviewedToday;
 
       New = config.NewCardPerDay - newReviewedToday;

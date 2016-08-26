@@ -4,9 +4,9 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-using Mnemophile.Const.SRS;
+using Mnemophile.Const.SpacedRepetition;
 
-namespace Mnemophile.SRS.Models
+namespace Mnemophile.SpacedRepetition.Models
 {
   public partial class Card
   {
@@ -14,17 +14,17 @@ namespace Mnemophile.SRS.Models
     /// Bitwise mask to retain misc states (Suspended, Dismissed) while
     /// updating main state (New, Learning, Due).
     /// </summary>
-    //const ConstSRS.CardStateFlag CardMiscStateMask =
-    //  (ConstSRS.CardStateFlag)(int.MaxValue
-    //                   ^ (int)ConstSRS.CardStateFlag.New
-    //                   ^ (int)ConstSRS.CardStateFlag.Learning
-    //                   ^ (int)ConstSRS.CardStateFlag.Due);
+    //const ConstSpacedRepetition.CardStateFlag CardMiscStateMask =
+    //  (ConstSpacedRepetition.CardStateFlag)(int.MaxValue
+    //                   ^ (int)ConstSpacedRepetition.CardStateFlag.New
+    //                   ^ (int)ConstSpacedRepetition.CardStateFlag.Learning
+    //                   ^ (int)ConstSpacedRepetition.CardStateFlag.Due);
 
     /// <summary>
     /// Bitwise mask to retain main state (New, Learning, Due) while updating
     /// misc states (Suspended, Dismissed).
     /// </summary>
-    //const ConstSRS.CardStateFlag CardMainStateMask = ~CardMiscStateMask;
+    //const ConstSpacedRepetition.CardStateFlag CardMainStateMask = ~CardMiscStateMask;
 
     public enum CardAction
     {

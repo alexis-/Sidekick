@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Mnemophile.Attributes.DB;
-using Mnemophile.Interfaces.SRS;
-using Mnemophile.SRS.Impl;
+using Mnemophile.Interfaces.SpacedRepetition;
+using Mnemophile.SpacedRepetition.Impl;
 using Mnemophile.Utils;
 
-namespace Mnemophile.SRS.Models
+namespace Mnemophile.SpacedRepetition.Models
 {
   [Table("Notes")]
   public class Note : INote

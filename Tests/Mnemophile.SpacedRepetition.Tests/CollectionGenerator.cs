@@ -1,16 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FluentAssertions;
 using Mnemophile.Interfaces.DB;
-using Mnemophile.SRS.Impl;
-using Mnemophile.SRS.Models;
+using Mnemophile.SpacedRepetition.Impl;
+using Mnemophile.SpacedRepetition.Models;
 using Ploeh.AutoFixture;
-using Xunit;
 
-namespace Mnemophile.SRS.Tests.Helpers
+namespace Mnemophile.SpacedRepetition.Tests
 {
   public class CollectionGenerator
   {

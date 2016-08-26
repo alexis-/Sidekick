@@ -23,7 +23,7 @@ namespace Mnemophile.Windows.Services
 
     private void InitializeConfigurationKey(string key, object defaultValue)
     {
-      _configurationService.InitializeValue(ConfigurationContainer.Roaming, key, defaultValue);
+      _configurationService.InitializeValue(ConfigurationContainer.Local, key, defaultValue);
     }
   }
 }

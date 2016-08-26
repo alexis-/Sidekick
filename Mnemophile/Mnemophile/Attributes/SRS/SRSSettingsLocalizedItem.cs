@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Mnemophile.Attributes.SRS
+namespace Mnemophile.Attributes.SpacedRepetition
 {
   // TODO: Allow localized textual descriptions through Resource items
   // http://stackoverflow.com/questions/356464/localization-of-displaynameattribute
-  public class SRSSettingsLocalizedItem : SRSSettingsItem
+  public class SpacedRepetitionSettingsLocalizedItem : SpacedRepetitionSettingsItem
   {
-    public SRSSettingsLocalizedItem(int categoryIndex) : base(categoryIndex)
+    public SpacedRepetitionSettingsLocalizedItem(int categoryIndex) : base(categoryIndex)
     {
       throw new NotImplementedException();
     }

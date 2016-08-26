@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Mnemophile.Interfaces.SRS
+namespace Mnemophile.Interfaces.SpacedRepetition
 {
   public interface INote
   {

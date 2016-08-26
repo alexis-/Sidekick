@@ -2,9 +2,13 @@ using System;
 using System.Reflection;
 using Catel.Data;
 using Catel.IoC;
-using Mnemophile.SRS.Impl;
-using Mnemophile.SRS.Models;
+using Catel.IO;
+using Mnemophile.SpacedRepetition.Impl;
+using Mnemophile.SpacedRepetition.Models;
+using Mnemophile.SpacedRepetition.Tests;
+using Mnemophile.Utils;
 using PCLStorage;
+using Ploeh.AutoFixture;
 using SQLite.Net;
 using SQLite.Net.Bridge;
 using SQLite.Net.Platform.Win32;
@@ -33,11 +37,11 @@ namespace Mnemophile.Windows.Services
     {
       // Use local storage. It may be too voluminous to sync, use server sync
       // for that purpose instead.
-      var storage = FileSystem.Current.LocalStorage;
+      var storageTarget = ApplicationDataTarget.UserLocal;
 
-      return storage.CreateFileAsync(
-        DbFilename,
-        CreationCollisionOption.OpenIfExists).Result.Path;
+      return Path.Combine(
+        Path.GetApplicationDataDirectory(storageTarget),
+        DbFilename);
     }
 
     private static object CreateInstance(
@@ -45,8 +49,8 @@ namespace Mnemophile.Windows.Services
     {
       if (type == typeof(Card))
       {
-        CollectionConfig config =
-          ServiceLocator.Default.ResolveType<CollectionConfig>();
+        CollectionConfig config = null; // TODO: Load config
+          //ServiceLocator.Default.ResolveType<CollectionConfig>();
 
         return new Card(config ?? CollectionConfig.Default);
       }

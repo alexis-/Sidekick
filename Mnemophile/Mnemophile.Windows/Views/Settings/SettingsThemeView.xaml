@@ -8,25 +8,27 @@
               MaxWidth="500">
 
     <Label Content="{catel:LanguageBinding Settings_Theme_ThemeLbl}"
-           Style="{DynamicResource TitleStyle}"
-           Margin="0 0 0 4" />
+           Style="{DynamicResource TitleStyle}" />
 
     <Label Content="{catel:LanguageBinding Settings_Theme_ThemeDescriptionLbl}"
-           Style="{DynamicResource DescriptionStyle}"
-           Margin="0 0 0 4" />
+           Style="{DynamicResource DescriptionStyle}" />
 
+    <!--Labels seem to shift combo box... HorizontalAligment + Left Margin as a fix for lack of better solution-->
     <ComboBox Name="ThemeComboBox"
               Width="180"
-              Margin="0 0 0 20"
+              Margin="9 0 0 20"
+              HorizontalAlignment="Left"
               ItemsSource="{Binding Themes}"
               SelectedItem="{Binding SelectedTheme}" />
 
     <Label Content="{catel:LanguageBinding Settings_Theme_AccentDescriptionLbl}"
-           Style="{DynamicResource DescriptionStyle}"
-           Margin="0 0 0 4" />
+           Style="{DynamicResource DescriptionStyle}" />
 
+    <!--Labels seem to shift combo box... HorizontalAligment + Left Margin as a fix for lack of better solution-->
     <ComboBox Name="AccentComboBox"
               Width="180"
+              Margin="9 0 0 0"
+              HorizontalAlignment="Left"
               ItemsSource="{Binding Accents}"
               SelectedItem="{Binding SelectedAccent}" />
 

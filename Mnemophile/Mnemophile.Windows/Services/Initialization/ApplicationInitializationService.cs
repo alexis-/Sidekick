@@ -6,13 +6,14 @@ using Catel;
 using Catel.IoC;
 using Catel.Logging;
 using Catel.MVVM;
+using Catel.Services;
 using Catel.Threading;
 using Catel.Windows.Controls;
 using global::MahApps.Metro.Controls;
 using MethodTimer;
 using Mnemophile.Interfaces.DB;
-using Mnemophile.Interfaces.SRS;
-using Mnemophile.SRS.Impl;
+using Mnemophile.Interfaces.SpacedRepetition;
+using Mnemophile.SpacedRepetition.Impl;
 using Mnemophile.Windows.Services.Interfaces;
 using Orchestra.Services;
 using InputGesture = Catel.Windows.Input.InputGesture;
@@ -65,6 +66,7 @@ namespace Mnemophile.Windows.Services
       InitializeCommands();
       InitializeViewPaths();
       InitializeViewModelPaths();
+      InitializeSpacedRepetition();
 
       await TaskHelper.RunAndWaitAsync(new Func<Task>[] {
         InitializeDatabase,
@@ -91,8 +93,8 @@ namespace Mnemophile.Windows.Services
         IApplicationConfigurationService,
         ApplicationConfigurationService>();
 
-      // TODO: Load SRS implementation dynamically
-      _serviceLocator.RegisterType<ISRS>(
+      // TODO: Load SpacedRepetition implementation dynamically
+      _serviceLocator.RegisterType<ISpacedRepetition>(
         slr => new SM2Impl());
       _serviceLocator.RegisterType<IDatabase>(
         slr => new DatabaseService());
@@ -152,6 +154,16 @@ namespace Mnemophile.Windows.Services
         "Mnemophile.MVVM.ViewModels.SpacedRepetition.[VW]ViewModel");
     }
 
+    private void InitializeSpacedRepetition()
+    {
+      ISpacedRepetition spacedRepetition =
+        _serviceLocator.ResolveType<ISpacedRepetition>();
+      ILanguageService languageService =
+        _serviceLocator.ResolveType<ILanguageService>();
+
+      languageService.RegisterLanguageSource(
+        spacedRepetition.GetLanguageSource());
+    }
 
 
     //

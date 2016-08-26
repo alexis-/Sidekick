@@ -9,17 +9,16 @@
     <ResourceDictionary>
       <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary
-          Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.AnimatedTabControl.xaml" />
-        <ResourceDictionary
           Source="pack://application:,,,/Mnemophile.Windows;component/Styles/StretchHeaderTabItem.xaml" />
+        <ResourceDictionary
+          Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.AnimatedTabControl.xaml" />
       </ResourceDictionary.MergedDictionaries>
+
+      <Style TargetType="catel:TabControl" BasedOn="{StaticResource {x:Type TabControl}}" />
     </ResourceDictionary>
   </UserControl.Resources>
 
   <Grid>
-    <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="*" />
-    </Grid.ColumnDefinitions>
 
     <catel:TabControl controls:TabControlHelper.IsUnderlined="True"
                       Padding="10 10 10 10">
@@ -27,9 +26,12 @@
                IsSelected="True">
         <settings:SettingsThemeView />
       </TabItem>
-      <TabItem Header="Tab 2" />
+      <TabItem Header="{catel:LanguageBinding Settings_SpacedRepetition_Header}">
+        <settings:SettingsSpacedRepetitionView />
+      </TabItem>
       <TabItem Header="Tab 3" />
     </catel:TabControl>
+    
   </Grid>
 
 </catel:UserControl>

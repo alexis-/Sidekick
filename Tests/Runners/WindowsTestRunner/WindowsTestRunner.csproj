@@ -118,11 +118,8 @@
       <Link>SQLite\TestDb.cs</Link>
     </Compile>
     <Compile Include="Factories\DelayFactory.cs" />
-    <Compile Include="Mnemophile.SRS\Card.Test.cs" />
-    <Compile Include="Mnemophile.SRS\Helpers\CardGenerator.cs" />
-    <Compile Include="Mnemophile.SRS\Helpers\CollectionGenerator.cs" />
-    <Compile Include="Mnemophile.SRS\Helpers\CollectionGeneratorTest.cs" />
-    <Compile Include="Mnemophile.SRS\Helpers\TimeGenerator.cs" />
+    <Compile Include="Mnemophile.SpacedRepetition\Card.Test.cs" />
+    <Compile Include="Mnemophile.SpacedRepetition\CollectionGeneratorTest.cs" />
     <Compile Include="Mnemophile\DelayTest.cs" />
     <Compile Include="Mnemophile\DelayTest.DaysGetTest.g.cs">
       <DependentUpon>DelayTest.cs</DependentUpon>
@@ -175,6 +172,10 @@
     <ProjectReference Include="..\..\..\Mnemophile\SQLite.Net.Bridge\SQLite.Net.Bridge.csproj">
       <Project>{97A6601D-F0C7-47ED-AD6B-7A15E623422D}</Project>
       <Name>SQLite.Net.Bridge</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Mnemophile.SpacedRepetition.Tests\Mnemophile.SpacedRepetition.Tests.csproj">
+      <Project>{E39765B1-C8E4-455F-A9BE-85FE038B03FF}</Project>
+      <Name>Mnemophile.SpacedRepetition.Tests</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

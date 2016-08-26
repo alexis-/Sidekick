@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Mnemophile.SRS.Models;
+using Mnemophile.SpacedRepetition.Models;
 
-namespace Mnemophile.SRS.Impl.Review
+namespace Mnemophile.SpacedRepetition.Impl.Review
 {
   /// <summary>
   ///     <see cref="IComparer{T}"/> implementation for Card comparison :

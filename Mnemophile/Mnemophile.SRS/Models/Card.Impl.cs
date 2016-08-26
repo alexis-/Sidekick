@@ -1,16 +1,16 @@
 ﻿using Mnemophile.Utils;
 using System;
-using Mnemophile.Const.SRS;
+using Mnemophile.Const.SpacedRepetition;
 using Mnemophile.Interfaces.DB;
-using Mnemophile.SRS.Impl;
+using Mnemophile.SpacedRepetition.Impl;
 
-namespace Mnemophile.SRS.Models
+namespace Mnemophile.SpacedRepetition.Models
 {
   public partial class Card
   {
     public void Dismiss(IDatabase db)
     {
-      MiscState = MiscState | ConstSRS.CardMiscStateFlag.Dismissed;
+      MiscState = MiscState | ConstSpacedRepetition.CardMiscStateFlag.Dismissed;
 
       Due = Math.Max(Due, DateTime.Today.AddDays(1).ToUnixTimestamp());
       // TODO: If card is overdue, interval bonus is lost
@@ -19,12 +19,12 @@ namespace Mnemophile.SRS.Models
         db.Update(this);
     }
 
-    public void Answer(ConstSRS.Grade grade)
+    public void Answer(ConstSpacedRepetition.Grade grade)
     {
       Answer(grade, null);
     }
 
-    public void Answer(ConstSRS.Grade grade, IDatabase db)
+    public void Answer(ConstSpacedRepetition.Grade grade, IDatabase db)
     {
       CardAction cardAction = CardAction.Invalid;
       CurrentReviewTime = DateTime.Now.UnixTimestamp();
@@ -37,19 +37,19 @@ namespace Mnemophile.SRS.Models
       if (IsLearning())
         switch (grade)
         {
-          case ConstSRS.Grade.FailSevere:
-          case ConstSRS.Grade.FailMedium:
-          case ConstSRS.Grade.Fail:
+          case ConstSpacedRepetition.Grade.FailSevere:
+          case ConstSpacedRepetition.Grade.FailMedium:
+          case ConstSpacedRepetition.Grade.Fail:
             // TODO: If relearning, further decrease ease and interval ?
             cardAction = UpdateLearningStep(true);
             break;
 
-          case ConstSRS.Grade.Hard:
-          case ConstSRS.Grade.Good:
+          case ConstSpacedRepetition.Grade.Hard:
+          case ConstSpacedRepetition.Grade.Good:
             cardAction = UpdateLearningStep();
             break;
 
-          case ConstSRS.Grade.Easy:
+          case ConstSpacedRepetition.Grade.Easy:
             cardAction = Graduate(true);
             break;
         }
@@ -58,21 +58,21 @@ namespace Mnemophile.SRS.Models
       else
         switch (grade)
         {
-          case ConstSRS.Grade.FailSevere:
-          case ConstSRS.Grade.FailMedium:
-          case ConstSRS.Grade.Fail:
+          case ConstSpacedRepetition.Grade.FailSevere:
+          case ConstSpacedRepetition.Grade.FailMedium:
+          case ConstSpacedRepetition.Grade.Fail:
             cardAction = Lapse(grade);
             break;
 
-          case ConstSRS.Grade.Hard:
-          case ConstSRS.Grade.Good:
-          case ConstSRS.Grade.Easy:
+          case ConstSpacedRepetition.Grade.Hard:
+          case ConstSpacedRepetition.Grade.Good:
+          case ConstSpacedRepetition.Grade.Easy:
             cardAction = Review(grade);
             break;
         }
 
       // Update card properties
-      MiscState = ConstSRS.CardMiscStateFlag.None;
+      MiscState = ConstSpacedRepetition.CardMiscStateFlag.None;
       Reviews++;
       LastModified = CurrentReviewTime;
 
@@ -82,7 +82,7 @@ namespace Mnemophile.SRS.Models
         switch (cardAction)
         {
           case CardAction.Delete:
-            PracticeState = ConstSRS.CardPracticeState.Deleted;
+            PracticeState = ConstSpacedRepetition.CardPracticeState.Deleted;
 
             using (db.Lock())
               db.Delete<Card>(Id);
@@ -106,10 +106,10 @@ namespace Mnemophile.SRS.Models
     /// Card values are unaffected.
     /// </summary>
     /// <returns>Description of all grading options outcomes</returns>
-    public override ConstSRS.GradingInfo[] ComputeGrades()
+    public override ConstSpacedRepetition.GradingInfo[] ComputeGrades()
     {
       int currentReviewTime = DateTime.Now.UnixTimestamp();
-      ConstSRS.GradingInfo[] gradingInfos;
+      ConstSpacedRepetition.GradingInfo[] gradingInfos;
 
       // Learning grades
       if (IsNew() || IsLearning())
@@ -125,7 +125,7 @@ namespace Mnemophile.SRS.Models
       // Compute outcomes of each grade option
       for (int i = 0; i < gradingInfos.Length; i++)
       {
-        ConstSRS.GradingInfo gradingInfo = gradingInfos[i];
+        ConstSpacedRepetition.GradingInfo gradingInfo = gradingInfos[i];
         Card cardClone = Clone();
 
         cardClone.CurrentReviewTime = currentReviewTime;

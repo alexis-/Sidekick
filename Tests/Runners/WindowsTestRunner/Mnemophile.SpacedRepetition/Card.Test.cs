@@ -4,20 +4,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Mnemophile.Const.SRS;
-using Mnemophile.Interfaces.SRS;
-using Mnemophile.SRS.Impl;
-using Mnemophile.SRS.Impl.Review;
-using Mnemophile.SRS.Models;
-using Mnemophile.SRS.Tests;
-using Mnemophile.SRS.Tests.Helpers;
+using Mnemophile.Const.SpacedRepetition;
+using Mnemophile.Interfaces.SpacedRepetition;
+using Mnemophile.SpacedRepetition.Impl;
+using Mnemophile.SpacedRepetition.Impl.Review;
+using Mnemophile.SpacedRepetition.Models;
+using Mnemophile.SpacedRepetition.Tests;
 using Mnemophile.Tests;
 using Mnemophile.Utils;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.Xunit2;
 using Xunit;
 
-namespace Mnemophile.SRS.Tests
+namespace Mnemophile.SpacedRepetition.Tests
 {
   public class CardTest
   {
@@ -34,15 +33,15 @@ namespace Mnemophile.SRS.Tests
         Config, cardCount);
 
       Dictionary<short, int> gradesCount = new Dictionary<short, int>();
-      gradesCount[(short)ConstSRS.CardPracticeState.Due] = 4;
-      gradesCount[(short)ConstSRS.CardPracticeState.Learning] = 3;
-      gradesCount[(short)ConstSRS.CardPracticeState.New] = 3;
+      gradesCount[(short)ConstSpacedRepetition.CardPracticeState.Due] = 4;
+      gradesCount[(short)ConstSpacedRepetition.CardPracticeState.Learning] = 3;
+      gradesCount[(short)ConstSpacedRepetition.CardPracticeState.New] = 3;
 
       for (int i = 0; i < cardCount; i++)
       {
         Card card = cardGenerator.Generate();
 
-        ConstSRS.GradingInfo[] grades = card.ComputeGrades();
+        ConstSpacedRepetition.GradingInfo[] grades = card.ComputeGrades();
 
         grades.Should()
               .NotBeNull()
@@ -101,7 +100,7 @@ namespace Mnemophile.SRS.Tests
     {
       Card card = CardGenerator.MakeCard(
         Config,
-        ConstSRS.CardPracticeState.New,
+        ConstSpacedRepetition.CardPracticeState.New,
         DateTime.Now.AddSeconds(60).ToUnixTimestamp(),
         2.5f, 1);
 
@@ -112,14 +111,14 @@ namespace Mnemophile.SRS.Tests
       card.IsNew().Should().Be(true);
 
       // Correct answer
-      card.Answer(ConstSRS.Grade.Good);
+      card.Answer(ConstSpacedRepetition.Grade.Good);
 
       card.IsLearning().Should().Be(true);
       card.GetCurrentLearningIndex().Should().Be(1);
       card.GetLearningStepsLeft().Should().Be(learningSteps - 1);
 
       // Fail
-      card.Answer(ConstSRS.Grade.Fail);
+      card.Answer(ConstSpacedRepetition.Grade.Fail);
 
       // Answer until graduation
       for (int i = 0; i < learningSteps; i++)
@@ -128,7 +127,7 @@ namespace Mnemophile.SRS.Tests
         card.GetCurrentLearningIndex().Should().Be(i);
         card.GetLearningStepsLeft().Should().Be(learningSteps - i);
 
-        card.Answer(ConstSRS.Grade.Good);
+        card.Answer(ConstSpacedRepetition.Grade.Good);
       }
 
       card.IsDue().Should().Be(true);
@@ -141,13 +140,13 @@ namespace Mnemophile.SRS.Tests
     {
       Card card = CardGenerator.MakeCard(
         Config,
-        ConstSRS.CardPracticeState.Due,
+        ConstSpacedRepetition.CardPracticeState.Due,
         DateTime.Now.AddSeconds(60).ToUnixTimestamp(),
         2.5f, 1);
       
       card.IsDue().Should().Be(true);
 
-      card.Answer(ConstSRS.Grade.Fail);
+      card.Answer(ConstSpacedRepetition.Grade.Fail);
       card.IsLearning().Should().Be(true);
       card.Lapses.Should().Be(1);
       card.IsLeech().Should().Be(false);
@@ -159,7 +158,7 @@ namespace Mnemophile.SRS.Tests
       // In time, 250% ease, 1d ivl
       Card card = CardGenerator.MakeCard(
         Config,
-        ConstSRS.CardPracticeState.Due,
+        ConstSpacedRepetition.CardPracticeState.Due,
         DateTime.Now.AddSeconds(60).ToUnixTimestamp(),
         2.5f, 1);
 
@@ -168,7 +167,7 @@ namespace Mnemophile.SRS.Tests
       // In time, 250% ease, 2d ivl
       card = CardGenerator.MakeCard(
         Config,
-        ConstSRS.CardPracticeState.Due,
+        ConstSpacedRepetition.CardPracticeState.Due,
         DateTime.Now.AddSeconds(60).ToUnixTimestamp(),
         2.5f, 2);
 
@@ -183,11 +182,11 @@ namespace Mnemophile.SRS.Tests
     {
       for (int i = 0; i < 20; i++)
       {
-        card.ComputeReviewInterval(ConstSRS.Grade.Hard)
+        card.ComputeReviewInterval(ConstSpacedRepetition.Grade.Hard)
             .Should().BeInRange(hardMin, hardMax);
-        card.ComputeReviewInterval(ConstSRS.Grade.Good)
+        card.ComputeReviewInterval(ConstSpacedRepetition.Grade.Good)
             .Should().BeInRange(goodMin, goodMax);
-        card.ComputeReviewInterval(ConstSRS.Grade.Easy)
+        card.ComputeReviewInterval(ConstSpacedRepetition.Grade.Easy)
             .Should().BeInRange(easyMin, easyMax);
       }
     }
