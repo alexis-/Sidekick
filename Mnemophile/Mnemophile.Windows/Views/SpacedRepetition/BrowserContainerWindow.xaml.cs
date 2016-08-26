@@ -20,52 +20,20 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using Catel.IoC;
-using Catel.MVVM;
-using Catel.Services;
-using Mnemophile.MVVM.ViewModels.SpacedRepetition;
+using Orchestra.Windows;
 
-namespace Mnemophile.Windows.ViewModels
+namespace Mnemophile.Windows.Views.SpacedRepetition
 {
-  public class MainViewModel : ViewModelBase
+  /// <summary>
+  /// Interaction logic for BrowserContainerWindow.xaml
+  /// </summary>
+  public partial class BrowserContainerWindow : MetroDataWindow
   {
     #region Constructors
 
-    //
-    // Constructors
-    public MainViewModel(ILanguageService languageService)
+    public BrowserContainerWindow()
     {
-      Title = languageService.GetString("App_Title");
-
-      // VM
-      CurrentModel =
-        TypeFactory.Default.CreateInstance<CollectionViewModel>();
-
-      // Commands
-      ShowSettings = new Command(OnShowSettingsExecute);
-    }
-
-    #endregion
-
-    #region Properties
-
-    //
-    // Properties
-
-    public ViewModelBase CurrentModel { get; set; }
-
-    #endregion
-
-    #region Commands
-
-    //
-    // Commands
-
-    public Command ShowSettings { get; set; }
-
-    private void OnShowSettingsExecute()
-    {
-      CurrentModel = new SettingsViewModel();
+      InitializeComponent();
     }
 
     #endregion

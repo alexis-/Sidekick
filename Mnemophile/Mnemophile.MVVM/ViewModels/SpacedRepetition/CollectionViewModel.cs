@@ -1,36 +1,56 @@
-﻿using System;
+﻿// 
+// The MIT License (MIT)
+// Copyright (c) 2016 Incogito
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the "Software"),
+// to deal in the Software without restriction, including without limitation
+// the rights to use, copy, modify, merge, publish, distribute, sublicense,
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
+
+using System;
 using System.Threading.Tasks;
-using Catel.Fody;
-using Catel.IoC;
 using Catel.MVVM;
 using Catel.Services;
-using Catel.Threading;
 using Mnemophile.Base.SpacedRepetition;
 using Mnemophile.Const.SpacedRepetition;
 using Mnemophile.Interfaces.DB;
 using Mnemophile.Interfaces.SpacedRepetition;
-using Mnemophile.MVVM.Properties;
 
 namespace Mnemophile.MVVM.ViewModels.SpacedRepetition
 {
+  [InterestedIn(typeof(CardAnswerButtonsViewModel))]
   public class CollectionViewModel : ViewModelBase
   {
-    #region Fields
+    #region  Fields
+
     //
     // Attributes
 
     private readonly IDatabase _database;
-    private readonly ISpacedRepetition _spacedRepetition;
     private readonly ILanguageService _languageService;
+    private readonly IMessageService _messageService;
     private readonly IPleaseWaitService _pleaseWaitService;
+    private readonly ISpacedRepetition _spacedRepetition;
 
     private IReviewCollection _reviewCollection;
 
     #endregion
 
-
-
     #region Constructors
+
     //
     // Constructors
 
@@ -38,19 +58,20 @@ namespace Mnemophile.MVVM.ViewModels.SpacedRepetition
       IDatabase database,
       ISpacedRepetition spacedRepetition,
       ILanguageService languageService,
-      IPleaseWaitService pleaseWaitService)
+      IPleaseWaitService pleaseWaitService,
+      IMessageService messageService)
     {
       _database = database;
       _spacedRepetition = spacedRepetition;
       _languageService = languageService;
       _pleaseWaitService = pleaseWaitService;
+      _messageService = messageService;
     }
 
     #endregion
 
-
-
     #region Properties
+
     //
     // Properties
     [Model]
@@ -61,9 +82,8 @@ namespace Mnemophile.MVVM.ViewModels.SpacedRepetition
 
     #endregion
 
-
-
     #region Methods
+
     //
     // Initialization
 
@@ -92,7 +112,6 @@ namespace Mnemophile.MVVM.ViewModels.SpacedRepetition
         DisplayCard();
     }
 
-    
 
     //
     // Core methods
@@ -107,6 +126,28 @@ namespace Mnemophile.MVVM.ViewModels.SpacedRepetition
 
       // Get grading options, and display buttons
       Gradings = card.ComputeGrades();
+    }
+
+    private async Task AnswerCard(ConstSpacedRepetition.Grade grade)
+    {
+      if (await _reviewCollection.Answer(grade))
+        DisplayCard();
+
+      else
+        await _messageService.ShowInformationAsync("All cards reviewed.");
+    }
+
+    protected override void OnViewModelCommandExecuted(
+      IViewModel viewModel,
+      ICatelCommand command,
+      object commandParameter)
+    {
+      if (commandParameter is ConstSpacedRepetition.Grade)
+#pragma warning disable 4014
+        AnswerCard((ConstSpacedRepetition.Grade)commandParameter);
+#pragma warning restore 4014
+
+      base.OnViewModelCommandExecuted(viewModel, command, commandParameter);
     }
 
     #endregion

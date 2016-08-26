@@ -162,6 +162,12 @@
     <Compile Include="Views\Settings\SettingsSpacedRepetitionView.xaml.cs">
       <DependentUpon>SettingsSpacedRepetitionView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\SpacedRepetition\BrowserView.xaml.cs">
+      <DependentUpon>BrowserView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SpacedRepetition\BrowserContainerWindow.xaml.cs">
+      <DependentUpon>BrowserContainerWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\SpacedRepetition\CardAnswerButtonsView.xaml.cs">
       <DependentUpon>CardAnswerButtonsView.xaml</DependentUpon>
     </Compile>
@@ -286,6 +292,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\SpacedRepetition\BrowserView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SpacedRepetition\BrowserContainerWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\SpacedRepetition\CardAnswerButtonsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -301,9 +315,7 @@
       <Generator>MSBuild:Compile</Generator>
     </ApplicationDefinition>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Controls\SpacedRepetition\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Resource Include="Resources\WindowsIcons-license.txt" />
   </ItemGroup>

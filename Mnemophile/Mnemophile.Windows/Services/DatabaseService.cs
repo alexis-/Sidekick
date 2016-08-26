@@ -1,14 +1,31 @@
+// 
+// The MIT License (MIT)
+// Copyright (c) 2016 Incogito
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the "Software"),
+// to deal in the Software without restriction, including without limitation
+// the rights to use, copy, modify, merge, publish, distribute, sublicense,
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
+
 using System;
 using System.Reflection;
 using Catel.Data;
-using Catel.IoC;
 using Catel.IO;
 using Mnemophile.SpacedRepetition.Impl;
 using Mnemophile.SpacedRepetition.Models;
-using Mnemophile.SpacedRepetition.Tests;
-using Mnemophile.Utils;
-using PCLStorage;
-using Ploeh.AutoFixture;
 using SQLite.Net;
 using SQLite.Net.Bridge;
 using SQLite.Net.Platform.Win32;
@@ -17,7 +34,13 @@ namespace Mnemophile.Windows.Services
 {
   public class DatabaseService : SQLiteConnectionWithLockBridge
   {
+    #region  Fields
+
     private const string DbFilename = "database.db";
+
+    #endregion
+
+    #region Constructors
 
     public DatabaseService()
       : base(
@@ -32,6 +55,10 @@ namespace Mnemophile.Windows.Services
       CreateTable<Card>();
       CreateTable<ReviewLog>();
     }
+
+    #endregion
+
+    #region Methods
 
     private static string CreateOrOpenDatabase()
     {
@@ -50,7 +77,7 @@ namespace Mnemophile.Windows.Services
       if (type == typeof(Card))
       {
         CollectionConfig config = null; // TODO: Load config
-          //ServiceLocator.Default.ResolveType<CollectionConfig>();
+        //ServiceLocator.Default.ResolveType<CollectionConfig>();
 
         return new Card(config ?? CollectionConfig.Default);
       }
@@ -58,8 +85,12 @@ namespace Mnemophile.Windows.Services
       return Activator.CreateInstance(type, args);
     }
 
+    #endregion
+
     private class CatelColumnProvider : ColumnInformationProviderBridge
     {
+      #region Methods
+
       public override bool IsIgnored(PropertyInfo p)
       {
         if (p.DeclaringType == typeof(ModelBase))
@@ -67,6 +98,8 @@ namespace Mnemophile.Windows.Services
 
         return base.IsIgnored(p);
       }
+
+      #endregion
     }
   }
 }

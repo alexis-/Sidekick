@@ -14,7 +14,7 @@
            Grid.Row="0" />
     
     <spacedRepetition:CardAnswerButtonsView
-      Gradings="{Binding Gradings, Mode=OneWay}"
+      DataContext="{Binding Gradings, Mode=OneWay}"
       Grid.Row="1" />
     
   </Grid>

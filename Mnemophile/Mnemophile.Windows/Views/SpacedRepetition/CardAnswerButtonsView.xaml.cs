@@ -23,6 +23,7 @@
 using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using Catel.IoC;
@@ -46,7 +47,6 @@ namespace Mnemophile.Windows.Views.SpacedRepetition
     // Fields
 
     private readonly ILanguageService _languageService;
-    private object _lastBuiltView = null;
 
     #endregion
 
@@ -66,39 +66,6 @@ namespace Mnemophile.Windows.Views.SpacedRepetition
 
     #endregion
 
-    #region Properties
-
-    //
-    // Properties
-
-    public ConstSpacedRepetition.GradingInfo[] Gradings
-    {
-      get
-      {
-        return (ConstSpacedRepetition.GradingInfo[])
-               GetValue(MapCenterProperty);
-      }
-      set { SetValue(MapCenterProperty, value); }
-    }
-
-    public static readonly DependencyProperty MapCenterProperty =
-      DependencyProperty.Register(
-        "Gradings",
-        typeof(ConstSpacedRepetition.GradingInfo[]),
-        typeof(CardAnswerButtonsView),
-        new PropertyMetadata(
-          null,
-          (sender, e) =>
-          {
-            CardAnswerButtonsView @this = sender as CardAnswerButtonsView;
-
-            if (@this?.Gradings != null)
-              @this.SetValue(DataContextProperty, @this.Gradings);
-          })
-        );
-
-    #endregion
-
     #region Methods
 
     //
@@ -110,16 +77,14 @@ namespace Mnemophile.Windows.Views.SpacedRepetition
     /// </summary>
     protected override void OnViewModelChanged()
     {
+      // Remove last buttons if necessary
+      Content = null;
+
       if (ViewModel == null)
         return;
 
-      // Remove last buttons if necessary
-      if (_lastBuiltView != null)
-        RemoveLogicalChild(_lastBuiltView);
-
       // Build and add new buttons
-      _lastBuiltView = BuildView();
-      AddChild(_lastBuiltView);
+      AddChild(BuildView());
     }
 
     /// <summary>
@@ -155,7 +120,9 @@ namespace Mnemophile.Windows.Views.SpacedRepetition
         UIElement element =
           (i % 2 == 0)
           // Button (Even)
-          ? (UIElement)BuildButton(viewModel.GradingInfos[i / 2])
+          ? (UIElement)BuildButton(
+            viewModel.GradingInfos[i / 2],
+            viewModel.AnswerCommand)
           // Separator (Odd)
           : BuildSeparator();
 
@@ -193,7 +160,9 @@ namespace Mnemophile.Windows.Views.SpacedRepetition
     /// </summary>
     /// <param name="gradingInfo">Grading info</param>
     /// <returns>Setup Button</returns>
-    private Button BuildButton(ConstSpacedRepetition.GradingInfo gradingInfo)
+    private Button BuildButton(
+      ConstSpacedRepetition.GradingInfo gradingInfo,
+      ICommand command)
     {
       ConstSpacedRepetition.Grade grade = gradingInfo.Grade;
 
@@ -206,7 +175,7 @@ namespace Mnemophile.Windows.Views.SpacedRepetition
       button.Content = _languageService.GetString(buttonText);
       button.BorderBrush = buttonColorBrush;
       button.Foreground = buttonColorBrush;
-      button.Command = null;
+      button.Command = command;
       button.CommandParameter = grade;
 
       return button;

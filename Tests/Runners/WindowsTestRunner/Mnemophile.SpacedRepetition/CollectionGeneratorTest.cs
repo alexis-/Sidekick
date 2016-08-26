@@ -7,7 +7,7 @@ using Mnemophile.SpacedRepetition.Tests;
 using Ploeh.AutoFixture;
 using Xunit;
 
-namespace WindowsTestRunner.Mnemophile.SpacedRepetition
+namespace Mnemophile.SpacedRepetition.Tests
 {
   public class CollectionGeneratorTest
   {

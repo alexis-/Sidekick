@@ -43,6 +43,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="SpacedRepetition\GradeEx.cs" />
+    <Compile Include="ViewModels\SpacedRepetition\BrowserViewModel.cs" />
     <Compile Include="ViewModels\SpacedRepetition\CardAnswerButtonsViewModel.cs" />
     <Compile Include="ViewModels\SpacedRepetition\CollectionViewModel.cs" />
   </ItemGroup>
