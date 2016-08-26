@@ -1,18 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using Catel.Data;
 using FluentAssertions;
-using Mnemophile.SpacedRepetition.Impl;
-using Mnemophile.SpacedRepetition.Models;
-using Mnemophile.Tests;
+using Sidekick.Tests;
+using Sidekick.SpacedRepetition.Impl;
+using Sidekick.SpacedRepetition.Models;
 using SQLite.Net;
 using SQLite.Net.Bridge;
 
-namespace Mnemophile.Tests
+namespace WindowsTestRunner.SQLite
 {
   public class CardTestDb : TestDb
   {

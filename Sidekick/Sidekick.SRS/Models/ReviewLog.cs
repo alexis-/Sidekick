@@ -1,0 +1,77 @@
+﻿using Sidekick.Shared.Attributes.DB;
+using Sidekick.Shared.Const.SpacedRepetition;
+
+namespace Sidekick.SpacedRepetition.Models
+{
+  [Table("ReviewsLogs")]
+  public class ReviewLog
+  {
+    public ReviewLog() { }
+
+    public ReviewLog(
+      int id, int cardId,
+      int lastDue, ConstSpacedRepetition.CardPracticeState lastState,
+      int lastInterval, float lastEFactor)
+    {
+      Id = id;
+      CardId = cardId;
+      LastDue = lastDue;
+      LastState = lastState;
+      LastInterval = lastInterval;
+      LastEFactor = lastEFactor;
+    }
+
+    public ReviewLog(
+      int id, int cardId,
+      ConstSpacedRepetition.Grade grade,
+      int lastDue, int newDue,
+      ConstSpacedRepetition.CardPracticeState lastState,
+      ConstSpacedRepetition.CardPracticeState newState,
+      int lastInterval, int newInterval,
+      float lastEFactor, float newEFactor,
+      int evalTime)
+    {
+      Id = id;
+      CardId = cardId;
+      Grade = grade;
+      LastDue = lastDue;
+      NewDue = newDue;
+      LastState = lastState;
+      NewState = newState;
+      LastInterval = lastInterval;
+      NewInterval = newInterval;
+      LastEFactor = lastEFactor;
+      NewEFactor = newEFactor;
+      EvalTime = evalTime;
+    }
+
+    public void CompleteReview(
+      ConstSpacedRepetition.Grade grade,
+      int newDue, ConstSpacedRepetition.CardPracticeState newState, int newInterval,
+      float newEFactor, int evalTime)
+    {
+      Grade = grade;
+      NewDue = newDue;
+      NewState = newState;
+      NewInterval = newInterval;
+      NewEFactor = newEFactor;
+      EvalTime = evalTime;
+    }
+
+    public int Id { get; set; }
+    public int CardId { get; set; }
+
+    public int Grade { get; set; }
+    
+    public int LastDue { get; set; }
+    public int NewDue { get; set; }
+    public short LastState { get; set; }
+    public short NewState { get; set; }
+    public int LastInterval { get; set; }
+    public int NewInterval { get; set; }
+    public float LastEFactor { get; set; }
+    public float NewEFactor { get; set; }
+
+    public int EvalTime { get; set; }
+  }
+}

@@ -1,11 +1,11 @@
 ﻿using System;
-using Mnemophile.Tests;
+using Sidekick.Tests;
 using PCLStorage;
 using SQLite.Net;
 using SQLite.Net.Bridge;
 using SQLite.Net.Interop;
 
-namespace Mnemophile.Tests
+namespace Sidekick.Tests
 {
   public class TestDb : SQLiteConnectionWithLockBridge
   {

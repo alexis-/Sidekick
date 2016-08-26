@@ -1,15 +1,10 @@
-using System;
 using System.Reflection;
 using Android.App;
-using Android.Content;
-using Android.Runtime;
-using Android.Views;
-using Android.Widget;
 using Android.OS;
-using Xunit.Sdk;
 using Xunit.Runners.UI;
+using Xunit.Sdk;
 
-namespace AndroidTestRunner
+namespace Sidekick.Android.TestRunner
 {
   [Activity(Label = "xUnit Android Runner", MainLauncher = true, Theme = "@android:style/Theme.Material.Light")]
   public class MainActivity : RunnerActivity

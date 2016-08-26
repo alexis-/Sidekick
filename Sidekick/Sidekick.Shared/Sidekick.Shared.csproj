@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <ProjectGuid>{2B6BB05D-C1E6-42FD-8837-7A20860BBC11}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Sidekick.Shared</RootNamespace>
+    <AssemblyName>Sidekick.Shared</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Profile111</TargetFrameworkProfile>
+    <MinimumVisualStudioVersion>10.0</MinimumVisualStudioVersion>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Attributes\DB\AutoIncrementAttribute.cs" />
+    <Compile Include="Attributes\DB\CollationAttribute.cs" />
+    <Compile Include="Attributes\DB\OrderAttribute.cs" />
+    <Compile Include="Attributes\DB\ColumnAttribute.cs" />
+    <Compile Include="Attributes\DB\DefaultAttribute.cs" />
+    <Compile Include="Attributes\DB\IgnoreAttribute.cs" />
+    <Compile Include="Attributes\DB\IndexedAttribute.cs" />
+    <Compile Include="Attributes\DB\MaxLengthAttribute.cs" />
+    <Compile Include="Attributes\DB\NotNullAttribute.cs" />
+    <Compile Include="Attributes\DB\PrimaryKeyAttribute.cs" />
+    <Compile Include="Attributes\DB\TableAttribute.cs" />
+    <Compile Include="Attributes\DB\UniqueAttribute.cs" />
+    <Compile Include="Attributes\JetBrains.cs" />
+    <Compile Include="Attributes\SRS\SRSSettingsDescriptorAttribute.cs" />
+    <Compile Include="Attributes\SRS\SRSSettingsItem.cs" />
+    <Compile Include="Attributes\SRS\SRSSettingsLocalizedItem.cs" />
+    <Compile Include="Interfaces\DB\IDatabase.cs" />
+    <Compile Include="Interfaces\DB\ITableMapping.cs" />
+    <Compile Include="Base\SRS\BaseCard.cs" />
+    <Compile Include="Interfaces\SpacedRepetition\ICard.cs" />
+    <Compile Include="Interfaces\SpacedRepetition\INote.cs" />
+    <Compile Include="Interfaces\SpacedRepetition\ISpacedRepetition.cs" />
+    <Compile Include="Interfaces\DB\ITableQuery.cs" />
+    <Compile Include="Interfaces\SpacedRepetition\IReviewCollection.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utils\Collections\AsyncDbListBase.cs" />
+    <Compile Include="Utils\DateTimeEx.cs" />
+    <Compile Include="Utils\Delay.cs" />
+    <Compile Include="Utils\LazyLoad\Attributes\LazyLoadedAttribute.cs" />
+    <Compile Include="Utils\LazyLoad\Attributes\LazyUnloadedAttribute.cs" />
+    <Compile Include="Utils\LazyLoad\DbLazyLoaded.cs" />
+    <Compile Include="Utils\TastConst.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Const\SpacedRepetition\Const.SRS.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="README.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Catel.Core, Version=4.5.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Catel.Core.4.5.2\lib\portable-net45+sl5+wp8+win8+wpa81+MonoAndroid16+MonoTouch40\Catel.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
+</Project>

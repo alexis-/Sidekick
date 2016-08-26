@@ -21,7 +21,7 @@ using _SQLitePlatformTest = SQLite.Net.Platform.Generic.SQLitePlatformGeneric;
 #endif
 
 // ReSharper disable once CheckNamespace
-namespace Mnemophile.Tests
+namespace Sidekick.Tests
 {
     public class SQLitePlatformTest : _SQLitePlatformTest
     {

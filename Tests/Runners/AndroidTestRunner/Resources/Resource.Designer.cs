@@ -9,9 +9,9 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: global::Android.Runtime.ResourceDesignerAttribute("AndroidTestRunner.Resource", IsApplication=true)]
+[assembly: global::Android.Runtime.ResourceDesignerAttribute("Sidekick.Android.TestRunner.Resource", IsApplication=true)]
 
-namespace AndroidTestRunner
+namespace Sidekick.Android.TestRunner
 {
 	
 	
@@ -26,9 +26,9 @@ namespace AndroidTestRunner
 		
 		public static void UpdateIdValues()
 		{
-			global::SQLite.Net.Platform.XamarinAndroid.Resource.String.ApplicationName = global::AndroidTestRunner.Resource.String.ApplicationName;
-			global::SQLite.Net.Platform.XamarinAndroid.Resource.String.Hello = global::AndroidTestRunner.Resource.String.Hello;
-			global::Xamarin.Forms.Platform.Android.Resource.Attribute.actionBarSize = global::AndroidTestRunner.Resource.Attribute.actionBarSize;
+			global::SQLite.Net.Platform.XamarinAndroid.Resource.String.ApplicationName = global::Sidekick.Android.TestRunner.Resource.String.ApplicationName;
+			global::SQLite.Net.Platform.XamarinAndroid.Resource.String.Hello = global::Sidekick.Android.TestRunner.Resource.String.Hello;
+			global::Xamarin.Forms.Platform.Android.Resource.Attribute.actionBarSize = global::Sidekick.Android.TestRunner.Resource.Attribute.actionBarSize;
 		}
 		
 		public partial class Animation

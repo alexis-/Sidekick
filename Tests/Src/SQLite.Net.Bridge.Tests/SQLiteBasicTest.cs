@@ -2,10 +2,10 @@
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Mnemophile.Attributes.DB;
-using Mnemophile.Tests;
+using Sidekick.Tests;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.Xunit2;
+using Sidekick.Shared.Attributes.DB;
 using Xunit;
 
 

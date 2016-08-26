@@ -1,0 +1,14 @@
+﻿<orchestra:MetroDataWindow x:Class="Sidekick.Windows.Views.SpacedRepetition.BrowserContainerWindow"
+                           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                           xmlns:orchestra="https://github.com/orcomp/orchestra"
+                           xmlns:spacedRepetition="clr-namespace:Sidekick.Windows.Views.SpacedRepetition"
+                           mc:Ignorable="d"
+                           Height="300"
+                           Width="300">
+
+  <spacedRepetition:BrowserView />
+  
+</orchestra:MetroDataWindow>

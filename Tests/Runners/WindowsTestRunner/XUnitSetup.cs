@@ -1,5 +1,5 @@
 ﻿using Xunit;
 
 //[assembly: TestFramework(
-//  "Mnemophile.Tests.XunitTestFrameworkWithSQLiteFixture",
+//  "Sidekick.Tests.XunitTestFrameworkWithSQLiteFixture",
 //  "WindowsTestRunner")]

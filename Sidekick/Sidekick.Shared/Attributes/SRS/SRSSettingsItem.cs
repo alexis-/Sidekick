@@ -1,0 +1,18 @@
+﻿using System;
+
+namespace Sidekick.Shared.Attributes.SRS
+{
+  [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
+  public class SpacedRepetitionSettingsItem : Attribute
+  {
+    public SpacedRepetitionSettingsItem(int categoryIndex)
+    {
+      CategoryIndex = categoryIndex;
+    }
+
+    public int CategoryIndex { get; }
+    public string CategoryLabel { get; set; }
+
+    // TODO: Description, constraints, ...
+  }
+}
