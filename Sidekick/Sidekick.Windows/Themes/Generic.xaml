@@ -4,13 +4,20 @@
   xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls">
 
   <ResourceDictionary.MergedDictionaries>
+    
+    <!--MahApps styles-->
     <ResourceDictionary Source="/Resources/Icons.xaml" />
 
     <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
     <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
     <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colors.xaml" />
 
+    <!--Existing controls styles-->
     <ResourceDictionary Source="pack://application:,,,/Sidekick.Windows;component/Styles/Controls.xaml" />
+
+    <!--Sidekick controls styles-->
+    <ResourceDictionary Source="pack://application:,,,/Sidekick.Windows;component/Controls/FlatIconizableToggleButton.xaml" />
+    <ResourceDictionary Source="pack://application:,,,/Sidekick.Windows;component/Controls/FlatIconizableButton.xaml" />
 
   </ResourceDictionary.MergedDictionaries>
 

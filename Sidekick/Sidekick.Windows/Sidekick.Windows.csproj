@@ -143,6 +143,11 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Constants.cs" />
+    <Compile Include="Controls\FlatIconizableButtonBase.cs" />
+    <Compile Include="Controls\FlatIconizableToggleButton.cs" />
+    <Compile Include="Controls\FlatIconizableButton.cs" />
+    <Compile Include="Controls\RadioController.cs" />
+    <Compile Include="Controls\SafeRaise.cs" />
     <Compile Include="Converters\TabSizeConverter.cs" />
     <Compile Include="ModuleInitializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -241,6 +246,14 @@
     <Resource Include="FodyWeavers.xml" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Controls\FlatIconizableToggleButton.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\FlatIconizableButton.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Resources\Icons.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -262,6 +275,7 @@
     <Page Include="Styles\Controls.TabControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+      <DependentUpon>Controls.xaml</DependentUpon>
     </Page>
     <Page Include="Styles\Controls.xaml">
       <SubType>Designer</SubType>

@@ -70,6 +70,24 @@ namespace Sidekick.Windows.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Collection.
+        /// </summary>
+        internal static string Main_Navigation_Collection_Button {
+            get {
+                return ResourceManager.GetString("Main_Navigation_Collection_Button", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Knowledge network.
+        /// </summary>
+        internal static string Main_Navigation_KnowledgeNetwork_Button {
+            get {
+                return ResourceManager.GetString("Main_Navigation_KnowledgeNetwork_Button", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Spaced Repetition.
         /// </summary>
         internal static string Settings_SpacedRepetition_Header {
@@ -111,6 +129,24 @@ namespace Sidekick.Windows.Properties {
         internal static string Settings_Theme_ThemeLbl {
             get {
                 return ResourceManager.GetString("Settings_Theme_ThemeLbl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add Query.
+        /// </summary>
+        internal static string SpacedRepetition_Browser_Queries_Add_Button {
+            get {
+                return ResourceManager.GetString("SpacedRepetition_Browser_Queries_Add_Button", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Saved Queries.
+        /// </summary>
+        internal static string SpacedRepetition_Browser_SavedQueries_Header {
+            get {
+                return ResourceManager.GetString("SpacedRepetition_Browser_SavedQueries_Header", resourceCulture);
             }
         }
     }

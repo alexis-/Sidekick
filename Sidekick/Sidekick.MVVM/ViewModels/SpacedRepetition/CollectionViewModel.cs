@@ -31,10 +31,15 @@ using Sidekick.Shared.Interfaces.SpacedRepetition;
 
 namespace Sidekick.MVVM.ViewModels.SpacedRepetition
 {
+  /// <summary>
+  /// Main Spaced Repetition view's model.
+  /// Should not be unloaded on view close.
+  /// </summary>
+  /// <seealso cref="Catel.MVVM.ViewModelBase" />
   [InterestedIn(typeof(CardAnswerButtonsViewModel))]
-  public class CollectionViewModel : ViewModelBase
+  public class CollectionViewModel : MainContentViewModelBase
   {
-    #region  Fields
+    #region Fields
 
     //
     // Attributes
@@ -100,8 +105,8 @@ namespace Sidekick.MVVM.ViewModels.SpacedRepetition
       if (!_reviewCollection.Initialized.IsCompleted
           && !_reviewCollection.Initialized.Wait(100))
       {
-        _pleaseWaitService.Push(_languageService.GetString(
-          "SpacedRepetition_Review_Loading"));
+        _pleaseWaitService.Push(
+          _languageService.GetString("SpacedRepetition_Review_Loading"));
 
         if (await _reviewCollection.Initialized)
           DisplayCard();
@@ -115,6 +120,28 @@ namespace Sidekick.MVVM.ViewModels.SpacedRepetition
 
     //
     // Core methods
+
+    public override Task<bool> OnContentChange()
+    {
+      // If a review session is ongoing, prompt user to validate interruption
+      return _reviewCollection?.Current != null
+               ? OnContentChangeAsync()
+               : base.OnContentChange();
+    }
+
+    private async Task<bool> OnContentChangeAsync()
+    {
+      MessageResult messageResult = await _messageService.ShowAsync(
+        _languageService.GetString(
+          "SpacedRepetition_Review_NavigateAwayPrompt"),
+        "", MessageButton.YesNoCancel, MessageImage.Question);
+
+      // Cancel review
+      if (messageResult == MessageResult.No)
+        _reviewCollection = null;
+
+      return messageResult != MessageResult.Cancel;
+    }
 
     private void DisplayCard()
     {
@@ -138,9 +165,7 @@ namespace Sidekick.MVVM.ViewModels.SpacedRepetition
     }
 
     protected override void OnViewModelCommandExecuted(
-      IViewModel viewModel,
-      ICatelCommand command,
-      object commandParameter)
+      IViewModel viewModel, ICatelCommand command, object commandParameter)
     {
       if (commandParameter is ConstSpacedRepetition.Grade)
 #pragma warning disable 4014

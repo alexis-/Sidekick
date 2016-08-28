@@ -140,4 +140,16 @@
   <data name="Settings_SpacedRepetition_Header" xml:space="preserve">
     <value>Spaced Repetition</value>
   </data>
+  <data name="SpacedRepetition_Browser_SavedQueries_Header" xml:space="preserve">
+    <value>Saved Queries</value>
+  </data>
+  <data name="SpacedRepetition_Browser_Queries_Add_Button" xml:space="preserve">
+    <value>Add Query</value>
+  </data>
+  <data name="Main_Navigation_Collection_Button" xml:space="preserve">
+    <value>Collection</value>
+  </data>
+  <data name="Main_Navigation_KnowledgeNetwork_Button" xml:space="preserve">
+    <value>Knowledge network</value>
+  </data>
 </root>

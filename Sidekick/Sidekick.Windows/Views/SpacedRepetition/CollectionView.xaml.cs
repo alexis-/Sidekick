@@ -10,6 +10,8 @@ namespace Sidekick.Windows.Views.SpacedRepetition
     public CollectionView()
     {
       InitializeComponent();
+
+      CloseViewModelOnUnloaded = false;
     }
   }
 }

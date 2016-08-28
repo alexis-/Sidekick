@@ -1,8 +1,9 @@
 ﻿using Catel.MVVM;
+using Sidekick.MVVM.ViewModels;
 
 namespace Sidekick.Windows.ViewModels
 {
-  public class SettingsViewModel : ViewModelBase
+  public class SettingsViewModel : MainContentViewModelBase
   {
     public SettingsViewModel()
     {

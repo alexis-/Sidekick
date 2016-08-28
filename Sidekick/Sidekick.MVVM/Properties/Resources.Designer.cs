@@ -69,5 +69,15 @@ namespace Sidekick.MVVM.Properties {
                 return ResourceManager.GetString("SpacedRepetition_Review_Loading", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A review session is ongoing. Would you like to retain current session progress ?
+        ///This option allows you to resume this session at a later opportunity..
+        /// </summary>
+        internal static string SpacedRepetition_Review_NavigateAwayPrompt {
+            get {
+                return ResourceManager.GetString("SpacedRepetition_Review_NavigateAwayPrompt", resourceCulture);
+            }
+        }
     }
 }

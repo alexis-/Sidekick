@@ -20,15 +20,25 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+using System.Threading.Tasks;
 using Catel.IoC;
 using Catel.MVVM;
 using Catel.Services;
+using Sidekick.MVVM.ViewModels;
 using Sidekick.MVVM.ViewModels.SpacedRepetition;
+using Sidekick.Shared.Utils;
 
 namespace Sidekick.Windows.ViewModels
 {
   public class MainViewModel : ViewModelBase
   {
+    #region Fields
+
+    private CollectionViewModel _collectionViewModel;
+    private SettingsViewModel _settingsViewModel;
+
+    #endregion
+
     #region Constructors
 
     //
@@ -37,11 +47,8 @@ namespace Sidekick.Windows.ViewModels
     {
       Title = languageService.GetString("App_Title");
 
-      // VM
-      CurrentModel =
-        TypeFactory.Default.CreateInstance<CollectionViewModel>();
-
       // Commands
+      ShowCollection = new Command(OnShowCollectionExecute);
       ShowSettings = new Command(OnShowSettingsExecute);
     }
 
@@ -52,11 +59,40 @@ namespace Sidekick.Windows.ViewModels
     //
     // Properties
 
-    public ViewModelBase CurrentModel { get; set; }
+    public MainContentViewModelBase CurrentModel { get; set; }
 
     #endregion
 
-    #region Commands
+    #region Methods
+
+    //
+    // Methods
+
+    private void SetCurrentModel(MainContentViewModelBase viewModel)
+    {
+      if (CurrentModel == viewModel)
+        return;
+
+      Task<bool> allowChangeTask =
+        CurrentModel != null
+          ? CurrentModel.OnContentChange()
+          : TaskConstants.BooleanTrue;
+
+      if (allowChangeTask.IsCompleted)
+        CurrentModel = viewModel;
+
+      else
+        SetCurrentModelAsync(viewModel, allowChangeTask);
+    }
+
+    private async void SetCurrentModelAsync(
+      MainContentViewModelBase viewModel,
+      Task<bool> allowChangeTask)
+    {
+      if (await allowChangeTask)
+        CurrentModel = viewModel;
+    }
+
 
     //
     // Commands
@@ -65,7 +101,19 @@ namespace Sidekick.Windows.ViewModels
 
     private void OnShowSettingsExecute()
     {
-      CurrentModel = new SettingsViewModel();
+      SetCurrentModel(
+        _settingsViewModel
+        ?? (_settingsViewModel = new SettingsViewModel()));
+    }
+
+    public Command ShowCollection { get; set; }
+
+    private void OnShowCollectionExecute()
+    {
+      SetCurrentModel(
+        _collectionViewModel
+        ?? (_collectionViewModel =
+            TypeFactory.Default.CreateInstance<CollectionViewModel>()));
     }
 
     #endregion

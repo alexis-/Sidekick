@@ -101,4 +101,8 @@
   <data name="SpacedRepetition_Review_Loading" xml:space="preserve">
     <value>Loading collection review</value>
   </data>
+  <data name="SpacedRepetition_Review_NavigateAwayPrompt" xml:space="preserve">
+    <value>A review session is ongoing. Would you like to retain current session progress ?
+This option allows you to resume this session at a later opportunity.</value>
+  </data>
 </root>
