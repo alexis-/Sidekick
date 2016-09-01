@@ -25,6 +25,8 @@ public static class ModuleInitializer
     serviceLocator.RegisterType<IApplicationInitializationService,
       ApplicationInitializationService>();
 
+    FilterBuilderModuleInitializer.Initialize();
+
     // ***** IMPORTANT NOTE *****
     //
     // Only register the shell services in the ModuleInitializer. All other

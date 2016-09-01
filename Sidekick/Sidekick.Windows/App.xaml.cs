@@ -45,6 +45,11 @@ namespace Sidekick.Windows
           "Resources"));
       languageService.RegisterLanguageSource(
         new LanguageResourceSource(
+          "Sidekick.Windows",
+          "Sidekick.Windows.Properties",
+          "FilterBuilderResources"));
+      languageService.RegisterLanguageSource(
+        new LanguageResourceSource(
           "Sidekick.MVVM",
           "Sidekick.MVVM.Properties",
           "Resources"));

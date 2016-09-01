@@ -61,6 +61,7 @@
     <Compile Include="Utils\Collections\AsyncDbListBase.cs" />
     <Compile Include="Utils\DateTimeEx.cs" />
     <Compile Include="Utils\Delay.cs" />
+    <Compile Include="Utils\DictionaryEx.cs" />
     <Compile Include="Utils\LazyLoad\Attributes\LazyLoadedAttribute.cs" />
     <Compile Include="Utils\LazyLoad\Attributes\LazyUnloadedAttribute.cs" />
     <Compile Include="Utils\LazyLoad\DbLazyLoaded.cs" />

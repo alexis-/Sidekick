@@ -9,6 +9,7 @@ using Catel.Threading;
 using Catel.Windows.Controls;
 using MethodTimer;
 using Orchestra.Services;
+using Sidekick.MVVM.ViewModels.SpacedRepetition;
 using Sidekick.Shared.Interfaces.DB;
 using Sidekick.Shared.Interfaces.SpacedRepetition;
 using Sidekick.SpacedRepetition.Impl;
@@ -63,6 +64,7 @@ namespace Sidekick.Windows.Services.Initialization
       InitializeViewPaths();
       InitializeViewModelPaths();
       InitializeSpacedRepetition();
+      //InitializeNavigationMenu();
 
       await TaskHelper.RunAndWaitAsync(new Func<Task>[] {
         InitializeDatabase,
@@ -88,6 +90,8 @@ namespace Sidekick.Windows.Services.Initialization
       _serviceLocator.RegisterType<
         IApplicationConfigurationService,
         ApplicationConfigurationService>();
+
+      _serviceLocator.RegisterTypeAndInstantiate<NavigationMenuService>();
 
       // TODO: Load SpacedRepetition implementation dynamically
       _serviceLocator.RegisterType<ISpacedRepetition>(
@@ -123,11 +127,13 @@ namespace Sidekick.Windows.Services.Initialization
         _serviceLocator.ResolveType<IViewLocator>();
       
       viewLocator.NamingConventions.Add(
-        "[UP].Views.DataTemplates.[VM]View");
+        "Sidekick.Windows.Views.DataTemplates.[VM]View");
       viewLocator.NamingConventions.Add(
-        "[UP].Views.Settings.[VM]View");
+        "Sidekick.Windows.Views.Settings.[VM]View");
       viewLocator.NamingConventions.Add(
-        "[UP].Views.SpacedRepetition.[VM]View");
+        "Sidekick.Windows.Views.SpacedRepetition.[VM]View");
+      viewLocator.NamingConventions.Add(
+        "Sidekick.WPF.Views.DataTemplates.[VM]View");
     }
 
     private void InitializeViewModelPaths()
@@ -161,6 +167,22 @@ namespace Sidekick.Windows.Services.Initialization
         spacedRepetition.GetLanguageSource());
     }
 
+#if false
+    private void InitializeNavigationMenu()
+    {
+      var languageService = _serviceLocator.ResolveType<ILanguageService>();
+      NavigationMenuService menuService =
+        _serviceLocator.ResolveType<NavigationMenuService>();
+
+      menuService.Add(
+        languageService.GetString("Main_Navigation_Collection_Button"),
+        "appbar_card", 0, typeof(CollectionViewModel));
+      menuService.Add(
+        languageService.GetString("Main_Navigation_KnowledgeNetwork_Button"),
+        "appbar_share", 10, null);
+    }
+#endif
+
 
     //
     // Async init
@@ -179,6 +201,6 @@ namespace Sidekick.Windows.Services.Initialization
       UserControl.DefaultSkipSearchingForInfoBarMessageControlValue = true;
     }
 
-    #endregion
+#endregion
   }
 }

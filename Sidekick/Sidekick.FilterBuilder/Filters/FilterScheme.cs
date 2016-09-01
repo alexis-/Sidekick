@@ -1,0 +1,256 @@
+// 
+// The MIT License (MIT)
+// Copyright (c) 2016 Incogito
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the "Software"),
+// to deal in the Software without restriction, including without limitation
+// the rights to use, copy, modify, merge, publish, distribute, sublicense,
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Catel;
+using Catel.Collections;
+using Catel.Fody;
+using Sidekick.FilterBuilder.Conditions;
+using Sidekick.FilterBuilder.Expressions;
+using Sidekick.FilterBuilder.Models.Interfaces;
+using Sidekick.FilterBuilder.Services.Interfaces;
+
+namespace Sidekick.FilterBuilder.Filters
+{
+  /// <summary>
+  ///   Filter conditions container.
+  ///   Provides functionalities to dynamically build a filtering
+  ///   Condition Tree.
+  /// </summary>
+  public class FilterScheme
+  {
+    #region Fields
+
+    private readonly IReflectionService _reflectionService;
+
+    #endregion
+
+    #region Constructors
+
+    public FilterScheme(IReflectionService reflectionService)
+    {
+      _reflectionService = reflectionService;
+
+      OptimizeTree = true;
+    }
+
+    #endregion
+
+    #region Properties
+
+    /// <summary>
+    ///   If true, will attempt to optimize tree when a
+    ///   <see cref="ConditionGroup"/> value is changed.
+    ///   Optimization also occurs when changing this value to true.
+    /// </summary>
+    /// <remarks>Defaults to true.</remarks>
+    public bool OptimizeTree { get; set; } // TODO : Optimize away
+
+    /// <summary>
+    ///   Target type properties metadata
+    /// </summary>
+    public IEnumerable<IPropertyMetadata> TargetProperties { get; set; }
+
+    /// <summary>
+    ///   Root <see cref="ConditionTreeItem"/> item, of type
+    ///   <see cref="ConditionGroup"/>.
+    /// </summary>
+    /// <remarks>Defaults to <see cref="ConditionGroupType.And"/></remarks>
+    public ConditionTreeItem RootItem => ItemCollection.FirstOrDefault();
+    public IEnumerable<ConditionTreeItem> ItemCollection { get; set; }
+
+    private Type TargetType { get; set; }
+
+    #endregion
+
+    #region Methods
+
+    /// <summary>
+    ///   Initializes scheme asynchronously.
+    /// </summary>
+    /// <returns>Waitable task.</returns>
+    public async Task InitializeAsync(Type targetType)
+    {
+      TargetType = targetType;
+      TargetProperties =
+        (await _reflectionService.GetInstancePropertiesAsync(TargetType))
+          .Properties;
+
+      List<ConditionTreeItem> itemCollection = new List<ConditionTreeItem>();
+      ItemCollection = itemCollection;
+
+      itemCollection.Add(CreateConditionGroup(ConditionGroupType.And));
+      RootItem.Items.Add(CreatePropertyExpression(RootItem));
+    }
+
+    /// <summary>
+    ///   Determines whether target item can be removed.
+    /// </summary>
+    /// <param name="targetItem">
+    ///   Target item underlying type should be
+    ///   <see cref="PropertyExpression"/>.
+    /// </param>
+    /// <returns>Whether target item can be removed.</returns>
+    public bool CanRemove([NotNull] ConditionTreeItem targetItem)
+    {
+      Argument.IsOfType("targetItem", targetItem, typeof(PropertyExpression));
+
+      // Not root condition
+      if (targetItem.Parent.Parent != null)
+        return
+          targetItem.Parent.Items.Count(i => i is PropertyExpression) > 1;
+
+      // If root condition, check there if there are other properties
+      return
+        targetItem.Parent.Items.Count(i => i is PropertyExpression) > 1
+        || targetItem.Parent.Items.Count > 2;
+
+    }
+
+    /// <summary>
+    ///   Adds a new item to target's parent <see cref="ConditionGroup"/> if
+    ///   type is the same as parent's <see cref="ConditionGroupType"/>, or 
+    ///   create a new <see cref="ConditionGroup"/> containing targetItem and
+    ///   a new, blank <see cref="PropertyExpression"/> item otherwise.
+    /// </summary>
+    /// <param name="targetItem">Target item</param>
+    /// <param name="type">Condition type (and/or)</param>
+    public void Add(
+      [NotNull] ConditionTreeItem targetItem,
+      ConditionGroupType type)
+    {
+      Argument.IsOfType("targetItem", targetItem, typeof(PropertyExpression));
+
+      ConditionGroup parent = targetItem.Parent as ConditionGroup;
+      PropertyExpression newItem = CreatePropertyExpression();
+
+      // Same condition type, add new item to parent
+      if (type == parent.Type)
+      {
+        int targetItemIndex = parent.Items.IndexOf(targetItem);
+
+        parent.Items.Insert(targetItemIndex + 1, newItem);
+        newItem.Parent = parent;
+      }
+
+      // Different condition type
+      else
+      {
+        // Special case, where parent is root, and contains a single item.
+        // Since condition type is different, and a condition cannot contain
+        // a single item of ConditionGroup type, switch root type to new type
+        if (parent.Parent == null && parent.Items.Count == 1)
+        {
+          parent.Type = type;
+
+          parent.Items.Add(newItem);
+          newItem.Parent = parent;
+        }
+
+        // New condition group
+        // Create new condition group, relate with targetItem and newItem, and
+        // deny initial parent targetItem's care in profit of that of new
+        // condition group
+        else
+        {
+          ConditionGroup newParent = CreateConditionGroup(
+            type, parent, targetItem, newItem);
+
+          parent.Items.Remove(targetItem);
+          parent.Items.Add(newParent);
+        }
+      }
+    }
+
+    /// <summary>
+    ///   Removes specified target item.
+    /// </summary>
+    /// <param name="targetItem">
+    ///   Target item underlying type should be
+    ///   <see cref="PropertyExpression"/>.
+    /// </param>
+    public void Remove([NotNull] ConditionTreeItem targetItem)
+    {
+      Argument.IsOfType("targetItem", targetItem, typeof(PropertyExpression));
+
+      if (!CanRemove(targetItem))
+        return;
+
+      ConditionGroup parent = targetItem.Parent as ConditionGroup;
+      parent.Items.Remove(targetItem);
+
+      // Last expression in condition group, if parent is not root condition,
+      // merge this condition with parent's parent
+      if (parent.Items.Count == 1 && parent.Parent != null)
+      {
+        int propExpIndex = parent.Parent.Items.Count(
+          cti => cti is PropertyExpression);
+
+        parent.Parent.Items.Insert(
+          propExpIndex, parent.Items.FirstOrDefault());
+        parent.Items.Clear();
+
+        parent.Parent.Items.Remove(parent);
+      }
+    }
+
+    private PropertyExpression CreatePropertyExpression(
+      ConditionTreeItem parent = null)
+    {
+      return new PropertyExpression
+      {
+        Parent = parent,
+        Property = TargetProperties.FirstOrDefault()
+      };
+    }
+
+    private ConditionGroup CreateConditionGroup(
+      ConditionGroupType type, ConditionTreeItem parent = null,
+      ConditionTreeItem child1 = null, ConditionTreeItem child2 = null)
+    {
+      var conditionGroup = new ConditionGroup
+      {
+        Parent = parent,
+        Type = type
+      };
+
+      if (child1 != null)
+      {
+        conditionGroup.Items.Add(child1);
+        child1.Parent = conditionGroup;
+      }
+
+      if (child2 != null)
+      {
+        conditionGroup.Items.Add(child2);
+        child2.Parent = conditionGroup;
+      }
+
+      return conditionGroup;
+    }
+
+    #endregion
+  }
+}

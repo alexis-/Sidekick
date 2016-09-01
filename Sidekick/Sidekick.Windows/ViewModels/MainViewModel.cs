@@ -20,13 +20,20 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Catel;
 using Catel.IoC;
 using Catel.MVVM;
 using Catel.Services;
 using Sidekick.MVVM.ViewModels;
 using Sidekick.MVVM.ViewModels.SpacedRepetition;
 using Sidekick.Shared.Utils;
+using Sidekick.SpacedRepetition.Models;
+using Sidekick.Windows.Models;
+using Sidekick.Windows.Services;
+using Sidekick.Windows.ViewModels.SpacedRepetition;
+using Sidekick.WPF.Controls;
 
 namespace Sidekick.Windows.ViewModels
 {
@@ -34,8 +41,10 @@ namespace Sidekick.Windows.ViewModels
   {
     #region Fields
 
-    private CollectionViewModel _collectionViewModel;
-    private SettingsViewModel _settingsViewModel;
+    private readonly NavigationMenuService _menuService;
+
+    private readonly Dictionary<string,
+      MainContentViewModelBase> _navViewModels;
 
     #endregion
 
@@ -43,13 +52,15 @@ namespace Sidekick.Windows.ViewModels
 
     //
     // Constructors
-    public MainViewModel(ILanguageService languageService)
+    public MainViewModel(
+      ILanguageService languageService, NavigationMenuService menuService)
     {
-      Title = languageService.GetString("App_Title");
+      _menuService = menuService;
+      _navViewModels =
+        new Dictionary<string, MainContentViewModelBase>();
 
-      // Commands
-      ShowCollection = new Command(OnShowCollectionExecute);
-      ShowSettings = new Command(OnShowSettingsExecute);
+      Title = languageService.GetString("App_Title");
+      MenuController = new RadioController();
     }
 
     #endregion
@@ -61,6 +72,8 @@ namespace Sidekick.Windows.ViewModels
 
     public MainContentViewModelBase CurrentModel { get; set; }
 
+    public RadioController MenuController { get; set; }
+
     #endregion
 
     #region Methods
@@ -68,21 +81,61 @@ namespace Sidekick.Windows.ViewModels
     //
     // Methods
 
-    private void SetCurrentModel(MainContentViewModelBase viewModel)
+    protected override Task InitializeAsync()
+    {
+      MenuController.OnSelectionChanged += MenuControllerOnOnSelectionChanged;
+      MenuControllerOnOnSelectionChanged(null, "NavigationCollectionButton");
+
+      return base.InitializeAsync();
+    }
+
+    private Task<bool> MenuControllerOnOnSelectionChanged(
+      object selectedItem, object parameter)
+    {
+      Argument.IsNotNull(() => parameter);
+      Argument.IsOfType("parameter", parameter, typeof(string));
+
+      string buttonName = (string)parameter;
+
+      switch (buttonName)
+      {
+        case "NavigationCollectionButton":
+          return SetCurrentModel(_navViewModels.GetOrAdd(
+            buttonName,
+            () => TypeFactory.Default.CreateInstance<CollectionViewModel>()));
+
+        case "NavigationKnowledgeNetworkButton":
+          //return SetCurrentModel(_navViewModels.GetOrAdd(
+          //  buttonName,
+          //  () => TypeFactory.Default.CreateInstanceWithParameters<BrowserQueryBuilderViewModel>(typeof(Card))));
+          return TaskConstants.BooleanFalse;
+
+        case "SettingsButton":
+          return SetCurrentModel(_navViewModels.GetOrAdd(
+            buttonName,
+            () => TypeFactory.Default.CreateInstance<SettingsViewModel>()));
+      }
+
+      return TaskConstants.BooleanFalse;
+    }
+
+    private Task<bool> SetCurrentModel(MainContentViewModelBase viewModel)
     {
       if (CurrentModel == viewModel)
-        return;
+        return TaskConstants.BooleanFalse;
 
       Task<bool> allowChangeTask =
         CurrentModel != null
           ? CurrentModel.OnContentChange()
           : TaskConstants.BooleanTrue;
 
-      if (allowChangeTask.IsCompleted)
+      if (allowChangeTask.IsCompleted && allowChangeTask.Result)
         CurrentModel = viewModel;
 
       else
         SetCurrentModelAsync(viewModel, allowChangeTask);
+
+      return allowChangeTask;
     }
 
     private async void SetCurrentModelAsync(
@@ -91,29 +144,6 @@ namespace Sidekick.Windows.ViewModels
     {
       if (await allowChangeTask)
         CurrentModel = viewModel;
-    }
-
-
-    //
-    // Commands
-
-    public Command ShowSettings { get; set; }
-
-    private void OnShowSettingsExecute()
-    {
-      SetCurrentModel(
-        _settingsViewModel
-        ?? (_settingsViewModel = new SettingsViewModel()));
-    }
-
-    public Command ShowCollection { get; set; }
-
-    private void OnShowCollectionExecute()
-    {
-      SetCurrentModel(
-        _collectionViewModel
-        ?? (_collectionViewModel =
-            TypeFactory.Default.CreateInstance<CollectionViewModel>()));
     }
 
     #endregion

@@ -44,7 +44,6 @@
     </Compile>
     <Compile Include="SpacedRepetition\GradeEx.cs" />
     <Compile Include="ViewModels\MainContentViewModelBase.cs" />
-    <Compile Include="ViewModels\SpacedRepetition\BrowserViewModel.cs" />
     <Compile Include="ViewModels\SpacedRepetition\CardAnswerButtonsViewModel.cs" />
     <Compile Include="ViewModels\SpacedRepetition\CollectionViewModel.cs" />
   </ItemGroup>
@@ -85,11 +84,16 @@
       <Project>{2b6bb05d-c1e6-42fd-8837-7a20860bbc11}</Project>
       <Name>Sidekick.Shared</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Sidekick.SRS\Sidekick.SpacedRepetition.csproj">
+      <Project>{863D9959-01CD-490B-BBC2-62966BCA89FC}</Project>
+      <Name>Sidekick.SpacedRepetition</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
