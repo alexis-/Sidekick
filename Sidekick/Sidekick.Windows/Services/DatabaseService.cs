@@ -24,8 +24,9 @@ using System;
 using System.Reflection;
 using Catel.Data;
 using Catel.IO;
-using Sidekick.SpacedRepetition.Impl;
+using Sidekick.SpacedRepetition;
 using Sidekick.SpacedRepetition.Models;
+using Sidekick.Windows.Models;
 using SQLite.Net;
 using SQLite.Net.Bridge;
 using SQLite.Net.Platform.Win32;
@@ -34,7 +35,7 @@ namespace Sidekick.Windows.Services
 {
   public class DatabaseService : SQLiteConnectionWithLockBridge
   {
-    #region  Fields
+    #region Fields
 
     private const string DbFilename = "database.db";
 
@@ -54,6 +55,7 @@ namespace Sidekick.Windows.Services
       CreateTable<Note>();
       CreateTable<Card>();
       CreateTable<ReviewLog>();
+      CreateTable<CollectionFilter>();
     }
 
     #endregion

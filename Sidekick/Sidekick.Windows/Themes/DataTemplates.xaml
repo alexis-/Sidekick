@@ -27,11 +27,17 @@
   <DataTemplate DataType="{x:Type mvvmSpacedRepetitionViewModels:CollectionViewModel}">
     <spacedRepetition:CollectionView />
   </DataTemplate>
+  <DataTemplate DataType="{x:Type winSpacedRepetitionViewModels:CollectionDataGridViewModel}">
+    <spacedRepetition:CollectionDataGridView />
+  </DataTemplate>
   <DataTemplate DataType="{x:Type winSpacedRepetitionViewModels:BrowserViewModel}">
     <spacedRepetition:BrowserView />
   </DataTemplate>
-  <DataTemplate DataType="{x:Type winSpacedRepetitionViewModels:BrowserQueryBuilderViewModel}">
-    <spacedRepetition:BrowserQueryBuilderView />
+  <DataTemplate DataType="{x:Type winSpacedRepetitionViewModels:BrowserQueryViewerViewModel}">
+    <spacedRepetition:BrowserQueryViewerView />
+  </DataTemplate>
+  <DataTemplate DataType="{x:Type viewModels:QueryBuilderViewModel}">
+    <views:QueryBuilderView />
   </DataTemplate>
   
 

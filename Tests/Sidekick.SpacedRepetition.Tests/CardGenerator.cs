@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using Ploeh.AutoFixture;
-using Sidekick.Shared.Const.SpacedRepetition;
+using Sidekick.Shared.Extensions;
 using Sidekick.Shared.Utils;
-using Sidekick.SpacedRepetition.Impl;
+using Sidekick.SpacedRepetition.Const;
 using Sidekick.SpacedRepetition.Models;
 
 namespace Sidekick.SpacedRepetition.Tests
@@ -70,21 +70,21 @@ namespace Sidekick.SpacedRepetition.Tests
       card.LastModified = Math.Max(card.Id, TimeGenerator.RandomTime());
 
       bool lapsing;
-      ConstSpacedRepetition.CardPracticeState state;
+      CardPracticeState state;
 
       ComputeNextCardType(out state, out lapsing);
 
       switch (state)
       {
-        case ConstSpacedRepetition.CardPracticeState.Due:
+        case CardPracticeState.Due:
           DueCount--;
           return SetupDueCard(card, lapsing);
 
-        case ConstSpacedRepetition.CardPracticeState.Learning:
+        case CardPracticeState.Learning:
           LearnCount--;
           return SetupLearningCard(card, lapsing);
 
-        case ConstSpacedRepetition.CardPracticeState.New:
+        case CardPracticeState.New:
           NewCount--;
           return SetupNewCard(card);
       }
@@ -93,7 +93,7 @@ namespace Sidekick.SpacedRepetition.Tests
     }
 
     private void ComputeNextCardType(
-      out ConstSpacedRepetition.CardPracticeState state,
+      out CardPracticeState state,
       out bool lapsing)
     {
       int total = DueCount + LearnCount + NewCount;
@@ -104,17 +104,17 @@ namespace Sidekick.SpacedRepetition.Tests
       int rnd = Random.Next(0, total);
 
       if (rnd < DueCount)
-        state = ConstSpacedRepetition.CardPracticeState.Due;
+        state = CardPracticeState.Due;
       
       else if (rnd < DueCount + LearnCount)
-        state = ConstSpacedRepetition.CardPracticeState.Learning;
+        state = CardPracticeState.Learning;
 
       else
-        state = ConstSpacedRepetition.CardPracticeState.New;
+        state = CardPracticeState.New;
 
       if (LapseCount > 0
-          && (state == ConstSpacedRepetition.CardPracticeState.Due
-              || state == ConstSpacedRepetition.CardPracticeState.Learning))
+          && (state == CardPracticeState.Due
+              || state == CardPracticeState.Learning))
       {
         int lapseTotal = DueCount + LearnCount;
 
@@ -129,7 +129,7 @@ namespace Sidekick.SpacedRepetition.Tests
 
     private Card SetupDueCard(Card card, bool lapsing)
     {
-      card.PracticeState = ConstSpacedRepetition.CardPracticeState.Due;
+      card.PracticeState = CardPracticeState.Due;
       card.Due = Math.Max(card.Id, TimeGenerator.RandomTime());
 
       if (lapsing)
@@ -142,7 +142,7 @@ namespace Sidekick.SpacedRepetition.Tests
 
     private Card SetupLearningCard(Card card, bool lapsing)
     {
-      card.PracticeState = ConstSpacedRepetition.CardPracticeState.Learning;
+      card.PracticeState = CardPracticeState.Learning;
       card.Due = TimeGenerator.RandomTime(card.LearningOrLapsingSteps.Last());
 
       if (lapsing)
@@ -156,7 +156,7 @@ namespace Sidekick.SpacedRepetition.Tests
 
     private Card SetupNewCard(Card card)
     {
-      card.PracticeState = ConstSpacedRepetition.CardPracticeState.New;
+      card.PracticeState = CardPracticeState.New;
       card.Due = 0; //Math.Max(card.Id, TimeGenerator.RandomTime());
 
       return card;
@@ -190,7 +190,7 @@ namespace Sidekick.SpacedRepetition.Tests
 
     public static Card MakeCard(
       CollectionConfig config,
-      ConstSpacedRepetition.CardPracticeState state,
+      CardPracticeState state,
       int due = -1,
       float eFactor = 2.5f,
       int interval = 1,

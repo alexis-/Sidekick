@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Ploeh.AutoFixture.Xunit2;
-using Sidekick.Shared.Attributes.DB;
+using Sidekick.Shared.Attributes.Database;
+using Sidekick.Shared.Attributes.LazyLoad;
 using Sidekick.Shared.Utils.LazyLoad;
-using Sidekick.Shared.Utils.LazyLoad.Attributes;
 using Xunit;
 
 namespace Sidekick.Tests

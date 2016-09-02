@@ -24,8 +24,9 @@ using System.Windows.Input;
 using Catel.MVVM;
 using Catel.Services;
 using Ploeh.AutoFixture;
-using Sidekick.Shared.Interfaces.DB;
-using Sidekick.SpacedRepetition.Impl;
+using Sidekick.Shared.Interfaces.Database;
+using Sidekick.SpacedRepetition;
+using Sidekick.SpacedRepetition.Models;
 using Sidekick.SpacedRepetition.Tests;
 
 namespace Sidekick.Windows.ViewModels.Settings
@@ -72,7 +73,7 @@ namespace Sidekick.Windows.ViewModels.Settings
       collectionGenerator.Generate();
 
       _messageService.ShowInformationAsync(
-        "Collection successfully Generated", "Collection Debugging");
+        "Collection successfully Generated", "PageableCollection Debugging");
     }
 
     #endregion

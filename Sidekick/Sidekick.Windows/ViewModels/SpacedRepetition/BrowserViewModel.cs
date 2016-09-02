@@ -20,19 +20,51 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+using Catel.IoC;
 using Catel.MVVM;
 using Sidekick.MVVM.ViewModels;
 using Sidekick.SpacedRepetition.Models;
 
 namespace Sidekick.Windows.ViewModels.SpacedRepetition
 {
+  [InterestedIn(typeof(BrowserQueryViewerViewModel))]
   public class BrowserViewModel : MainContentViewModelBase
   {
+    #region Fields
+
+    private readonly QueryBuilderViewModel _browserQueryBuilderViewModel;
+    private readonly BrowserQueryViewerViewModel _browserQueryViewerViewModel;
+
+    #endregion
+
+    #region Constructors
+
     public BrowserViewModel()
     {
-      //CurrentModel = new BrowserQueryBuilderViewModel(typeof(Card));
+      _browserQueryViewerViewModel =
+        TypeFactory.Default.CreateInstance<BrowserQueryViewerViewModel>();
+      _browserQueryBuilderViewModel = new QueryBuilderViewModel(typeof(Card));
+      // TODO: BrowserQueryBuilder w/ buttons, preview, ...
+
+      CurrentModel = _browserQueryViewerViewModel;
     }
 
+    #endregion
+
+    #region Properties
+
     public ViewModelBase CurrentModel { get; set; }
+
+    #endregion
+
+    protected override void OnViewModelCommandExecuted(
+      IViewModel viewModel, ICatelCommand command, object commandParameter)
+    {
+      switch (command.Tag as string)
+      {
+        case "AddQuery":
+          break;
+      }
+    }
   }
 }

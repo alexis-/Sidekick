@@ -5,7 +5,7 @@ using FluentAssertions;
 using Sidekick.Tests;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.Xunit2;
-using Sidekick.Shared.Attributes.DB;
+using Sidekick.Shared.Attributes.Database;
 using Xunit;
 
 

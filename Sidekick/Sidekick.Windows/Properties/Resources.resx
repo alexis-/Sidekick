@@ -152,4 +152,7 @@
   <data name="Main_Navigation_KnowledgeNetwork_Button" xml:space="preserve">
     <value>Knowledge network</value>
   </data>
+  <data name="Main_Navigation_Browse_Button" xml:space="preserve">
+    <value>Browse</value>
+  </data>
 </root>

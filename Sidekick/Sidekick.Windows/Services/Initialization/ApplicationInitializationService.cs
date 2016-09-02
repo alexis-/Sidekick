@@ -4,15 +4,16 @@ using Catel;
 using Catel.IoC;
 using Catel.Logging;
 using Catel.MVVM;
+using Catel.Runtime.Serialization.Json;
 using Catel.Services;
 using Catel.Threading;
 using Catel.Windows.Controls;
 using MethodTimer;
 using Orchestra.Services;
 using Sidekick.MVVM.ViewModels.SpacedRepetition;
-using Sidekick.Shared.Interfaces.DB;
-using Sidekick.Shared.Interfaces.SpacedRepetition;
-using Sidekick.SpacedRepetition.Impl;
+using Sidekick.Shared.Interfaces.Database;
+using Sidekick.SpacedRepetition;
+using Sidekick.SpacedRepetition.Interfaces;
 using Sidekick.Windows.Services.Interfaces;
 
 namespace Sidekick.Windows.Services.Initialization
@@ -59,17 +60,16 @@ namespace Sidekick.Windows.Services.Initialization
     {
       // Non-async first
       RegisterTypes();
+      PreloadTypes();
       InitializeConfiguration();
       InitializeCommands();
       InitializeViewPaths();
       InitializeViewModelPaths();
-      InitializeSpacedRepetition();
       //InitializeNavigationMenu();
 
-      await TaskHelper.RunAndWaitAsync(new Func<Task>[] {
+      await TaskHelper.RunAndWaitAsync(
         InitializeDatabase,
-        InitializePerformance
-      });
+        InitializePerformance);
     }
 
     public override async Task InitializeAfterCreatingShellAsync()
@@ -91,13 +91,15 @@ namespace Sidekick.Windows.Services.Initialization
         IApplicationConfigurationService,
         ApplicationConfigurationService>();
 
-      _serviceLocator.RegisterTypeAndInstantiate<NavigationMenuService>();
-
-      // TODO: Load SpacedRepetition implementation dynamically
-      _serviceLocator.RegisterType<ISpacedRepetition>(
-        slr => new SM2Impl());
+      //_serviceLocator.RegisterTypeAndInstantiate<NavigationMenuService>();
+      
       _serviceLocator.RegisterType<IDatabase>(
         slr => new DatabaseService());
+    }
+
+    private void PreloadTypes()
+    {
+      var tmp = ServiceLocator.Default.ResolveType<IJsonSerializer>();
     }
 
     private void InitializeConfiguration()
@@ -154,17 +156,6 @@ namespace Sidekick.Windows.Services.Initialization
         "Sidekick.MVVM.ViewModels.[VW]ViewModel");
       viewModelLocator.NamingConventions.Add(
         "Sidekick.MVVM.ViewModels.SpacedRepetition.[VW]ViewModel");
-    }
-
-    private void InitializeSpacedRepetition()
-    {
-      ISpacedRepetition spacedRepetition =
-        _serviceLocator.ResolveType<ISpacedRepetition>();
-      ILanguageService languageService =
-        _serviceLocator.ResolveType<ILanguageService>();
-
-      languageService.RegisterLanguageSource(
-        spacedRepetition.GetLanguageSource());
     }
 
 #if false

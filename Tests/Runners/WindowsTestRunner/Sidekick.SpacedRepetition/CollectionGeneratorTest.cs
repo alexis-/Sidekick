@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using Ploeh.AutoFixture;
-using Sidekick.SpacedRepetition.Impl;
+using Sidekick.SpacedRepetition;
 using Sidekick.SpacedRepetition.Models;
 using Sidekick.SpacedRepetition.Tests;
 using Xunit;

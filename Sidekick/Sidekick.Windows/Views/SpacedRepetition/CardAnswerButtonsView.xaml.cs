@@ -28,9 +28,10 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using Catel.IoC;
 using Catel.Services;
-using Sidekick.MVVM.SpacedRepetition;
+using Sidekick.MVVM.Extensions.SpacedRepetition;
 using Sidekick.MVVM.ViewModels.SpacedRepetition;
-using Sidekick.Shared.Const.SpacedRepetition;
+using Sidekick.SpacedRepetition;
+using Sidekick.SpacedRepetition.Const;
 using Sidekick.Windows.Utils;
 using UserControl = Catel.Windows.Controls.UserControl;
 
@@ -73,7 +74,7 @@ namespace Sidekick.Windows.Views.SpacedRepetition
 
     /// <summary>
     /// Called a new card is displayed, thus resulting in a new set of
-    /// <see cref="ConstSpacedRepetition.GradingInfo" /> and thus changing ViewModel.
+    /// <see cref="GradeInfo" /> and thus changing ViewModel.
     /// </summary>
     protected override void OnViewModelChanged()
     {
@@ -103,7 +104,7 @@ namespace Sidekick.Windows.Views.SpacedRepetition
 
       // {Grade Count} Buttons
       // {Grade Count} - 1 Buttons Separator
-      int elementCount = viewModel.GradingInfos.Length * 2 - 1;
+      int elementCount = viewModel.GradeInfos.Length * 2 - 1;
 
 
       //
@@ -121,7 +122,7 @@ namespace Sidekick.Windows.Views.SpacedRepetition
           (i % 2 == 0)
           // Button (Even)
           ? (UIElement)BuildButton(
-            viewModel.GradingInfos[i / 2],
+            viewModel.GradeInfos[i / 2],
             viewModel.AnswerCommand)
           // Separator (Odd)
           : BuildSeparator();
@@ -156,21 +157,21 @@ namespace Sidekick.Windows.Views.SpacedRepetition
     }
 
     /// <summary>
-    /// Builds a button based on GradingInfo's color and text
+    /// Builds a button based on GradeInfo's color and text
     /// </summary>
-    /// <param name="gradingInfo">Grading info</param>
+    /// <param name="gradeInfo">Grading info</param>
     /// <returns>Setup Button</returns>
     private Button BuildButton(
-      ConstSpacedRepetition.GradingInfo gradingInfo,
+      GradeInfo gradeInfo,
       ICommand command)
     {
-      ConstSpacedRepetition.Grade grade = gradingInfo.Grade;
+      Grade grade = gradeInfo.Grade;
 
       Button button = new Button();
 
       SolidColorBrush buttonColorBrush = new SolidColorBrush(
         grade.GetColor().ToWPFColor());
-      string buttonText = gradingInfo.LocalizableText;
+      string buttonText = gradeInfo.LocalizableText;
 
       button.Content = _languageService.GetString(buttonText);
       button.BorderBrush = buttonColorBrush;

@@ -8,59 +8,9 @@
                    mc:Ignorable="d"
                    d:DesignHeight="300" d:DesignWidth="300">
 
-  <Grid Name="BrowserRootGrid">
-    <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="260" />
-      <ColumnDefinition Width="1" />
-      <ColumnDefinition Width="*" />
-    </Grid.ColumnDefinitions>
-
-    <!--Queries-->
-    <Grid Name="QueriesRootGrid"
-          Grid.Column="0"
-          Visibility="Collapsed" >
-      <Grid.RowDefinitions>
-        <RowDefinition Height="Auto" />
-        <RowDefinition Height="Auto" />
-        <RowDefinition Height="*" />
-        <RowDefinition Height="Auto" />
-      </Grid.RowDefinitions>
-
-      <!--Header-->
-      <Label Content="{catel:LanguageBinding SpacedRepetition_Browser_SavedQueries_Header}"
-             Style="{DynamicResource DescriptionStyle}"
-             Grid.Row="0" />
-
-      <!--Query sorting-->
-      <Label Content="Sort by Name"
-             FontSize="10"
-             Grid.Row="1" />
-
-      <!--Query list-->
-      <ListView Name="QueriesListView"
-                ItemsSource="{Binding Queries, Mode=OneWay}"
-                SelectedItem="{Binding SelectedQuery}"
-                Grid.Row="2" />
-
-      <!--Query add button-->
-      <controls:FlatIconizableButton x:Name="QueriesAddButton"
-                                     Content="{catel:LanguageBinding SpacedRepetition_Browser_Queries_Add_Button}"
-                                     Height="50"
-                                     Width="50"
-                                     Icon="{DynamicResource appbar_add}"
-                                     IconSize="20 20"
-                                     Command="{Binding AddQuery}"
-                                     Grid.Row="3" />
-
-    </Grid>
-
-
-    <!--Browser content-->
-    <ContentControl Name="BrowserContentControl"
-                    Content="{Binding CurrentModel, Mode=OneWay}"
-                    Grid.Column="2" />
-
-  </Grid>
+  <!--Browser content-->
+  <ContentControl Name="BrowserContentControl"
+                  Content="{Binding CurrentModel, Mode=OneWay}" />
 
 </catel:UserControl>
 

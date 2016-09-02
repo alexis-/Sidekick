@@ -22,7 +22,8 @@
 
 using Catel.Fody;
 using Catel.MVVM;
-using Sidekick.Shared.Const.SpacedRepetition;
+using Sidekick.SpacedRepetition;
+using Sidekick.SpacedRepetition.Const;
 
 namespace Sidekick.MVVM.ViewModels.SpacedRepetition
 {
@@ -31,9 +32,9 @@ namespace Sidekick.MVVM.ViewModels.SpacedRepetition
     #region Constructors
 
     public CardAnswerButtonsViewModel(
-      [NotNull] ConstSpacedRepetition.GradingInfo[] gradingInfos)
+      [NotNull] GradeInfo[] gradeInfos)
     {
-      GradingInfos = gradingInfos;
+      GradeInfos = gradeInfos;
 
       AnswerCommand = new Command(OnAnswerCommandExecute);
     }
@@ -42,7 +43,7 @@ namespace Sidekick.MVVM.ViewModels.SpacedRepetition
 
     #region Properties
 
-    public ConstSpacedRepetition.GradingInfo[] GradingInfos { get; set; }
+    public GradeInfo[] GradeInfos { get; set; }
 
     public ICatelCommand AnswerCommand { get; set; }
 

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Sidekick.Shared.Interfaces.DB;
+using Sidekick.Shared.Interfaces.Database;
 using Sidekick.Shared.Utils.LazyLoad;
 
 namespace Sidekick.Shared.Utils.Collections

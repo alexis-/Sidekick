@@ -36,8 +36,8 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Catel.Core, Version=4.5.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\Catel.Core.4.5.2\lib\net45\Catel.Core.dll</HintPath>
+    <Reference Include="Catel.Core, Version=4.5.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Catel.Core.4.5.3\lib\net45\Catel.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="FluentAssertions, Version=4.13.0.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
@@ -76,10 +76,6 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
     <Reference Include="xunit.abstractions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\xunit.abstractions.2.0.0\lib\net35\xunit.abstractions.dll</HintPath>
@@ -99,8 +95,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\Src\Sidekick.SRS\ReviewCollectionImplTest.cs">
-      <Link>Sidekick.SRS\ReviewCollectionImplTest.cs</Link>
+    <Compile Include="..\..\Src\Sidekick.SpacedRepetition\ReviewCollectionImplTest.cs">
+      <Link>Sidekick.SpacedRepetition\ReviewCollectionImplTest.cs</Link>
     </Compile>
     <Compile Include="..\..\Src\Sidekick.Tests\DbLazyLoadedTest.cs">
       <Link>Sidekick\DbLazyLoadedTest.cs</Link>
@@ -161,7 +157,7 @@
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Sidekick\Sidekick.SRS\Sidekick.SpacedRepetition.csproj">
+    <ProjectReference Include="..\..\..\Sidekick\Sidekick.SpacedRepetition\Sidekick.SpacedRepetition.csproj">
       <Project>{863d9959-01cd-490b-bbc2-62966bca89fc}</Project>
       <Name>Sidekick.SpacedRepetition</Name>
     </ProjectReference>

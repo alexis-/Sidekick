@@ -28,6 +28,7 @@ using Catel.MVVM;
 using Catel.Services;
 using Sidekick.MVVM.ViewModels;
 using Sidekick.MVVM.ViewModels.SpacedRepetition;
+using Sidekick.Shared.Extensions;
 using Sidekick.Shared.Utils;
 using Sidekick.SpacedRepetition.Models;
 using Sidekick.Windows.Models;
@@ -84,7 +85,7 @@ namespace Sidekick.Windows.ViewModels
     protected override Task InitializeAsync()
     {
       MenuController.OnSelectionChanged += MenuControllerOnOnSelectionChanged;
-      MenuControllerOnOnSelectionChanged(null, "NavigationCollectionButton");
+      MenuControllerOnOnSelectionChanged(null, "NavigationBrowseButton");
 
       return base.InitializeAsync();
     }
@@ -104,10 +105,15 @@ namespace Sidekick.Windows.ViewModels
             buttonName,
             () => TypeFactory.Default.CreateInstance<CollectionViewModel>()));
 
+        case "NavigationBrowseButton":
+          return SetCurrentModel(_navViewModels.GetOrAdd(
+            buttonName,
+            () => TypeFactory.Default.CreateInstance<BrowserViewModel>()));
+
         case "NavigationKnowledgeNetworkButton":
           //return SetCurrentModel(_navViewModels.GetOrAdd(
           //  buttonName,
-          //  () => TypeFactory.Default.CreateInstanceWithParameters<BrowserQueryBuilderViewModel>(typeof(Card))));
+          //  () => TypeFactory.Default.CreateInstanceWithParameters<QueryBuilderViewModel>(typeof(Card))));
           return TaskConstants.BooleanFalse;
 
         case "SettingsButton":

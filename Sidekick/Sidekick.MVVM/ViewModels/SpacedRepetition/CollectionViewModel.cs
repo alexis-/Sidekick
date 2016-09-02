@@ -24,10 +24,11 @@ using System;
 using System.Threading.Tasks;
 using Catel.MVVM;
 using Catel.Services;
-using Sidekick.Shared.Base.SRS;
-using Sidekick.Shared.Const.SpacedRepetition;
-using Sidekick.Shared.Interfaces.DB;
-using Sidekick.Shared.Interfaces.SpacedRepetition;
+using Sidekick.Shared.Interfaces.Database;
+using Sidekick.SpacedRepetition;
+using Sidekick.SpacedRepetition.Const;
+using Sidekick.SpacedRepetition.Interfaces;
+using Sidekick.SpacedRepetition.Models;
 
 namespace Sidekick.MVVM.ViewModels.SpacedRepetition
 {
@@ -81,9 +82,9 @@ namespace Sidekick.MVVM.ViewModels.SpacedRepetition
     // Properties
     [Model]
     //[Expose("Data")]
-    public BaseCard Card { get; set; }
+    public Card Card { get; set; }
 
-    public ConstSpacedRepetition.GradingInfo[] Gradings { get; set; }
+    public GradeInfo[] GradeInfos { get; set; }
 
     #endregion
 
@@ -146,16 +147,16 @@ namespace Sidekick.MVVM.ViewModels.SpacedRepetition
     private void DisplayCard()
     {
       // Get current card
-      ICard card = _reviewCollection.Current;
+      Card card = _reviewCollection.Current;
 
       if (card == null)
         throw new InvalidOperationException("Current card is NULL.");
 
       // Get grading options, and display buttons
-      Gradings = card.ComputeGrades();
+      GradeInfos = card.ComputeGrades();
     }
 
-    private async Task AnswerCard(ConstSpacedRepetition.Grade grade)
+    private async Task AnswerCard(Grade grade)
     {
       if (await _reviewCollection.Answer(grade))
         DisplayCard();
@@ -167,9 +168,9 @@ namespace Sidekick.MVVM.ViewModels.SpacedRepetition
     protected override void OnViewModelCommandExecuted(
       IViewModel viewModel, ICatelCommand command, object commandParameter)
     {
-      if (commandParameter is ConstSpacedRepetition.Grade)
+      if (commandParameter is Grade)
 #pragma warning disable 4014
-        AnswerCard((ConstSpacedRepetition.Grade)commandParameter);
+        AnswerCard((Grade)commandParameter);
 #pragma warning restore 4014
 
       base.OnViewModelCommandExecuted(viewModel, command, commandParameter);

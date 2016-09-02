@@ -1,25 +1,54 @@
-﻿using System;
+﻿// 
+// The MIT License (MIT)
+// Copyright (c) 2016 Incogito
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the "Software"),
+// to deal in the Software without restriction, including without limitation
+// the rights to use, copy, modify, merge, publish, distribute, sublicense,
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using JetBrains.Annotations;
-using Sidekick.Shared.Interfaces.DB;
+using Sidekick.Shared.Interfaces.Database;
 using SQLite.Net.Interop;
 
 namespace SQLite.Net.Bridge
 {
   // ReSharper disable once InconsistentNaming
+  /// <summary>
+  ///   Database instance.
+  ///   Bridges database-generic interface with SQLite.NET implementation.
+  /// </summary>
+  /// <seealso cref="SQLite.Net.SQLiteConnectionWithLock" />
+  /// <seealso cref="Sidekick.Shared.Interfaces.Database.IDatabase" />
   public class SQLiteConnectionWithLockBridge
     : SQLiteConnectionWithLock, IDatabase
   {
+    #region Constructors
+
     public SQLiteConnectionWithLockBridge(
-      [NotNull] ISQLitePlatform sqlitePlatform,
-      [NotNull] string databasePath,
+      ISQLitePlatform sqlitePlatform,
+      string databasePath,
       IColumnInformationProvider columnInformationProvider = null,
       bool storeDateTimeAsTicks = true,
-      [CanBeNull] IBlobSerializer serializer = null,
-      [CanBeNull] IDictionary<string, TableMapping> tableMappings = null,
-      [CanBeNull] IDictionary<Type, string> extraTypeMappings = null,
-      [CanBeNull] IContractResolver resolver = null)
+      IBlobSerializer serializer = null,
+      IDictionary<string, TableMapping> tableMappings = null,
+      IDictionary<Type, string> extraTypeMappings = null,
+      IContractResolver resolver = null)
       : base(
         sqlitePlatform,
         new SQLiteConnectionString(
@@ -32,13 +61,13 @@ namespace SQLite.Net.Bridge
     }
 
     public SQLiteConnectionWithLockBridge(
-      [NotNull] ISQLitePlatform sqlitePlatform,
+      ISQLitePlatform sqlitePlatform,
       string databasePath, SQLiteOpenFlags openFlags,
       IColumnInformationProvider columnInformationProvider = null,
       bool storeDateTimeAsTicks = true,
-      [CanBeNull] IBlobSerializer serializer = null,
-      [CanBeNull] IDictionary<string, TableMapping> tableMappings = null,
-      [CanBeNull] IDictionary<Type, string> extraTypeMappings = null,
+      IBlobSerializer serializer = null,
+      IDictionary<string, TableMapping> tableMappings = null,
+      IDictionary<Type, string> extraTypeMappings = null,
       IContractResolver resolver = null)
       : base(
         sqlitePlatform,
@@ -51,6 +80,10 @@ namespace SQLite.Net.Bridge
       ColumnInformationProvider =
         columnInformationProvider ?? new ColumnInformationProviderBridge();
     }
+
+    #endregion
+
+    #region Methods
 
     public void CommitTransaction()
     {
@@ -73,7 +106,8 @@ namespace SQLite.Net.Bridge
       return Insert(obj, typeof(T));
     }
 
-    public int InsertAll<T>(IEnumerable<T> objects, bool runInTransaction = true)
+    public int InsertAll<T>(IEnumerable<T> objects,
+      bool runInTransaction = true)
     {
       return InsertAll(objects, typeof(T), runInTransaction);
     }
@@ -118,19 +152,22 @@ namespace SQLite.Net.Bridge
       return Table<T>();
     }
 
-    public new TableQueryBridge<T> Table<T>() where T : class
-    {
-      return new TableQueryBridge<T>(Platform, this);
-    }
-
     public int Update<T>(T obj)
     {
       return Update(obj, typeof(T));
     }
 
-    public int UpdateAll<T>(IEnumerable<T> objects, bool runInTransaction = true)
+    public int UpdateAll<T>(IEnumerable<T> objects,
+      bool runInTransaction = true)
     {
       return UpdateAll((IEnumerable)objects, runInTransaction);
     }
+
+    public new TableQueryBridge<T> Table<T>() where T : class
+    {
+      return new TableQueryBridge<T>(Platform, this);
+    }
+
+    #endregion
   }
 }

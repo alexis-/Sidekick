@@ -21,7 +21,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sidekick.Windows", "Sidekic
 		{2B6BB05D-C1E6-42FD-8837-7A20860BBC11} = {2B6BB05D-C1E6-42FD-8837-7A20860BBC11}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sidekick.SpacedRepetition", "Sidekick\Sidekick.SRS\Sidekick.SpacedRepetition.csproj", "{863D9959-01CD-490B-BBC2-62966BCA89FC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sidekick.SpacedRepetition", "Sidekick\Sidekick.SpacedRepetition\Sidekick.SpacedRepetition.csproj", "{863D9959-01CD-490B-BBC2-62966BCA89FC}"
 	ProjectSection(ProjectDependencies) = postProject
 		{2B6BB05D-C1E6-42FD-8837-7A20860BBC11} = {2B6BB05D-C1E6-42FD-8837-7A20860BBC11}
 	EndProjectSection

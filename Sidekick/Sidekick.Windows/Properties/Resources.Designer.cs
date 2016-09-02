@@ -70,6 +70,15 @@ namespace Sidekick.Windows.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Browse.
+        /// </summary>
+        internal static string Main_Navigation_Browse_Button {
+            get {
+                return ResourceManager.GetString("Main_Navigation_Browse_Button", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Collection.
         /// </summary>
         internal static string Main_Navigation_Collection_Button {

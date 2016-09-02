@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Ploeh.AutoFixture;
-using Sidekick.Shared.Interfaces.DB;
-using Sidekick.SpacedRepetition.Impl;
+using Sidekick.Shared.Interfaces.Database;
 using Sidekick.SpacedRepetition.Models;
 
 namespace Sidekick.SpacedRepetition.Tests

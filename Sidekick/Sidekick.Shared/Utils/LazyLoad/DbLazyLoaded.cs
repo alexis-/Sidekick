@@ -1,19 +1,47 @@
-﻿using System;
+﻿// 
+// The MIT License (MIT)
+// Copyright (c) 2016 Incogito
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the "Software"),
+// to deal in the Software without restriction, including without limitation
+// the rights to use, copy, modify, merge, publish, distribute, sublicense,
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Sidekick.Shared.Interfaces.DB;
-using Sidekick.Shared.Utils.LazyLoad.Attributes;
+using Sidekick.Shared.Attributes.LazyLoad;
+using Sidekick.Shared.Interfaces.Database;
 
 namespace Sidekick.Shared.Utils.LazyLoad
 {
   public class DbLazyLoad<T> where T : class
   {
-    protected string[] PermanentProperties;
-    protected string[] LazyLoadedProperties;
-    protected string[] LazyUnloadedProperties;
-    protected Dictionary<string, PropertyInfo> PropertyInfoMap;
-    protected string PrimaryKeyPropName;
+    #region Fields
+
+    protected readonly string[] LazyLoadedProperties;
+    protected readonly string[] LazyUnloadedProperties;
+    protected readonly string[] PermanentProperties;
+    protected readonly string PrimaryKeyPropName;
+    protected readonly Dictionary<string, PropertyInfo> PropertyInfoMap;
+
+    #endregion
+
+    #region Constructors
 
     protected DbLazyLoad(IDatabase db)
     {
@@ -62,7 +90,16 @@ namespace Sidekick.Shared.Utils.LazyLoad
       LazyUnloadedProperties = lazyUnloadedPropertiesList.ToArray();
     }
 
+    #endregion
+
+    #region Properties
+
     protected static DbLazyLoad<T> Instance { get; set; }
+
+    #endregion
+
+    #region Methods
+
     public static DbLazyLoad<T> GetOrCreateInstance(IDatabase db)
     {
       return Instance ?? (Instance = new DbLazyLoad<T>(db));
@@ -120,21 +157,28 @@ namespace Sidekick.Shared.Utils.LazyLoad
         propInfo.SetValue(instance, null);
       }
     }
+
+    #endregion
   }
 
   public static class DbLazyLoadExtensions
   {
+    #region Methods
+
     public static ITableQuery<T> ShallowLoad<T>(
       this ITableQuery<T> query, DbLazyLoad<T> lazyLoad)
       where T : class
     {
       return lazyLoad.ShallowLoad(query);
     }
+
     public static ITableQuery<T> FurtherLoad<T>(
       this ITableQuery<T> query, DbLazyLoad<T> lazyLoad)
       where T : class
     {
       return lazyLoad.FurtherLoad(query);
     }
+
+    #endregion
   }
 }

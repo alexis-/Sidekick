@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Sidekick.Shared.Extensions;
 using Sidekick.Shared.Utils;
 
 namespace Sidekick.SpacedRepetition.Tests

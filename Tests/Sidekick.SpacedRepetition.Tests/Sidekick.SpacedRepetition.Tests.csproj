@@ -35,7 +35,7 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .NET Framework is automatically included -->
-    <ProjectReference Include="..\..\Sidekick\Sidekick.SRS\Sidekick.SpacedRepetition.csproj">
+    <ProjectReference Include="..\..\Sidekick\Sidekick.SpacedRepetition\Sidekick.SpacedRepetition.csproj">
       <Project>{863d9959-01cd-490b-bbc2-62966bca89fc}</Project>
       <Name>Sidekick.SpacedRepetition</Name>
     </ProjectReference>
@@ -51,8 +51,8 @@
     <Compile Include="TimeGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Catel.Core, Version=4.5.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Catel.Core.4.5.2\lib\portable-net45+sl5+wp8+win8+wpa81+MonoAndroid16+MonoTouch40\Catel.Core.dll</HintPath>
+    <Reference Include="Catel.Core, Version=4.5.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Catel.Core.4.5.3\lib\portable-net45+sl5+wp8+win8+wpa81+MonoAndroid16+MonoTouch40\Catel.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Ploeh.AutoFixture">

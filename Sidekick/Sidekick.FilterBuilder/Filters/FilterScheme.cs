@@ -22,15 +22,19 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Catel;
-using Catel.Collections;
-using Catel.Fody;
+using Catel.Runtime.Serialization.Json;
+using MethodTimer;
 using Sidekick.FilterBuilder.Conditions;
 using Sidekick.FilterBuilder.Expressions;
 using Sidekick.FilterBuilder.Models.Interfaces;
 using Sidekick.FilterBuilder.Services.Interfaces;
+using Sidekick.Shared.Attributes.Database;
 
 namespace Sidekick.FilterBuilder.Filters
 {
@@ -43,15 +47,21 @@ namespace Sidekick.FilterBuilder.Filters
   {
     #region Fields
 
-    private readonly IReflectionService _reflectionService;
+    protected readonly IReflectionService _reflectionService;
+    protected readonly IJsonSerializer _serializer;
 
     #endregion
 
     #region Constructors
 
-    public FilterScheme(IReflectionService reflectionService)
+    public FilterScheme(
+      IReflectionService reflectionService, IJsonSerializer serializer)
     {
+      Argument.IsNotNull(() => reflectionService);
+      Argument.IsNotNull(() => serializer);
+
       _reflectionService = reflectionService;
+      _serializer = serializer;
 
       OptimizeTree = true;
     }
@@ -60,17 +70,43 @@ namespace Sidekick.FilterBuilder.Filters
 
     #region Properties
 
+    //
+    // DB Properties
+    [PrimaryKey, AutoIncrement]
+    public int Id { get; set; }
+
+    public string Data
+    {
+      get { return Serialize(RootItem); }
+      set { Deserialize(value); }
+    }
+
+    public string Title { get; set; }
+
+    public virtual string TargetTypeName
+    {
+      get { return TargetType.AssemblyQualifiedName; }
+      set { TargetType = Type.GetType(value); }
+    }
+
+
+    //
+    // Other properties
+
+
     /// <summary>
     ///   If true, will attempt to optimize tree when a
     ///   <see cref="ConditionGroup"/> value is changed.
     ///   Optimization also occurs when changing this value to true.
     /// </summary>
     /// <remarks>Defaults to true.</remarks>
+    [Ignore]
     public bool OptimizeTree { get; set; } // TODO : Optimize away
 
     /// <summary>
     ///   Target type properties metadata
     /// </summary>
+    [Ignore]
     public IEnumerable<IPropertyMetadata> TargetProperties { get; set; }
 
     /// <summary>
@@ -78,10 +114,14 @@ namespace Sidekick.FilterBuilder.Filters
     ///   <see cref="ConditionGroup"/>.
     /// </summary>
     /// <remarks>Defaults to <see cref="ConditionGroupType.And"/></remarks>
+    [Ignore]
     public ConditionTreeItem RootItem => ItemCollection.FirstOrDefault();
-    public IEnumerable<ConditionTreeItem> ItemCollection { get; set; }
 
-    private Type TargetType { get; set; }
+    [Ignore]
+    public ObservableCollection<ConditionTreeItem> ItemCollection { get; set; }
+
+    [Ignore]
+    protected Type TargetType { get; set; }
 
     #endregion
 
@@ -94,15 +134,32 @@ namespace Sidekick.FilterBuilder.Filters
     public async Task InitializeAsync(Type targetType)
     {
       TargetType = targetType;
+
       TargetProperties =
         (await _reflectionService.GetInstancePropertiesAsync(TargetType))
           .Properties;
 
-      List<ConditionTreeItem> itemCollection = new List<ConditionTreeItem>();
+      ObservableCollection<ConditionTreeItem> itemCollection =
+        new ObservableCollection<ConditionTreeItem>();
       ItemCollection = itemCollection;
 
       itemCollection.Add(CreateConditionGroup(ConditionGroupType.And));
       RootItem.Items.Add(CreatePropertyExpression(RootItem));
+    }
+
+    [Time]
+    public Expression<Func<T, bool>> ToLinqExpression<T>()
+    {
+      if (typeof(T) != TargetType)
+        throw new InvalidOperationException("Invalid type");
+
+      // TODO: Cache expression
+
+      ParameterExpression parameterExpr = Expression.Parameter(
+        typeof(T), "obj");
+
+      return Expression.Lambda<Func<T, bool>>(
+        RootItem.ToLinqExpression(parameterExpr), parameterExpr);
     }
 
     /// <summary>
@@ -113,7 +170,7 @@ namespace Sidekick.FilterBuilder.Filters
     ///   <see cref="PropertyExpression"/>.
     /// </param>
     /// <returns>Whether target item can be removed.</returns>
-    public bool CanRemove([NotNull] ConditionTreeItem targetItem)
+    public bool CanRemove([Catel.Fody.NotNull] ConditionTreeItem targetItem)
     {
       Argument.IsOfType("targetItem", targetItem, typeof(PropertyExpression));
 
@@ -126,7 +183,6 @@ namespace Sidekick.FilterBuilder.Filters
       return
         targetItem.Parent.Items.Count(i => i is PropertyExpression) > 1
         || targetItem.Parent.Items.Count > 2;
-
     }
 
     /// <summary>
@@ -138,7 +194,7 @@ namespace Sidekick.FilterBuilder.Filters
     /// <param name="targetItem">Target item</param>
     /// <param name="type">Condition type (and/or)</param>
     public void Add(
-      [NotNull] ConditionTreeItem targetItem,
+      [Catel.Fody.NotNull] ConditionTreeItem targetItem,
       ConditionGroupType type)
     {
       Argument.IsOfType("targetItem", targetItem, typeof(PropertyExpression));
@@ -191,7 +247,7 @@ namespace Sidekick.FilterBuilder.Filters
     ///   Target item underlying type should be
     ///   <see cref="PropertyExpression"/>.
     /// </param>
-    public void Remove([NotNull] ConditionTreeItem targetItem)
+    public void Remove([Catel.Fody.NotNull] ConditionTreeItem targetItem)
     {
       Argument.IsOfType("targetItem", targetItem, typeof(PropertyExpression));
 
@@ -249,6 +305,34 @@ namespace Sidekick.FilterBuilder.Filters
       }
 
       return conditionGroup;
+    }
+
+    private string Serialize(ConditionTreeItem model)
+    {
+      using (var stream = new MemoryStream())
+      {
+        _serializer.Serialize(model, stream, null);
+        stream.Position = 0L;
+
+        using (var streamReader = new StreamReader(stream))
+        {
+          return streamReader.ReadToEnd();
+        }
+      }
+    }
+
+    private ConditionTreeItem Deserialize(string json)
+    {
+      using (var stream = new MemoryStream())
+      {
+        using (var streamWriter = new StreamWriter(stream))
+        {
+          streamWriter.Write(json);
+        }
+
+        stream.Position = 0L;
+        return (ConditionTreeItem)_serializer.Deserialize(json, stream, null);
+      }
     }
 
     #endregion

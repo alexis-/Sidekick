@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using Ploeh.AutoFixture;
-using Sidekick.Shared.Const.SpacedRepetition;
+using Sidekick.Shared.Extensions;
 using Sidekick.Shared.Utils;
-using Sidekick.SpacedRepetition.Impl;
+using Sidekick.SpacedRepetition;
+using Sidekick.SpacedRepetition.Const;
 using Sidekick.SpacedRepetition.Models;
 using Sidekick.SpacedRepetition.Tests;
 using Xunit;
@@ -27,15 +28,15 @@ namespace WindowsTestRunner.Sidekick.SpacedRepetition
         Config, cardCount);
 
       Dictionary<short, int> gradesCount = new Dictionary<short, int>();
-      gradesCount[(short)ConstSpacedRepetition.CardPracticeState.Due] = 4;
-      gradesCount[(short)ConstSpacedRepetition.CardPracticeState.Learning] = 3;
-      gradesCount[(short)ConstSpacedRepetition.CardPracticeState.New] = 3;
+      gradesCount[(short)CardPracticeState.Due] = 4;
+      gradesCount[(short)CardPracticeState.Learning] = 3;
+      gradesCount[(short)CardPracticeState.New] = 3;
 
       for (int i = 0; i < cardCount; i++)
       {
         Card card = cardGenerator.Generate();
 
-        ConstSpacedRepetition.GradingInfo[] grades = card.ComputeGrades();
+        GradeInfo[] grades = card.ComputeGrades();
 
         grades.Should()
               .NotBeNull()
@@ -94,7 +95,7 @@ namespace WindowsTestRunner.Sidekick.SpacedRepetition
     {
       Card card = CardGenerator.MakeCard(
         Config,
-        ConstSpacedRepetition.CardPracticeState.New,
+        CardPracticeState.New,
         DateTime.Now.AddSeconds(60).ToUnixTimestamp(),
         2.5f, 1);
 
@@ -105,14 +106,14 @@ namespace WindowsTestRunner.Sidekick.SpacedRepetition
       card.IsNew().Should().Be(true);
 
       // Correct answer
-      card.Answer(ConstSpacedRepetition.Grade.Good);
+      card.Answer(Grade.Good);
 
       card.IsLearning().Should().Be(true);
       card.GetCurrentLearningIndex().Should().Be(1);
       card.GetLearningStepsLeft().Should().Be(learningSteps - 1);
 
       // Fail
-      card.Answer(ConstSpacedRepetition.Grade.Fail);
+      card.Answer(Grade.Fail);
 
       // Answer until graduation
       for (int i = 0; i < learningSteps; i++)
@@ -121,7 +122,7 @@ namespace WindowsTestRunner.Sidekick.SpacedRepetition
         card.GetCurrentLearningIndex().Should().Be(i);
         card.GetLearningStepsLeft().Should().Be(learningSteps - i);
 
-        card.Answer(ConstSpacedRepetition.Grade.Good);
+        card.Answer(Grade.Good);
       }
 
       card.IsDue().Should().Be(true);
@@ -134,13 +135,13 @@ namespace WindowsTestRunner.Sidekick.SpacedRepetition
     {
       Card card = CardGenerator.MakeCard(
         Config,
-        ConstSpacedRepetition.CardPracticeState.Due,
+        CardPracticeState.Due,
         DateTime.Now.AddSeconds(60).ToUnixTimestamp(),
         2.5f, 1);
       
       card.IsDue().Should().Be(true);
 
-      card.Answer(ConstSpacedRepetition.Grade.Fail);
+      card.Answer(Grade.Fail);
       card.IsLearning().Should().Be(true);
       card.Lapses.Should().Be(1);
       card.IsLeech().Should().Be(false);
@@ -152,7 +153,7 @@ namespace WindowsTestRunner.Sidekick.SpacedRepetition
       // In time, 250% ease, 1d ivl
       Card card = CardGenerator.MakeCard(
         Config,
-        ConstSpacedRepetition.CardPracticeState.Due,
+        CardPracticeState.Due,
         DateTime.Now.AddSeconds(60).ToUnixTimestamp(),
         2.5f, 1);
 
@@ -161,7 +162,7 @@ namespace WindowsTestRunner.Sidekick.SpacedRepetition
       // In time, 250% ease, 2d ivl
       card = CardGenerator.MakeCard(
         Config,
-        ConstSpacedRepetition.CardPracticeState.Due,
+        CardPracticeState.Due,
         DateTime.Now.AddSeconds(60).ToUnixTimestamp(),
         2.5f, 2);
 
@@ -176,11 +177,11 @@ namespace WindowsTestRunner.Sidekick.SpacedRepetition
     {
       for (int i = 0; i < 20; i++)
       {
-        card.ComputeReviewInterval(ConstSpacedRepetition.Grade.Hard)
+        card.ComputeReviewInterval(Grade.Hard)
             .Should().BeInRange(hardMin, hardMax);
-        card.ComputeReviewInterval(ConstSpacedRepetition.Grade.Good)
+        card.ComputeReviewInterval(Grade.Good)
             .Should().BeInRange(goodMin, goodMax);
-        card.ComputeReviewInterval(ConstSpacedRepetition.Grade.Easy)
+        card.ComputeReviewInterval(Grade.Easy)
             .Should().BeInRange(easyMin, easyMax);
       }
     }

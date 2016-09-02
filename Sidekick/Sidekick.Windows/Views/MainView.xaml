@@ -5,7 +5,8 @@
   xmlns:catel="http://catel.codeplex.com"
   xmlns:controls="clr-namespace:Sidekick.WPF.Controls;assembly=Sidekick.WPF"
   xmlns:models="clr-namespace:Sidekick.Windows.Models"
-  xmlns:markupExtensions="clr-namespace:Sidekick.WPF.Markup.Mersoft.Mvvm.MarkupExtensions;assembly=Sidekick.WPF">
+  xmlns:markupExtensions="clr-namespace:Sidekick.WPF.Markup.Mersoft.Mvvm.MarkupExtensions;assembly=Sidekick.WPF"
+  xmlns:Properties="clr-namespace:Sidekick.Windows.Properties">
 
   <UserControl.Resources>
     <ResourceDictionary>
@@ -53,7 +54,7 @@
           IconSize="20 20" />
 
         <controls:FlatIconizableToggleButton
-          x:Name="NavigationBrowserButton"
+          x:Name="NavigationBrowseButton"
           ButtonPadding="6 0 0 0"
           FontSize="16"
           FontWeight="DemiBold"
@@ -64,7 +65,7 @@
           PressedBrush="{DynamicResource WhiteBrush}"
           Padding="20 0 20 0"
           RadioController="{Binding MenuController}"
-          Content="{catel:LanguageBinding Main_Navigation_KnowledgeNetwork_Button}"
+          Content="{catel:LanguageBinding Main_Navigation_Browse_Button}"
           Icon="{DynamicResource appbar_page_search}"
           IconSize="20 20" />
 

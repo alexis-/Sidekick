@@ -33,49 +33,37 @@
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Attributes\DB\AutoIncrementAttribute.cs" />
-    <Compile Include="Attributes\DB\CollationAttribute.cs" />
-    <Compile Include="Attributes\DB\OrderAttribute.cs" />
-    <Compile Include="Attributes\DB\ColumnAttribute.cs" />
-    <Compile Include="Attributes\DB\DefaultAttribute.cs" />
-    <Compile Include="Attributes\DB\IgnoreAttribute.cs" />
-    <Compile Include="Attributes\DB\IndexedAttribute.cs" />
-    <Compile Include="Attributes\DB\MaxLengthAttribute.cs" />
-    <Compile Include="Attributes\DB\NotNullAttribute.cs" />
-    <Compile Include="Attributes\DB\PrimaryKeyAttribute.cs" />
-    <Compile Include="Attributes\DB\TableAttribute.cs" />
-    <Compile Include="Attributes\DB\UniqueAttribute.cs" />
-    <Compile Include="Attributes\JetBrains.cs" />
-    <Compile Include="Attributes\SRS\SRSSettingsDescriptorAttribute.cs" />
-    <Compile Include="Attributes\SRS\SRSSettingsItem.cs" />
-    <Compile Include="Attributes\SRS\SRSSettingsLocalizedItem.cs" />
-    <Compile Include="Interfaces\DB\IDatabase.cs" />
-    <Compile Include="Interfaces\DB\ITableMapping.cs" />
-    <Compile Include="Base\SRS\BaseCard.cs" />
-    <Compile Include="Interfaces\SpacedRepetition\ICard.cs" />
-    <Compile Include="Interfaces\SpacedRepetition\INote.cs" />
-    <Compile Include="Interfaces\SpacedRepetition\ISpacedRepetition.cs" />
-    <Compile Include="Interfaces\DB\ITableQuery.cs" />
-    <Compile Include="Interfaces\SpacedRepetition\IReviewCollection.cs" />
+    <Compile Include="Attributes\Database\AutoIncrementAttribute.cs" />
+    <Compile Include="Attributes\Database\CollationAttribute.cs" />
+    <Compile Include="Attributes\Database\ColumnAttribute.cs" />
+    <Compile Include="Attributes\Database\DefaultAttribute.cs" />
+    <Compile Include="Attributes\Database\IgnoreAttribute.cs" />
+    <Compile Include="Attributes\Database\IndexedAttribute.cs" />
+    <Compile Include="Attributes\Database\MaxLengthAttribute.cs" />
+    <Compile Include="Attributes\Database\NotNullAttribute.cs" />
+    <Compile Include="Attributes\Database\OrderAttribute.cs" />
+    <Compile Include="Attributes\Database\PrimaryKeyAttribute.cs" />
+    <Compile Include="Attributes\Database\TableAttribute.cs" />
+    <Compile Include="Attributes\Database\UniqueAttribute.cs" />
+    <Compile Include="Attributes\LazyLoad\LazyLoadedAttribute.cs" />
+    <Compile Include="Attributes\LazyLoad\LazyUnloadedAttribute.cs" />
+    <Compile Include="Extensions\DateTimeExtensions.cs" />
+    <Compile Include="Extensions\DictionaryExtensions.cs" />
+    <Compile Include="Interfaces\Database\IDatabase.cs" />
+    <Compile Include="Interfaces\Database\ITableMapping.cs" />
+    <Compile Include="Interfaces\Database\ITableQuery.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\Collections\AsyncDbListBase.cs" />
-    <Compile Include="Utils\DateTimeEx.cs" />
     <Compile Include="Utils\Delay.cs" />
-    <Compile Include="Utils\DictionaryEx.cs" />
-    <Compile Include="Utils\LazyLoad\Attributes\LazyLoadedAttribute.cs" />
-    <Compile Include="Utils\LazyLoad\Attributes\LazyUnloadedAttribute.cs" />
     <Compile Include="Utils\LazyLoad\DbLazyLoaded.cs" />
     <Compile Include="Utils\TastConst.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Const\SpacedRepetition\Const.SRS.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="README.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Catel.Core, Version=4.5.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Catel.Core.4.5.2\lib\portable-net45+sl5+wp8+win8+wpa81+MonoAndroid16+MonoTouch40\Catel.Core.dll</HintPath>
+    <Reference Include="Catel.Core, Version=4.5.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Catel.Core.4.5.3\lib\portable-net45+sl5+wp8+win8+wpa81+MonoAndroid16+MonoTouch40\Catel.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>

@@ -27,7 +27,8 @@ namespace Sidekick.WPF.Controls
 {
   public static class StackedTreeView
   {
-    #region Fields
+#if false
+#region Fields
 
     public static readonly DependencyProperty OuterBorderBrushProperty =
       DependencyProperty.RegisterAttached(
@@ -39,9 +40,9 @@ namespace Sidekick.WPF.Controls
         "InnerBorderBrush", typeof(Brush), typeof(StackedTreeView),
         new PropertyMetadata(default(Brush)));
 
-    #endregion
+#endregion
 
-    #region Methods
+#region Methods
 
     public static Brush GetOuterBorderBrush(DependencyObject obj)
     {
@@ -64,6 +65,7 @@ namespace Sidekick.WPF.Controls
       obj.SetValue(InnerBorderBrushProperty, value);
     }
 
-    #endregion
+#endregion
+#endif
   }
 }

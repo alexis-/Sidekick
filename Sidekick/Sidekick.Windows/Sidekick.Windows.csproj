@@ -55,20 +55,24 @@
     </StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Catel.Core, Version=4.5.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Catel.Core.4.5.2\lib\net45\Catel.Core.dll</HintPath>
+    <Reference Include="Catel.Core, Version=4.5.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Catel.Core.4.5.3\lib\net45\Catel.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Catel.Extensions.Controls, Version=4.5.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Catel.Extensions.Controls.4.5.2\lib\net45\Catel.Extensions.Controls.dll</HintPath>
+    <Reference Include="Catel.Extensions.Controls, Version=4.5.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Catel.Extensions.Controls.4.5.3\lib\net45\Catel.Extensions.Controls.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Catel.Fody.Attributes, Version=2.14.0.0, Culture=neutral, PublicKeyToken=1c8163524cbe02e6, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Catel.Fody.2.14.0\lib\portable-net4+sl4+wp7+win8+wpa81+MonoAndroid14+MonoTouch40\Catel.Fody.Attributes.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Catel.MVVM, Version=4.5.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Catel.MVVM.4.5.2\lib\net45\Catel.MVVM.dll</HintPath>
+    <Reference Include="Catel.MVVM, Version=4.5.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Catel.MVVM.4.5.3\lib\net45\Catel.MVVM.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Catel.Serialization.Json, Version=4.5.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Catel.Serialization.Json.4.5.3\lib\net45\Catel.Serialization.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="MahApps.Metro, Version=1.2.4.0, Culture=neutral, PublicKeyToken=f4fb5a3c4d1e5b4f, processorArchitecture=MSIL">
@@ -78,6 +82,10 @@
     <Reference Include="MethodTimer, Version=1.16.0.0, Culture=neutral, PublicKeyToken=cb1364609f40a1dc, processorArchitecture=MSIL">
       <HintPath>..\..\packages\MethodTimer.Fody.1.16.0.0\lib\dotnet\MethodTimer.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Orc.Controls, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Orc.Controls.1.2.0\lib\net45\Orc.Controls.dll</HintPath>
@@ -89,14 +97,6 @@
     </Reference>
     <Reference Include="Orchestra.Shell.MahApps, Version=2.3.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Orchestra.Shell.MahApps.2.3.0\lib\net45\Orchestra.Shell.MahApps.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="PCLStorage, Version=1.0.2.0, Culture=neutral, PublicKeyToken=286fe515a2c35b64, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\PCLStorage.1.0.2\lib\net45\PCLStorage.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="PCLStorage.Abstractions, Version=1.0.2.0, Culture=neutral, PublicKeyToken=286fe515a2c35b64, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\PCLStorage.1.0.2\lib\net45\PCLStorage.Abstractions.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Ploeh.AutoFixture, Version=3.50.1.0, Culture=neutral, PublicKeyToken=b24654c590009d4f, processorArchitecture=MSIL">
@@ -114,14 +114,10 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\MahApps.Metro.1.2.4.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
+      <HintPath>..\..\packages\Catel.MVVM.4.5.3\lib\net45\System.Windows.Interactivity.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Xaml" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
     <Reference Include="Xamarin.Forms.Core, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -144,6 +140,7 @@
     </Compile>
     <Compile Include="Constants.cs" />
     <Compile Include="Converters\TabSizeConverter.cs" />
+    <Compile Include="Models\CollectionFilter.cs" />
     <Compile Include="Models\MenuItem.cs" />
     <Compile Include="ModuleInitializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -157,17 +154,22 @@
     <Compile Include="Services\NavigationMenuService.cs" />
     <Compile Include="ViewModels\DataTemplates\ThemeViewModel.cs" />
     <Compile Include="ViewModels\MnemoShellViewModel.cs" />
+    <Compile Include="ViewModels\QueryBuilderViewModel.cs" />
     <Compile Include="ViewModels\Settings\SettingsThemeViewModel.cs" />
     <Compile Include="ViewModels\SettingsViewModel.cs" />
     <Compile Include="ViewModels\Settings\SettingsSpacedRepetitionViewModel.cs" />
-    <Compile Include="ViewModels\SpacedRepetition\BrowserQueryBuilderViewModel.cs" />
+    <Compile Include="ViewModels\SpacedRepetition\BrowserQueryViewerViewModel.cs" />
     <Compile Include="ViewModels\SpacedRepetition\BrowserViewModel.cs" />
+    <Compile Include="ViewModels\SpacedRepetition\CollectionDataGridViewModel.cs" />
     <Compile Include="Views\MnemoShellWindow.xaml.cs">
       <DependentUpon>MnemoShellWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="Views\MainView.xaml.cs">
       <DependentUpon>MainView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\QueryBuilderView.xaml.cs">
+      <DependentUpon>QueryBuilderView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Settings\SettingsThemeView.xaml.cs">
       <DependentUpon>SettingsThemeView.xaml</DependentUpon>
@@ -178,8 +180,8 @@
     <Compile Include="Views\Settings\SettingsSpacedRepetitionView.xaml.cs">
       <DependentUpon>SettingsSpacedRepetitionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\SpacedRepetition\BrowserQueryBuilderView.xaml.cs">
-      <DependentUpon>BrowserQueryBuilderView.xaml</DependentUpon>
+    <Compile Include="Views\SpacedRepetition\BrowserQueryViewerView.xaml.cs">
+      <DependentUpon>BrowserQueryViewerView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\SpacedRepetition\BrowserView.xaml.cs">
       <DependentUpon>BrowserView.xaml</DependentUpon>
@@ -189,6 +191,9 @@
     </Compile>
     <Compile Include="Views\SpacedRepetition\CardAnswerButtonsView.xaml.cs">
       <DependentUpon>CardAnswerButtonsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SpacedRepetition\CollectionDataGridView.xaml.cs">
+      <DependentUpon>CollectionDataGridView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\SpacedRepetition\CollectionView.xaml.cs">
       <DependentUpon>CollectionView.xaml</DependentUpon>
@@ -227,7 +232,7 @@
       <Project>{8ff533cc-7198-4a6f-816f-ff24e551f2f3}</Project>
       <Name>Sidekick.MVVM</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Sidekick.SRS\Sidekick.SpacedRepetition.csproj">
+    <ProjectReference Include="..\Sidekick.SpacedRepetition\Sidekick.SpacedRepetition.csproj">
       <Project>{863d9959-01cd-490b-bbc2-62966bca89fc}</Project>
       <Name>Sidekick.SpacedRepetition</Name>
     </ProjectReference>
@@ -299,6 +304,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\QueryBuilderView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\Settings\SettingsThemeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -311,7 +320,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\SpacedRepetition\BrowserQueryBuilderView.xaml">
+    <Page Include="Views\SpacedRepetition\BrowserQueryViewerView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -324,6 +333,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\SpacedRepetition\CardAnswerButtonsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SpacedRepetition\CollectionDataGridView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
