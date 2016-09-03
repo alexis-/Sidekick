@@ -3,3 +3,10 @@ before_build:
   
 install:
   - git submodule update --init --recursive
+  
+cache:
+  - packages -> **\packages.config
+  
+build:
+  parallel: true                  # enable MSBuild parallel builds
+  project: Sidekick.sln           # path to Visual Studio solution or project
