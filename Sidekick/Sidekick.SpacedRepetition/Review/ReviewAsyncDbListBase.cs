@@ -231,7 +231,8 @@ namespace Sidekick.SpacedRepetition.Review
         updateCards =
           Db.Table<Card>()
             .FurtherLoad(LazyLoader)
-            .Where(c => cardsId.Contains(c.Id));
+            .Where(c => cardsId.Contains(c.Id))
+            .ToList();
       }
 
       lock (LockObject)

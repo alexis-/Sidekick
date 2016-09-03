@@ -20,60 +20,52 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System.Windows.Input;
-using Catel.MVVM;
-using Catel.Services;
-using Sidekick.Shared.Interfaces.Database;
-using Sidekick.SpacedRepetition.Generators;
-using Sidekick.SpacedRepetition.Models;
+using System;
+using PCLStorage;
 
-namespace Sidekick.Windows.ViewModels.Settings
+namespace SQLite.Net.Bridge.Tests
 {
-  public class SettingsSpacedRepetitionViewModel : ViewModelBase
+  public class TestBaseDb : SQLiteConnectionWithLockBridge
   {
-    #region Fields
-
-    private readonly IDatabase _database;
-    private readonly IMessageService _messageService;
-
-    #endregion
-
     #region Constructors
 
-    public SettingsSpacedRepetitionViewModel(
-      IDatabase database,
-      IMessageService messageService)
+    public TestBaseDb(
+      IColumnInformationProvider columnInformationProvider = null,
+      IContractResolver contractResolver = null)
+      : base(
+        new SQLitePlatformTest(),
+        CreateTemporaryDatabase(),
+        columnInformationProvider,
+        resolver: contractResolver)
     {
-      _database = database;
-      _messageService = messageService;
-
-      GenerateTestCollectionCommand = new Command(
-        OnGenerateTestCollectionCommandExecute);
     }
-
-    #endregion
-
-    #region Properties
-
-    public ICommand GenerateTestCollectionCommand { get; set; }
 
     #endregion
 
     #region Methods
 
-    public void OnGenerateTestCollectionCommandExecute()
+    public static string CreateTemporaryDatabase(string fileName = null)
     {
-      var collectionGenerator = new CollectionGenerator(
-        new CardGenerator(new TimeGenerator(90),
-          CollectionConfig.Default,
-          200),
-        _database,
-        100, 3);
+      var desiredName = fileName ?? CreateDefaultTempFilename() + ".db";
+      var localStorage = FileSystem.Current.LocalStorage;
 
-      collectionGenerator.Generate();
+      if (localStorage.CheckExistsAsync("temp").Result !=
+          ExistenceCheckResult.FolderExists)
+        localStorage.CreateFolderAsync(
+          "temp",
+          CreationCollisionOption.OpenIfExists)
+                    .Wait();
 
-      _messageService.ShowInformationAsync(
-        "Collection successfully Generated", "PageableCollection Debugging");
+      IFolder tempFolder = localStorage.GetFolderAsync("temp").Result;
+      return tempFolder.CreateFileAsync(
+        desiredName,
+        CreationCollisionOption.FailIfExists)
+                       .Result.Path;
+    }
+
+    public static Guid CreateDefaultTempFilename()
+    {
+      return Guid.NewGuid();
     }
 
     #endregion

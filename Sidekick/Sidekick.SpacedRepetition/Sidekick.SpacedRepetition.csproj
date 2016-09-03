@@ -48,6 +48,9 @@
     <Compile Include="Const\Grade.cs" />
     <Compile Include="Const\GradeInfo.cs" />
     <Compile Include="Extensions\GradeExtensions.cs" />
+    <Compile Include="Generators\CardGenerator.cs" />
+    <Compile Include="Generators\CollectionGenerator.cs" />
+    <Compile Include="Generators\TimeGenerator.cs" />
     <Compile Include="Interfaces\IReviewCollection.cs" />
     <Compile Include="Interfaces\ISpacedRepetition.cs" />
     <Compile Include="Models\Card.Impl.cs" />

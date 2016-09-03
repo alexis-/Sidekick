@@ -26,6 +26,8 @@ namespace Sidekick.Android.TestRunner
 		
 		public static void UpdateIdValues()
 		{
+			global::PCLStorage.Resource.String.ApplicationName = global::Sidekick.Android.TestRunner.Resource.String.ApplicationName;
+			global::PCLStorage.Resource.String.Hello = global::Sidekick.Android.TestRunner.Resource.String.Hello;
 			global::SQLite.Net.Platform.XamarinAndroid.Resource.String.ApplicationName = global::Sidekick.Android.TestRunner.Resource.String.ApplicationName;
 			global::SQLite.Net.Platform.XamarinAndroid.Resource.String.Hello = global::Sidekick.Android.TestRunner.Resource.String.Hello;
 			global::Xamarin.Forms.Platform.Android.Resource.Attribute.actionBarSize = global::Sidekick.Android.TestRunner.Resource.Attribute.actionBarSize;

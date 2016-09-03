@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Ploeh.AutoFixture;
 using Sidekick.Shared.Interfaces.Database;
 using Sidekick.SpacedRepetition.Models;
 
-namespace Sidekick.SpacedRepetition.Tests
+namespace Sidekick.SpacedRepetition.Generators
 {
   public class CollectionGenerator
   {
@@ -15,8 +14,7 @@ namespace Sidekick.SpacedRepetition.Tests
 
     // Misc
     private HashSet<int> NotesIds { get; }
-
-    private Fixture Fixture { get; }
+    
     private CardGenerator CardGenerator { get; }
     private TimeGenerator TimeGenerator { get; }
     private CollectionConfig Config { get; }
@@ -45,7 +43,6 @@ namespace Sidekick.SpacedRepetition.Tests
       Db = db;
 
       CardGenerator = cardGenerator;
-      Fixture = CardGenerator.Fixture;
       TimeGenerator = CardGenerator.TimeGenerator;
       Config = CardGenerator.Config;
 
@@ -103,12 +100,20 @@ namespace Sidekick.SpacedRepetition.Tests
 
     private IEnumerable<Note> MakeNotes()
     {
-      return Fixture
-        .Build<Note>()
-        .Do(n => n.Id = TimeGenerator.RandomId(NotesIds))
-        .Without(n => n.Cards)
-        .Without(n => n.Id)
-        .CreateMany(NoteCount);
+      List<Note> notes = new List<Note>(NoteCount);
+
+      for (int i = 0; i < NoteCount; i++)
+      {
+        int id = TimeGenerator.RandomId(NotesIds);
+
+        notes.Add(new Note
+        {
+          Id = id,
+          LastModified = Math.Max(TimeGenerator.RandomTime(), id)
+        });
+      }
+
+      return notes;
     }
   }
 }

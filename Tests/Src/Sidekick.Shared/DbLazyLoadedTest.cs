@@ -1,21 +1,56 @@
-﻿using System;
+﻿// 
+// The MIT License (MIT)
+// Copyright (c) 2016 Incogito
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the "Software"),
+// to deal in the Software without restriction, including without limitation
+// the rights to use, copy, modify, merge, publish, distribute, sublicense,
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using FluentAssertions;
-using Ploeh.AutoFixture.Xunit2;
 using Sidekick.Shared.Attributes.Database;
 using Sidekick.Shared.Attributes.LazyLoad;
+using Sidekick.Shared.Utils;
 using Sidekick.Shared.Utils.LazyLoad;
+using SQLite.Net.Bridge.Tests;
 using Xunit;
 
-namespace Sidekick.Tests
+namespace Sidekick.Shared.Tests
 {
   public class DbLazyLoadedTest
   {
     public class LazyObject
     {
+      #region Fields
+
+      private static Random _random = new Random();
+
+      #endregion
+
+      #region Constructors
+
+      public LazyObject() {}
+
+      #endregion
+
+      #region Properties
+
       [PrimaryKey, AutoIncrement]
       public int Id { get; set; }
 
@@ -24,19 +59,37 @@ namespace Sidekick.Tests
 
       [LazyLoaded, LazyUnloaded]
       public string Value { get; set; }
+
+      #endregion
+
+      public static LazyObject Random()
+      {
+        return new LazyObject()
+        {
+          Idx = _random.Next(),
+          Value = Faker.RandomString(20)
+        };
+      }
     }
 
-    private class LazyObjectDb : TestDb
+    private class LazyObjectDb : TestBaseDb
     {
+      #region Constructors
+
       public LazyObjectDb()
       {
         CreateTable<LazyObject>();
       }
+
+      #endregion
     }
 
-    [Theory, AutoData]
-    public void LazyLoadCollection(IEnumerable<LazyObject> paramObjs)
+    [Fact]
+    public void LazyLoadCollection()
     {
+      IEnumerable<LazyObject> paramObjs = Faker.RandomCollection(
+        LazyObject.Random);
+
       // Setup DB & LazyLoader
       LazyObjectDb db = new LazyObjectDb();
       DbLazyLoad<LazyObject> lazyLoader =

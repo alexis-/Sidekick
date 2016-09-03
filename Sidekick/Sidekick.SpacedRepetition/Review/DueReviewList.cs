@@ -208,7 +208,7 @@ namespace Sidekick.SpacedRepetition.Review
         if (!fullLoad)
           tableQuery = tableQuery.ShallowLoad(LazyLoader);
 
-        dueCards = tableQuery.OrderBy(c => c.Due);
+        dueCards = tableQuery.OrderBy(c => c.Due).ToList();
       }
 
       int loadedCount = dueCards.Count();

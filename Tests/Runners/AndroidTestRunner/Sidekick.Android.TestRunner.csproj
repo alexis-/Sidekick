@@ -43,17 +43,31 @@
     <AndroidLinkMode>SdkOnly</AndroidLinkMode>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Catel.Core, Version=4.5.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Catel.Core.4.5.3\lib\MonoAndroid\Catel.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="FluentAssertions, Version=4.1.2.4, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\FluentAssertions.Xamarin.4.2.2\lib\monoandroid\FluentAssertions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="FluentAssertions.Core, Version=4.2.2.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\FluentAssertions.4.2.2\lib\monoandroid\FluentAssertions.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="FormsViewGroup, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\Xamarin.Forms.2.3.0.107\lib\MonoAndroid10\FormsViewGroup.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Mono.Android" />
     <Reference Include="mscorlib" />
-    <Reference Include="SQLite.Net">
-      <HintPath>..\..\..\Libs\SQLite.Net-PCL\src\SQLite.Net\bin\Release\SQLite.Net.dll</HintPath>
+    <Reference Include="PCLStorage, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\PCLStorage.1.0.2\lib\monoandroid\PCLStorage.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="SQLite.Net.Platform.XamarinAndroid">
-      <HintPath>..\..\..\Libs\SQLite.Net-PCL\src\SQLite.Net.Platform.XamarinAndroid\bin\Release\SQLite.Net.Platform.XamarinAndroid.dll</HintPath>
+    <Reference Include="PCLStorage.Abstractions, Version=1.0.2.0, Culture=neutral, PublicKeyToken=286fe515a2c35b64, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\PCLStorage.1.0.2\lib\monoandroid\PCLStorage.Abstractions.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -132,12 +146,21 @@
       <Private>True</Private>
     </Reference>
   </ItemGroup>
+  <PropertyGroup>
+    <TestRootPath>..\..\Src</TestRootPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(TestRootPath)\**\*.cs">
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+    </Compile>
+  </ItemGroup>
   <ItemGroup>
     <Content Include="MainActivity.cs.txt" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="GettingStarted.Xamarin" />
     <None Include="packages.config" />
     <None Include="Resources\AboutResources.txt" />
@@ -159,6 +182,28 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MainActivity.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Libs\SQLite.Net-PCL\src\SQLite.Net.Platform.XamarinAndroid\SQLite.Net.Platform.XamarinAndroid.csproj">
+      <Project>{219700f0-5444-4250-87d6-0551b39ca402}</Project>
+      <Name>SQLite.Net.Platform.XamarinAndroid</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Libs\SQLite.Net-PCL\src\SQLite.Net\SQLite.Net.csproj">
+      <Project>{4971d437-0694-4297-a8cc-146ce08c3bd9}</Project>
+      <Name>SQLite.Net</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Sidekick\Sidekick.Shared\Sidekick.Shared.csproj">
+      <Project>{2b6bb05d-c1e6-42fd-8837-7a20860bbc11}</Project>
+      <Name>Sidekick.Shared</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Sidekick\Sidekick.SpacedRepetition\Sidekick.SpacedRepetition.csproj">
+      <Project>{863d9959-01cd-490b-bbc2-62966bca89fc}</Project>
+      <Name>Sidekick.SpacedRepetition</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Sidekick\SQLite.Net.Bridge\SQLite.Net.Bridge.csproj">
+      <Project>{97a6601d-f0c7-47ed-ad6b-7a15e623422d}</Project>
+      <Name>SQLite.Net.Bridge</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <Import Project="..\..\..\packages\Xamarin.Android.Support.Vector.Drawable.23.3.0\build\Xamarin.Android.Support.Vector.Drawable.targets" Condition="Exists('..\..\..\packages\Xamarin.Android.Support.Vector.Drawable.23.3.0\build\Xamarin.Android.Support.Vector.Drawable.targets')" />

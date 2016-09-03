@@ -8,8 +8,8 @@
     <ProjectGuid>{52F5B60E-7CA5-451A-8E14-B5A530011D0A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>WindowsTestRunner</RootNamespace>
-    <AssemblyName>WindowsTestRunner</AssemblyName>
+    <RootNamespace>Sidekick.TestRunner</RootNamespace>
+    <AssemblyName>Sidekick.TestRunner</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>
@@ -40,12 +40,12 @@
       <HintPath>..\..\..\packages\Catel.Core.4.5.3\lib\net45\Catel.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="FluentAssertions, Version=4.13.0.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\FluentAssertions.4.13.0\lib\net45\FluentAssertions.dll</HintPath>
+    <Reference Include="FluentAssertions, Version=4.13.1.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\FluentAssertions.4.13.1\lib\net45\FluentAssertions.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="FluentAssertions.Core, Version=4.13.0.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\FluentAssertions.4.13.0\lib\net45\FluentAssertions.Core.dll</HintPath>
+    <Reference Include="FluentAssertions.Core, Version=4.13.1.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\FluentAssertions.4.13.1\lib\net45\FluentAssertions.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Pex.Framework">
@@ -58,20 +58,6 @@
     <Reference Include="PCLStorage.Abstractions, Version=1.0.2.0, Culture=neutral, PublicKeyToken=286fe515a2c35b64, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\PCLStorage.1.0.2\lib\net45\PCLStorage.Abstractions.dll</HintPath>
       <Private>True</Private>
-    </Reference>
-    <Reference Include="Ploeh.AutoFixture, Version=3.50.1.0, Culture=neutral, PublicKeyToken=b24654c590009d4f, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\AutoFixture.3.50.1\lib\net40\Ploeh.AutoFixture.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Ploeh.AutoFixture.Xunit2, Version=3.50.1.0, Culture=neutral, PublicKeyToken=b24654c590009d4f, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\AutoFixture.Xunit2.3.50.1\lib\net45\Ploeh.AutoFixture.Xunit2.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="SQLite.Net">
-      <HintPath>..\..\..\Libs\SQLite.Net-PCL\src\SQLite.Net\bin\Release\SQLite.Net.dll</HintPath>
-    </Reference>
-    <Reference Include="SQLite.Net.Platform.Win32">
-      <HintPath>..\..\..\Libs\SQLite.Net-PCL\src\SQLite.Net.Platform.Win32\bin\Release\SQLite.Net.Platform.Win32.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -94,59 +80,19 @@
       <Private>True</Private>
     </Reference>
   </ItemGroup>
+  <PropertyGroup>
+    <TestRootPath>..\..\Src</TestRootPath>
+  </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\..\Src\Sidekick.SpacedRepetition\ReviewCollectionImplTest.cs">
-      <Link>Sidekick.SpacedRepetition\ReviewCollectionImplTest.cs</Link>
+    <Compile Include="$(TestRootPath)\**\*.cs">
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
     </Compile>
-    <Compile Include="..\..\Src\Sidekick.Tests\DbLazyLoadedTest.cs">
-      <Link>Sidekick\DbLazyLoadedTest.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Src\SQLite.Net.Bridge.Tests\SQLiteBasicTest.cs">
-      <Link>SQLite.Net.Bridge.Tests\SQLiteBasicTest.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Src\SQLite.Net.Bridge.Tests\SQLiteNetBasicTest.cs">
-      <Link>SQLite.Net.Bridge.Tests\SQLiteNetBasicTest.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Src\SQLitePlatformTest.cs">
-      <Link>SQLite\SQLitePlatformTest.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Src\TestDb.cs">
-      <Link>SQLite\TestDb.cs</Link>
-    </Compile>
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="Factories\DelayFactory.cs" />
-    <Compile Include="Sidekick.SpacedRepetition\Card.Test.cs" />
-    <Compile Include="Sidekick.SpacedRepetition\CollectionGeneratorTest.cs" />
-    <Compile Include="Sidekick\DelayTest.cs" />
-    <Compile Include="Sidekick\DelayTest.DaysGetTest.g.cs">
-      <DependentUpon>DelayTest.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Sidekick\DelayTest.FromDaysTest.g.cs">
-      <DependentUpon>DelayTest.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Sidekick\DelayTest.FromHoursTest.g.cs">
-      <DependentUpon>DelayTest.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Sidekick\DelayTest.FromMinutesTest.g.cs">
-      <DependentUpon>DelayTest.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Sidekick\DelayTest.HoursGetTest.g.cs">
-      <DependentUpon>DelayTest.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Sidekick\DelayTest.MinutesGetTest.g.cs">
-      <DependentUpon>DelayTest.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Sidekick\DelayTest.op_ImplicitTest.g.cs">
-      <DependentUpon>DelayTest.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Sidekick\DelayTest.op_ImplicitTest01.g.cs">
-      <DependentUpon>DelayTest.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Sidekick\DelayTest.SecondsGetTest.g.cs">
-      <DependentUpon>DelayTest.cs</DependentUpon>
-    </Compile>
+    <Compile Include="Sidekick.Shared\DelayTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\PexAssemblyInfo.cs" />
-    <Compile Include="SQLite\CardTestDb.cs" />
     <Compile Include="XUnitSetup.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -157,6 +103,14 @@
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Libs\SQLite.Net-PCL\src\SQLite.Net.Platform.Win32\SQLite.Net.Platform.Win32.csproj">
+      <Project>{03799ad1-9fcf-48cb-8e6e-b233df583b10}</Project>
+      <Name>SQLite.Net.Platform.Win32</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Libs\SQLite.Net-PCL\src\SQLite.Net\SQLite.Net.csproj">
+      <Project>{4971d437-0694-4297-a8cc-146ce08c3bd9}</Project>
+      <Name>SQLite.Net</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Sidekick\Sidekick.SpacedRepetition\Sidekick.SpacedRepetition.csproj">
       <Project>{863d9959-01cd-490b-bbc2-62966bca89fc}</Project>
       <Name>Sidekick.SpacedRepetition</Name>
@@ -169,13 +123,11 @@
       <Project>{97A6601D-F0C7-47ED-AD6B-7A15E623422D}</Project>
       <Name>SQLite.Net.Bridge</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Sidekick.SpacedRepetition.Tests\Sidekick.SpacedRepetition.Tests.csproj">
-      <Project>{E39765B1-C8E4-455F-A9BE-85FE038B03FF}</Project>
-      <Name>Sidekick.SpacedRepetition.Tests</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="FodyWeavers.xml" />
+  </ItemGroup>
+  <ItemGroup>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

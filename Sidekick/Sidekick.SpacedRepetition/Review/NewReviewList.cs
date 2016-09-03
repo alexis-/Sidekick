@@ -212,7 +212,7 @@ namespace Sidekick.SpacedRepetition.Review
                        ? tableQuery.OrderByRand()
                        : tableQuery.OrderBy(c => c.Due);
 
-        newCards = tableQuery;
+        newCards = tableQuery.ToList();
       }
 
       int loadedCount = newCards.Count();

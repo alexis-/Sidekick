@@ -1,4 +1,4 @@
-﻿// 
+// 
 // The MIT License (MIT)
 // Copyright (c) 2016 Incogito
 // 
@@ -20,6 +20,28 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
- //[assembly: TestFramework(
-//  "Sidekick.Tests.XunitTestFrameworkWithSQLiteFixture",
-//  "WindowsTestRunner")]
+#if __WIN32__
+using _SQLitePlatformTest = SQLite.Net.Platform.Win32.SQLitePlatformWin32;
+
+#elif WINDOWS_PHONE
+using _SQLitePlatformTest = SQLite.Net.Platform.WindowsPhone8.SQLitePlatformWP8;
+#elif __WINRT__
+using _SQLitePlatformTest = SQLite.Net.Platform.WinRT.SQLitePlatformWinRT;
+#elif __IOS__
+using _SQLitePlatformTest = SQLite.Net.Platform.XamarinIOS.SQLitePlatformIOS;
+#elif __ANDROID__
+using _SQLitePlatformTest = SQLite.Net.Platform.XamarinAndroid.SQLitePlatformAndroid;
+#elif __OSX__
+using _SQLitePlatformTest = SQLite.Net.Platform.OSX.SQLitePlatformOSX;
+#else
+using _SQLitePlatformTest = SQLite.Net.Platform.Generic.SQLitePlatformGeneric;
+#endif
+
+// ReSharper disable once CheckNamespace
+
+namespace SQLite.Net.Bridge.Tests
+{
+  public class SQLitePlatformTest : _SQLitePlatformTest
+  {
+  }
+}

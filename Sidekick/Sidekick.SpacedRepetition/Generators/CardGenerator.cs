@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Ploeh.AutoFixture;
 using Sidekick.Shared.Extensions;
 using Sidekick.Shared.Utils;
 using Sidekick.SpacedRepetition.Const;
 using Sidekick.SpacedRepetition.Models;
 
-namespace Sidekick.SpacedRepetition.Tests
+namespace Sidekick.SpacedRepetition.Generators
 {
   public class CardGenerator
   {
@@ -19,8 +18,7 @@ namespace Sidekick.SpacedRepetition.Tests
 
     // Misc
     private HashSet<int> CardIds { get; }
-
-    internal Fixture Fixture { get; }
+    
     internal TimeGenerator TimeGenerator { get; }
     internal CollectionConfig Config { get; }
 
@@ -30,12 +28,8 @@ namespace Sidekick.SpacedRepetition.Tests
     //
     // Constructor
 
-    public CardGenerator(Fixture fixture,
-      TimeGenerator timeGenerator, CollectionConfig config,
-      int count = 100, float newRatio = 3, float learnRatio = 2,
-      float dueRatio = 5, float lapsePercent = 10)
+    public CardGenerator(TimeGenerator timeGenerator, CollectionConfig config, int count = 100, float newRatio = 3, float learnRatio = 2, float dueRatio = 5, float lapsePercent = 10)
     {
-      Fixture = fixture;
       TimeGenerator = timeGenerator;
       Config = config;
 
@@ -59,7 +53,7 @@ namespace Sidekick.SpacedRepetition.Tests
 
     public Card Generate(int noteId = -1)
     {
-      Card card = new Card(Config, noteId, Fixture.Create<string>());
+      Card card = new Card(Config, noteId, Faker.RandomString(20));
 
       return Generate(card);
     }

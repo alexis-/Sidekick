@@ -20,6 +20,49 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
- //[assembly: TestFramework(
-//  "Sidekick.Tests.XunitTestFrameworkWithSQLiteFixture",
-//  "WindowsTestRunner")]
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace Sidekick.Shared.Utils
+{
+  public static class Faker
+  {
+    #region Fields
+
+    private static readonly Random Random = new Random();
+
+    #endregion
+
+    #region Methods
+
+    public static string RandomString(int length)
+    {
+      const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+      return new string(Enumerable.Repeat(chars, 20)
+                                  .Select(s => s[Random.Next(s.Length)])
+                                  .ToArray());
+    }
+
+    public static int RandomInt(
+      int min = int.MinValue, int max = int.MaxValue)
+    {
+      return Random.Next(min, max);
+    }
+
+    public static IEnumerable<T> RandomCollection<T>(
+      Func<T> createFunc, int minElements = 5, int maxElements = 20)
+    {
+      int count = RandomInt(Math.Max(1, minElements), maxElements);
+      List<T> randomList = new List<T>(count);
+
+      while (count-- > 0)
+        randomList.Add(createFunc());
+
+      return randomList;
+    }
+
+    #endregion
+  }
+}

@@ -99,18 +99,8 @@
       <HintPath>..\..\packages\Orchestra.Shell.MahApps.2.3.0\lib\net45\Orchestra.Shell.MahApps.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Ploeh.AutoFixture, Version=3.50.1.0, Culture=neutral, PublicKeyToken=b24654c590009d4f, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\AutoFixture.3.50.1\lib\net40\Ploeh.AutoFixture.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="SQLite.Net">
-      <HintPath>..\..\Libs\SQLite.Net-PCL\src\SQLite.Net\bin\Release\SQLite.Net.dll</HintPath>
-    </Reference>
-    <Reference Include="SQLite.Net.Platform.Win32">
-      <HintPath>..\..\Libs\SQLite.Net-PCL\src\SQLite.Net.Platform.Win32\bin\Release\SQLite.Net.Platform.Win32.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -224,9 +214,13 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Tests\Sidekick.SpacedRepetition.Tests\Sidekick.SpacedRepetition.Tests.csproj">
-      <Project>{E39765B1-C8E4-455F-A9BE-85FE038B03FF}</Project>
-      <Name>Sidekick.SpacedRepetition.Tests</Name>
+    <ProjectReference Include="..\..\Libs\SQLite.Net-PCL\src\SQLite.Net.Platform.Win32\SQLite.Net.Platform.Win32.csproj">
+      <Project>{03799ad1-9fcf-48cb-8e6e-b233df583b10}</Project>
+      <Name>SQLite.Net.Platform.Win32</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Libs\SQLite.Net-PCL\src\SQLite.Net\SQLite.Net.csproj">
+      <Project>{4971d437-0694-4297-a8cc-146ce08c3bd9}</Project>
+      <Name>SQLite.Net</Name>
     </ProjectReference>
     <ProjectReference Include="..\Sidekick.MVVM\Sidekick.MVVM.csproj">
       <Project>{8ff533cc-7198-4a6f-816f-ff24e551f2f3}</Project>

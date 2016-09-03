@@ -35,6 +35,10 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .NET Framework is automatically included -->
+    <ProjectReference Include="..\..\Libs\SQLite.Net-PCL\src\SQLite.Net\SQLite.Net.csproj">
+      <Project>{4971d437-0694-4297-a8cc-146ce08c3bd9}</Project>
+      <Name>SQLite.Net</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Sidekick.Shared\Sidekick.Shared.csproj">
       <Project>{2b6bb05d-c1e6-42fd-8837-7a20860bbc11}</Project>
       <Name>Sidekick.Shared</Name>
@@ -47,11 +51,6 @@
     <Content Include="SQLiteConnectionBridge.cs.txt" />
     <Compile Include="TableMappingBridge.cs" />
     <Compile Include="TableQueryBridge.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="SQLite.Net">
-      <HintPath>..\..\Libs\SQLite.Net-PCL\src\SQLite.Net\bin\Release\SQLite.Net.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="x64\SQLite.Interop.dll">

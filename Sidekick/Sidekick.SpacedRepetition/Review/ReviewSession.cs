@@ -59,14 +59,19 @@ namespace Sidekick.SpacedRepetition.Review
       int todayStart = DateTime.Today.ToUnixTimestamp();
       int todayEnd = DateTime.Today.AddDays(1).ToUnixTimestamp();
 
-      IEnumerable<ReviewLog> logs =
-        db.Table<ReviewLog>()
-          .Where(l =>
-                 l.Id >= todayStart && l.Id < todayEnd
-                 && (l.LastState == CardPracticeState.New
-                     || l.LastState == CardPracticeState.Due))
-          .SelectColumns(nameof(ReviewLog.LastState))
-          .ToList();
+      IEnumerable<ReviewLog> logs;
+
+      using (db.Lock())
+      {
+        logs =
+          db.Table<ReviewLog>()
+            .Where(l =>
+                   l.Id >= todayStart && l.Id < todayEnd
+                   && (l.LastState == CardPracticeState.New
+                       || l.LastState == CardPracticeState.Due))
+            .SelectColumns(nameof(ReviewLog.LastState))
+            .ToList();
+      }
 
       int newReviewedToday = logs.Count(
         l => l.LastState == CardPracticeState.New);

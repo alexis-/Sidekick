@@ -20,6 +20,8 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyVersion("1.0.*")]
 [assembly: InternalsVisibleTo("Sidekick.Tests")]
 [assembly: InternalsVisibleTo("Sidekick.Explorables")]
+[assembly: InternalsVisibleTo("Sidekick.Shared.Tests")]
+[assembly: InternalsVisibleTo("Sidekick.Shared.Explorables")]
 
 // The following attributes are used to specify the signing key for the assembly,
 // if desired. See the Mono documentation for more information about signing.
