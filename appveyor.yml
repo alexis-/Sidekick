@@ -3,10 +3,11 @@ before_build:
   
 install:
   - git submodule update --init --recursive
+  - nuget restore Libs/SQLite.Net-PCL/SQLite.Net.OSS.sln
   
 cache:
   - packages -> **\packages.config
   
 build:
   parallel: true                  # enable MSBuild parallel builds
-  project: Sidekick.sln           # path to Visual Studio solution or project
+  project: Sidekick.OSS.sln           # path to Visual Studio solution or project
