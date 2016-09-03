@@ -41,50 +41,31 @@ namespace Sidekick.WPF.Controls
   /// <seealso cref="System.Windows.DependencyObject" />
   public class RadioController : DependencyObject
   {
-    public delegate Task<bool> SelectionChangeHandler(
-      object selectedItem, object parameter);
-
     #region Fields
-
-    public static readonly DependencyProperty ActiveProperty =
-      DependencyProperty.Register(
-        "Active", typeof(bool), typeof(RadioController),
-        new PropertyMetadata(false));
 
     private readonly Dictionary<ToggleButton, object> _elements =
       new Dictionary<ToggleButton, object>();
 
-    private bool _isSettingValue = false;
+    private readonly IRadioControllerMonitor _monitor;
+    private bool _isSettingValue;
 
     #endregion
 
     #region Constructors
 
     public RadioController()
-      : this(true)
+      : this(null)
     {
     }
 
-    public RadioController(bool active)
+    public RadioController(IRadioControllerMonitor monitor)
     {
-      Active = active;
-    }
-
-    #endregion
-
-    #region Properties
-
-    public bool Active
-    {
-      get { return (bool)GetValue(ActiveProperty); }
-      set { SetValue(ActiveProperty, value); }
+      _monitor = monitor;
     }
 
     #endregion
 
     #region Methods
-
-    public event SelectionChangeHandler OnSelectionChanged;
 
     //
     // Core methods
@@ -118,13 +99,12 @@ namespace Sidekick.WPF.Controls
       if (IsTrue(toggleButton.IsChecked))
       {
         Task<bool> allowChangeTask =
-          OnSelectionChanged?.Invoke(toggleButton, _elements[toggleButton]);
+          _monitor?.RadioControllerOnSelectionChangedAsync(
+            toggleButton, _elements[toggleButton]);
 
-        if (allowChangeTask == null)
-          throw new InvalidOperationException("Task is NULL.");
-
-        if (allowChangeTask.IsCompleted)
-          OnToggledChecked(toggleButton, allowChangeTask.Result);
+        if (allowChangeTask == null || allowChangeTask.IsCompleted)
+          OnToggledChecked(
+            toggleButton, allowChangeTask == null || allowChangeTask.Result);
 
         else
 #pragma warning disable 4014
@@ -195,6 +175,16 @@ namespace Sidekick.WPF.Controls
     #endregion
   }
 
+  public interface IRadioControllerMonitor
+  {
+    #region Methods
+
+    Task<bool> RadioControllerOnSelectionChangedAsync(
+      object selectedItem, object parameter);
+
+    #endregion
+  }
+
 
   /// <summary>
   /// RadioController attached property and TypeConverter.
@@ -247,25 +237,13 @@ namespace Sidekick.WPF.Controls
       public override bool CanConvertFrom(
         ITypeDescriptorContext context, Type sourceType)
       {
-        return sourceType == typeof(string)
-               || sourceType == typeof(bool);
+        return sourceType == typeof(IRadioControllerMonitor);
       }
 
       public override object ConvertFrom(
         ITypeDescriptorContext context, CultureInfo culture, object value)
       {
-        bool active = false;
-
-        if (value is string)
-        {
-          if (!Boolean.TryParse((string)value, out active))
-            return null;
-        }
-
-        else if (value is bool)
-          active = (bool)value;
-
-        return new RadioController(active);
+        return new RadioController(value as IRadioControllerMonitor);
       }
 
       #endregion

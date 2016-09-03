@@ -111,16 +111,8 @@ namespace SQLite.Net.Bridge.Tests
         && bo.Id <= paramObjs.Count());
     }
 
-    private bool DoAsyncOperation(BasicTestDb db, int count)
-    {
-      using (db.Lock())
-      {
-        return db.Table<BasicObject>().ToList().Count == count;
-      }
-    }
-
     [Fact]
-    public void AsyncOperations()
+    public async void AsyncOperations()
     {
       const int count = 500;
 
@@ -132,13 +124,18 @@ namespace SQLite.Net.Bridge.Tests
 
       for (int i = 0; i < 20; i++)
       {
-        Task<bool> task = new Task<bool>(() => DoAsyncOperation(db, count));
+        Task<bool> task = new Task<bool>(
+          () =>
+          {
+            using (db.Lock())
+              return db.Table<BasicObject>().ToList().Count == count;
+          });
 
         tasks.Add(task);
         task.Start();
       }
 
-      Task.WaitAll(tasks.ToArray());
+      await Task.WhenAll(tasks.ToArray());
 
       tasks.Should().OnlyContain(f => f.Result);
     }

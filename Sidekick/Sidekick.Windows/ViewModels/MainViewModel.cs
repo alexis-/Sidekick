@@ -38,11 +38,9 @@ using Sidekick.WPF.Controls;
 
 namespace Sidekick.Windows.ViewModels
 {
-  public class MainViewModel : ViewModelBase
+  public class MainViewModel : ViewModelBase, IRadioControllerMonitor
   {
     #region Fields
-
-    private readonly NavigationMenuService _menuService;
 
     private readonly Dictionary<string,
       MainContentViewModelBase> _navViewModels;
@@ -53,15 +51,13 @@ namespace Sidekick.Windows.ViewModels
 
     //
     // Constructors
-    public MainViewModel(
-      ILanguageService languageService, NavigationMenuService menuService)
+    public MainViewModel(ILanguageService languageService)
     {
-      _menuService = menuService;
       _navViewModels =
         new Dictionary<string, MainContentViewModelBase>();
 
       Title = languageService.GetString("App_Title");
-      MenuController = new RadioController();
+      MenuController = new RadioController(this);
     }
 
     #endregion
@@ -84,13 +80,12 @@ namespace Sidekick.Windows.ViewModels
 
     protected override Task InitializeAsync()
     {
-      MenuController.OnSelectionChanged += MenuControllerOnOnSelectionChanged;
-      MenuControllerOnOnSelectionChanged(null, "NavigationBrowseButton");
+      RadioControllerOnSelectionChangedAsync(null, "NavigationBrowseButton");
 
       return base.InitializeAsync();
     }
 
-    private Task<bool> MenuControllerOnOnSelectionChanged(
+    public Task<bool> RadioControllerOnSelectionChangedAsync(
       object selectedItem, object parameter)
     {
       Argument.IsNotNull(() => parameter);
