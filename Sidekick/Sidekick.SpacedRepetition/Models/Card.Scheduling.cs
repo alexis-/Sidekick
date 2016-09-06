@@ -1,6 +1,5 @@
 ﻿// 
 // The MIT License (MIT)
-// Copyright (c) 2016 Incogito
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -32,7 +31,7 @@ namespace Sidekick.SpacedRepetition.Models
 
     public int ReviewLeftToday()
     {
-      if (Due >= DateTime.Today.AddDays(1).ToUnixTimestamp())
+      if (Due >= DateTimeExtensions.Tomorrow.ToUnixTimestamp())
         return 0;
 
       switch (PracticeState)

@@ -1,6 +1,5 @@
 ﻿// 
 // The MIT License (MIT)
-// Copyright (c) 2016 Incogito
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -20,18 +19,26 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Sidekick.Shared.Interfaces.Database;
-using Sidekick.Shared.Utils;
-using Sidekick.Shared.Utils.Collections;
-using Sidekick.Shared.Utils.LazyLoad;
-using Sidekick.SpacedRepetition.Models;
-
 namespace Sidekick.SpacedRepetition.Review
 {
+  using System;
+  using System.Collections.Generic;
+  using System.Linq;
+  using System.Threading.Tasks;
+
+  using Sidekick.Shared.Interfaces.Database;
+  using Sidekick.Shared.Utils;
+  using Sidekick.Shared.Utils.Collections;
+  using Sidekick.Shared.Utils.LazyLoad;
+  using Sidekick.SpacedRepetition.Models;
+
+  /// <summary>
+  ///   Implements common methods and properties for review lists.
+  ///   - Dismiss
+  ///   - Card counts
+  ///   - Async loading
+  /// </summary>
+  /// <seealso cref="Sidekick.Shared.Utils.Collections.AsyncDbListBase{Card}" />
   internal abstract class ReviewAsyncDbListBase : AsyncDbListBase<Card>
   {
     #region Fields
@@ -39,59 +46,72 @@ namespace Sidekick.SpacedRepetition.Review
     //
     // Const
 
+    /// <summary>
+    ///   Maximum further (in constrast with lazy) load count from current position
+    /// </summary>
     protected const int IncrementalFurtherLoadMax = 10;
+
+    /// <summary>
+    ///   Minimum further (in constrast with lazy) loaded threshold from current position
+    /// </summary>
     protected const int IncrementalFurtherLoadMin = 5;
 
     #endregion
+
+
 
     #region Constructors
 
     //
     // Constructor
 
-    protected ReviewAsyncDbListBase(IDatabase db)
-      : base(db, true)
+    /// <summary>
+    ///   Initializes a new instance of the <see cref="ReviewAsyncDbListBase" /> class.
+    /// </summary>
+    /// <param name="db">The database.</param>
+    protected ReviewAsyncDbListBase(IDatabase db) : base(db, true)
     {
       FurtherLoadedIndex = -1;
       DismissedIds = new HashSet<int>();
-
-      Initialize(true);
     }
 
     #endregion
 
+
+
     #region Properties
 
-    //
-    // Properties
-
-    // State
-
-    protected int FurtherLoadedIndex { get; set; }
-    protected HashSet<int> DismissedIds { get; set; }
-
     /// <summary>
-    ///     Dismissed item count
+    ///   Dismissed item count.
     /// </summary>
     public int Dismissed => DismissedIds.Count;
 
     /// <summary>
-    ///     Number of card reviewed
+    ///   Number of card reviewed.
     /// </summary>
     public int ReviewedCardCount => Index + 1 - Dismissed;
 
+    /// <summary>
+    ///   Index up to which objects are fully loaded (starting from current position).
+    /// </summary>
+    protected int FurtherLoadedIndex { get; set; }
+
+    /// <summary>
+    ///   Id of all dismissed cards.
+    /// </summary>
+    protected HashSet<int> DismissedIds { get; }
+
     #endregion
 
-    #region Methods
 
-    // 
-    // Core methods
+
+    #region Methods
 
     /// <summary>
     ///   Returns waitable task for list initialization
     /// </summary>
     /// <returns>Waitable Task</returns>
-    public Task Initialized()
+    public Task IsInitializedAsync()
     {
       if (Objects.Count > 0)
         return TaskConstants.Completed;
@@ -101,28 +121,29 @@ namespace Sidekick.SpacedRepetition.Review
     }
 
     /// <summary>
-    ///     Dismiss current item and calls
-    ///     <see cref="AsyncDbListBase{T}.MoveNext()"/>
+    ///   Dismiss current item and calls
+    ///   <see cref="AsyncDbListBase{T}.MoveNextAsync" />
     /// </summary>
     /// <returns>Whether any item is available</returns>
-    public Task<bool> Dismiss()
+    public Task<bool> DismissAsync()
     {
       if (!CheckState(false))
         throw new InvalidOperationException("Invalid state");
 
       DismissedIds.Add(Current.Id);
 
-      return MoveNext();
+      return MoveNextAsync();
     }
 
     /// <summary>
-    ///     Dismisses card siblings (cards of the same note).
-    ///     Works by swapping cards.
+    ///   Dismisses card siblings (cards of the same note).
+    ///   Works by swapping cards.
     /// </summary>
-    /// <returns>Number of dismissed cards</returns>
-    /// <exception cref="System.InvalidOperationException">
-    ///     Is thrown if invalid state.
-    /// </exception>
+    /// <param name="card">Card from which siblings will be dismissed</param>
+    /// <returns>
+    ///   Number of dismissed cards
+    /// </returns>
+    /// <exception cref="System.InvalidOperationException">Is thrown if invalid state.</exception>
     public int DismissSiblings(Card card)
     {
       if (!CheckState(false))
@@ -140,10 +161,9 @@ namespace Sidekick.SpacedRepetition.Review
           return 0;
 
         // Find siblings indices
-        while ((cardIndex =
-                Objects.FindIndex(
-                  cardIndex + 1,
-                  c => c.NoteId == noteId && c.Id != cardId)) > 0)
+        while (
+          (cardIndex =
+           Objects.FindIndex(cardIndex + 1, c => c.NoteId == noteId && c.Id != cardId)) > 0)
           cardIndices.Add(cardIndex);
 
         // No siblings
@@ -188,52 +208,51 @@ namespace Sidekick.SpacedRepetition.Review
     }
 
     /// <summary>
-    ///     Good ol' swap.
+    ///   Computes the number of available cards for iteration
     /// </summary>
-    /// <param name="idx1">First card's index</param>
-    /// <param name="idx2">Second card's index</param>
-    private void SwapCards(int idx1, int idx2)
-    {
-      Card tmp = Objects[idx1];
-
-      Objects[idx1] = Objects[idx2];
-      Objects[idx2] = tmp;
-    }
-
     public abstract int AvailableCount();
+
+    /// <summary>
+    ///   Computes total review count left
+    /// </summary>
     public abstract int ReviewCount();
 
+    
 
     //
     // AsyncDbListBase core methods implementation
 
     /// <summary>
-    ///     Fully load lazy loaded items.
+    ///   Fully load lazy loaded items.
     /// </summary>
-    protected override void DoFurtherLoad()
+    protected override async Task DoFurtherLoadAsync()
     {
       IEnumerable<Card> cards;
       HashSet<int> cardsId;
 
       lock (LockObject)
       {
-        cards = Objects
-          .Skip(GetFurtherLoadedIndex())
-          .Take(Math.Max(Index - GetFurtherLoadedIndex(), 0)
-                + IncrementalFurtherLoadMax - IncrementalFurtherLoadMin);
+        cards =
+          Objects.Skip(GetFurtherLoadedIndex())
+                 .Take(
+                   Math.Max(Index - GetFurtherLoadedIndex(), 0) + IncrementalFurtherLoadMax
+                   - IncrementalFurtherLoadMin);
+
         cardsId = new HashSet<int>(cards.Select(c => c.Id));
       }
 
-      IEnumerable<Card> updateCards;
-
-      using (Db.Lock())
-      {
-        updateCards =
-          Db.Table<Card>()
-            .FurtherLoad(LazyLoader)
-            .Where(c => cardsId.Contains(c.Id))
-            .ToList();
-      }
+      IEnumerable<Card> updateCards = await Task.Run(
+        () =>
+        {
+          using (Db.Lock())
+          {
+            return
+              Db.Table<Card>()
+                .FurtherLoad(LazyLoader)
+                .Where(c => cardsId.Contains(c.Id))
+                .ToList();
+          }
+        }).ConfigureAwait(false);
 
       lock (LockObject)
       {
@@ -243,6 +262,19 @@ namespace Sidekick.SpacedRepetition.Review
 
         FurtherLoadedIndex = FurtherLoadedIndex + updateCards.Count();
       }
+    }
+
+    /// <summary>
+    ///   Good ol' swap.
+    /// </summary>
+    /// <param name="idx1">First card's index</param>
+    /// <param name="idx2">Second card's index</param>
+    private void SwapCards(int idx1, int idx2)
+    {
+      Card tmp = Objects[idx1];
+
+      Objects[idx1] = Objects[idx2];
+      Objects[idx2] = tmp;
     }
 
     #endregion

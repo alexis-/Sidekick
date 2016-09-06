@@ -1,6 +1,5 @@
 ﻿// 
 // The MIT License (MIT)
-// Copyright (c) 2016 Incogito
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -20,62 +19,57 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using FluentAssertions;
-using Sidekick.Shared.Extensions;
-using Sidekick.SpacedRepetition.Const;
-using Sidekick.SpacedRepetition.Generators;
-using Sidekick.SpacedRepetition.Models;
-using Xunit;
-
 namespace Sidekick.SpacedRepetition.Tests
 {
+  using System;
+  using System.Collections.Generic;
+  using System.Linq;
+
+  using FluentAssertions;
+
+  using Sidekick.Shared.Extensions;
+  using Sidekick.SpacedRepetition.Const;
+  using Sidekick.SpacedRepetition.Generators;
+  using Sidekick.SpacedRepetition.Models;
+
+  using Xunit;
+
   public class CardTest
   {
-    public CollectionConfig Config => CollectionConfig.Default;
+    private CollectionConfig Config => CollectionConfig.Default;
 
     private void ReviewIntervalExpectedIntervals(
-      Card card,
-      int hardMin, int hardMax,
-      int goodMin, int goodMax,
-      int easyMin, int easyMax)
+      Card card, int hardMin, int hardMax, int goodMin, int goodMax, int easyMin, int easyMax)
     {
       for (int i = 0; i < 20; i++)
       {
-        card.ComputeReviewInterval(Grade.Hard)
-            .Should().BeInRange(hardMin, hardMax);
-        card.ComputeReviewInterval(Grade.Good)
-            .Should().BeInRange(goodMin, goodMax);
-        card.ComputeReviewInterval(Grade.Easy)
-            .Should().BeInRange(easyMin, easyMax);
+        card.ComputeReviewInterval(Grade.Hard).Should().BeInRange(hardMin, hardMax);
+        card.ComputeReviewInterval(Grade.Good).Should().BeInRange(goodMin, goodMax);
+        card.ComputeReviewInterval(Grade.Easy).Should().BeInRange(easyMin, easyMax);
       }
     }
 
     [Fact]
     public void ComputeRandomCardsGrades()
     {
-      const int cardCount = 20;
+      const int CardCount = 20;
 
-      CardGenerator cardGenerator = new CardGenerator(new TimeGenerator(),
-        Config, cardCount);
+      CardGenerator cardGenerator = new CardGenerator(new TimeGenerator(), Config, CardCount);
 
-      Dictionary<short, int> gradesCount = new Dictionary<short, int>();
-      gradesCount[(short)CardPracticeState.Due] = 4;
-      gradesCount[(short)CardPracticeState.Learning] = 3;
-      gradesCount[(short)CardPracticeState.New] = 3;
+      Dictionary<short, int> gradesCount = new Dictionary<short, int>
+      {
+        [CardPracticeState.Due] = 4,
+        [CardPracticeState.Learning] = 3,
+        [CardPracticeState.New] = 3
+      };
 
-      for (int i = 0; i < cardCount; i++)
+      for (int i = 0; i < CardCount; i++)
       {
         Card card = cardGenerator.Generate();
 
         GradeInfo[] grades = card.ComputeGrades();
 
-        grades.Should()
-              .NotBeNull()
-              .And
-              .HaveCount(gradesCount[card.PracticeState]);
+        grades.Should().NotBeNull().And.HaveCount(gradesCount[card.PracticeState]);
       }
     }
 
@@ -83,10 +77,7 @@ namespace Sidekick.SpacedRepetition.Tests
     public void FailCard()
     {
       Card card = CardGenerator.MakeCard(
-        Config,
-        CardPracticeState.New,
-        DateTime.Now.AddSeconds(60).ToUnixTimestamp(),
-        2.5f, 1);
+        Config, CardPracticeState.New, DateTime.Now.AddSeconds(60).ToUnixTimestamp(), 2.5f, 1);
 
       // Ensure setting
       int learningSteps = Config.LearningSteps.Length;
@@ -115,18 +106,14 @@ namespace Sidekick.SpacedRepetition.Tests
       }
 
       card.IsDue().Should().Be(true);
-      card.Due.Should().BeGreaterOrEqualTo(
-        DateTime.Today.AddDays(1).ToUnixTimestamp());
+      card.Due.Should().BeGreaterOrEqualTo(DateTimeExtensions.Tomorrow.ToUnixTimestamp());
     }
 
     [Fact]
     public void LapseCard()
     {
       Card card = CardGenerator.MakeCard(
-        Config,
-        CardPracticeState.Due,
-        DateTime.Now.AddSeconds(60).ToUnixTimestamp(),
-        2.5f, 1);
+        Config, CardPracticeState.Due, DateTime.Now.AddSeconds(60).ToUnixTimestamp(), 2.5f, 1);
 
       card.IsDue().Should().Be(true);
 
@@ -139,28 +126,25 @@ namespace Sidekick.SpacedRepetition.Tests
     [Fact]
     public void LearningCard()
     {
-      const int cardCount = 20;
+      const int CardCount = 20;
 
-      CardGenerator cardGenerator = new CardGenerator(new TimeGenerator(),
-        Config,
-        cardCount, 0, 1, 0, 30);
+      CardGenerator cardGenerator = new CardGenerator(
+        new TimeGenerator(), Config, CardCount, 0, 1, 0, 30);
 
       Card card = new Card(Config);
 
-      Config.LearningSteps.Count().Should().BeGreaterThan(1);
+      Config.LearningSteps.Length.Should().BeGreaterThan(1);
 
-      for (int i = 0; i < cardCount; i++)
+      for (int i = 0; i < CardCount; i++)
       {
         cardGenerator.Generate(card);
-
-        //int leftToday = card.ReviewLeftToday();
+        
         int toGraduation = card.GetLearningStepsLeft();
 
         card.CurrentReviewTime = DateTime.Now.ToUnixTimestamp();
 
         card.GetCurrentLearningIndex().Should().Be(0);
-        card.GetLearningStepsLeft().Should().Be(
-          card.LearningOrLapsingSteps.Length);
+        card.GetLearningStepsLeft().Should().Be(card.LearningOrLapsingSteps.Length);
 
         // Loop until graduation step
         for (int step = 1; step < toGraduation; step++)
@@ -169,9 +153,7 @@ namespace Sidekick.SpacedRepetition.Tests
 
           card.GetCurrentLearningIndex().Should().Be(step);
           card.GetLearningStepsLeft().Should().Be(toGraduation - step);
-          card.Due.Should().Be(
-            card.CurrentReviewTime
-            + card.LearningOrLapsingSteps[step]);
+          card.Due.Should().Be(card.CurrentReviewTime + card.LearningOrLapsingSteps[step]);
         }
 
         card.UpdateLearningStep();
@@ -184,19 +166,13 @@ namespace Sidekick.SpacedRepetition.Tests
     {
       // In time, 250% ease, 1d ivl
       Card card = CardGenerator.MakeCard(
-        Config,
-        CardPracticeState.Due,
-        DateTime.Now.AddSeconds(60).ToUnixTimestamp(),
-        2.5f, 1);
+        Config, CardPracticeState.Due, DateTime.Now.AddSeconds(60).ToUnixTimestamp(), 2.5f, 1);
 
       ReviewIntervalExpectedIntervals(card, 2, 3, 2, 3, 2, 4);
 
       // In time, 250% ease, 2d ivl
       card = CardGenerator.MakeCard(
-        Config,
-        CardPracticeState.Due,
-        DateTime.Now.AddSeconds(60).ToUnixTimestamp(),
-        2.5f, 2);
+        Config, CardPracticeState.Due, DateTime.Now.AddSeconds(60).ToUnixTimestamp(), 2.5f, 2);
 
       ReviewIntervalExpectedIntervals(card, 3, 4, 4, 6, 5, 9);
     }

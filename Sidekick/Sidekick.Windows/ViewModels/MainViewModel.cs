@@ -1,6 +1,5 @@
 ﻿// 
 // The MIT License (MIT)
-// Copyright (c) 2016 Incogito
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -20,41 +19,49 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Catel;
-using Catel.IoC;
-using Catel.MVVM;
-using Catel.Services;
-using Sidekick.MVVM.ViewModels;
-using Sidekick.MVVM.ViewModels.SpacedRepetition;
-using Sidekick.Shared.Extensions;
-using Sidekick.Shared.Utils;
-using Sidekick.SpacedRepetition.Models;
-using Sidekick.Windows.Models;
-using Sidekick.Windows.Services;
-using Sidekick.Windows.ViewModels.SpacedRepetition;
-using Sidekick.WPF.Controls;
-
 namespace Sidekick.Windows.ViewModels
 {
-  public class MainViewModel : ViewModelBase, IRadioControllerMonitor
+  using System.Collections.Generic;
+  using System.Threading.Tasks;
+
+  using Catel;
+  using Catel.IoC;
+  using Catel.MVVM;
+  using Catel.Services;
+
+  using Sidekick.MVVM.ViewModels;
+  using Sidekick.MVVM.ViewModels.SpacedRepetition;
+  using Sidekick.Shared.Extensions;
+  using Sidekick.Shared.Utils;
+  using Sidekick.Windows.ViewModels.SpacedRepetition;
+  using Sidekick.WPF.Controls;
+
+  /// <summary>
+  ///   ViewModel for Main view directly under MainWindow.
+  ///   Controls left menu and displaying main navigation.
+  /// </summary>
+  /// <seealso cref="Catel.MVVM.ViewModelBase" />
+  /// <seealso cref="Sidekick.WPF.Controls.IRadioControllerMonitor" />
+  public sealed class MainViewModel : ViewModelBase, IRadioControllerMonitor
   {
     #region Fields
 
-    private readonly Dictionary<string,
-      MainContentViewModelBase> _navViewModels;
+    private readonly Dictionary<string, MainContentViewModelBase> _navViewModels;
 
     #endregion
 
     #region Constructors
 
-    //
-    // Constructors
+    /// <summary>
+    ///   Initializes a new instance of the <see cref="MainViewModel" /> class.
+    ///   Setup Title and navigation control.
+    /// </summary>
+    /// <param name="languageService">
+    ///   Language service used to setup Title
+    /// </param>
     public MainViewModel(ILanguageService languageService)
     {
-      _navViewModels =
-        new Dictionary<string, MainContentViewModelBase>();
+      _navViewModels = new Dictionary<string, MainContentViewModelBase>();
 
       Title = languageService.GetString("App_Title");
       MenuController = new RadioController(this);
@@ -64,9 +71,7 @@ namespace Sidekick.Windows.ViewModels
 
     #region Properties
 
-    //
     // Properties
-
     public MainContentViewModelBase CurrentModel { get; set; }
 
     public RadioController MenuController { get; set; }
@@ -75,18 +80,19 @@ namespace Sidekick.Windows.ViewModels
 
     #region Methods
 
-    //
-    // Methods
-
-    protected override Task InitializeAsync()
-    {
-      RadioControllerOnSelectionChangedAsync(null, "NavigationBrowseButton");
-
-      return base.InitializeAsync();
-    }
-
-    public Task<bool> RadioControllerOnSelectionChangedAsync(
-      object selectedItem, object parameter)
+    /// <summary>
+    ///   The radio controller on selection changed async.
+    /// </summary>
+    /// <param name="selectedItem">
+    ///   The selected item.
+    /// </param>
+    /// <param name="parameter">
+    ///   The parameter.
+    /// </param>
+    /// <returns>
+    ///   Waitable <see cref="Task" />.
+    /// </returns>
+    public Task<bool> RadioControllerOnSelectionChangedAsync(object selectedItem, object parameter)
     {
       Argument.IsNotNull(() => parameter);
       Argument.IsOfType("parameter", parameter, typeof(string));
@@ -96,43 +102,72 @@ namespace Sidekick.Windows.ViewModels
       switch (buttonName)
       {
         case "NavigationCollectionButton":
-          return SetCurrentModel(_navViewModels.GetOrAdd(
-            buttonName,
-            () => TypeFactory.Default.CreateInstance<CollectionViewModel>()));
+          return
+            SetCurrentModelAsync(
+              _navViewModels.GetOrAdd(
+                buttonName,
+                () => TypeFactory.Default.CreateInstance<CollectionViewModel>()));
 
         case "NavigationBrowseButton":
-          return SetCurrentModel(_navViewModels.GetOrAdd(
-            buttonName,
-            () => TypeFactory.Default.CreateInstance<BrowserViewModel>()));
+          return
+            SetCurrentModelAsync(
+              _navViewModels.GetOrAdd(
+                buttonName,
+                () => TypeFactory.Default.CreateInstance<BrowserViewModel>()));
 
         case "NavigationKnowledgeNetworkButton":
-          //return SetCurrentModel(_navViewModels.GetOrAdd(
-          //  buttonName,
-          //  () => TypeFactory.Default.CreateInstanceWithParameters<QueryBuilderViewModel>(typeof(Card))));
+          // return SetCurrentModelAsync(_navViewModels.GetOrAdd(
+          // buttonName,
+          // () => TypeFactory.Default.CreateInstanceWithParameters<QueryBuilderViewModel>(typeof(Card))));
           return TaskConstants.BooleanFalse;
 
         case "SettingsButton":
-          return SetCurrentModel(_navViewModels.GetOrAdd(
-            buttonName,
-            () => TypeFactory.Default.CreateInstance<SettingsViewModel>()));
+          return
+            SetCurrentModelAsync(
+              _navViewModels.GetOrAdd(
+                buttonName,
+                () => TypeFactory.Default.CreateInstance<SettingsViewModel>()));
       }
 
       return TaskConstants.BooleanFalse;
     }
 
-    private Task<bool> SetCurrentModel(MainContentViewModelBase viewModel)
+    /// <summary>
+    ///   Initializes the view model. Normally the initialization is done in the constructor, but
+    ///   sometimes this must be delayed
+    ///   to a state where the associated UI element (user control, window, ...) is actually loaded.
+    ///   <para />
+    ///   This method is called as soon as the associated UI element is loaded.
+    /// </summary>
+    /// <returns></returns>
+    /// <remarks>
+    ///   It's not recommended to implement the initialization of properties in this method. The
+    ///   initialization of properties
+    ///   should be done in the constructor. This method should be used to start the retrieval of data
+    ///   from a web service or something
+    ///   similar.
+    ///   <para />
+    ///   During unit tests, it is recommended to manually call this method because there is no external
+    ///   container calling this method.
+    /// </remarks>
+    protected override Task InitializeAsync()
+    {
+      RadioControllerOnSelectionChangedAsync(null, "NavigationBrowseButton");
+
+      return base.InitializeAsync();
+    }
+
+    private Task<bool> SetCurrentModelAsync(MainContentViewModelBase viewModel)
     {
       if (CurrentModel == viewModel)
         return TaskConstants.BooleanFalse;
 
-      Task<bool> allowChangeTask =
-        CurrentModel != null
-          ? CurrentModel.OnContentChange()
-          : TaskConstants.BooleanTrue;
+      Task<bool> allowChangeTask = CurrentModel != null
+                                     ? CurrentModel.OnContentChange()
+                                     : TaskConstants.BooleanTrue;
 
       if (allowChangeTask.IsCompleted && allowChangeTask.Result)
         CurrentModel = viewModel;
-
       else
         SetCurrentModelAsync(viewModel, allowChangeTask);
 
@@ -143,7 +178,7 @@ namespace Sidekick.Windows.ViewModels
       MainContentViewModelBase viewModel,
       Task<bool> allowChangeTask)
     {
-      if (await allowChangeTask)
+      if (await allowChangeTask.ConfigureAwait(true))
         CurrentModel = viewModel;
     }
 

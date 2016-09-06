@@ -1,6 +1,5 @@
 ﻿// 
 // The MIT License (MIT)
-// Copyright (c) 2016 Incogito
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -57,7 +56,7 @@ namespace Sidekick.SpacedRepetition.Review
       IDatabase db, CollectionConfig config)
     {
       int todayStart = DateTime.Today.ToUnixTimestamp();
-      int todayEnd = DateTime.Today.AddDays(1).ToUnixTimestamp();
+      int todayEnd = DateTimeExtensions.Tomorrow.ToUnixTimestamp();
 
       IEnumerable<ReviewLog> logs;
 

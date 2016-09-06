@@ -1,6 +1,5 @@
 ﻿// 
 // The MIT License (MIT)
-// Copyright (c) 2016 Incogito
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -20,13 +19,15 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-
 namespace Sidekick.Shared.Extensions
 {
+  using System;
+  using System.Collections.Generic;
+
   public static class DictionaryExtensions
   {
+    #region Methods
+
     public static TValue GetOrAdd<TKey, TValue>(
       this Dictionary<TKey, TValue> dictionary, TKey key, TValue value)
     {
@@ -43,8 +44,7 @@ namespace Sidekick.Shared.Extensions
     }
 
     public static TValue GetOrAdd<TKey, TValue>(
-      this Dictionary<TKey, TValue> dictionary,
-      TKey key, Func<TValue> valueFunc)
+      this Dictionary<TKey, TValue> dictionary, TKey key, Func<TValue> valueFunc)
     {
       TValue retValue;
 
@@ -57,5 +57,7 @@ namespace Sidekick.Shared.Extensions
 
       return retValue;
     }
+
+    #endregion
   }
 }

@@ -1,6 +1,5 @@
 // 
 // The MIT License (MIT)
-// Copyright (c) 2016 Incogito
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -20,80 +19,93 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Sidekick.Shared.Extensions;
-using Sidekick.Shared.Interfaces.Database;
-using Sidekick.Shared.Utils;
-using Sidekick.Shared.Utils.LazyLoad;
-using Sidekick.SpacedRepetition.Const;
-using Sidekick.SpacedRepetition.Models;
-
 namespace Sidekick.SpacedRepetition.Review
 {
+  using System;
+  using System.Collections.Generic;
+  using System.Linq;
+  using System.Threading.Tasks;
+
+  using Sidekick.Shared.Extensions;
+  using Sidekick.Shared.Interfaces.Database;
+  using Sidekick.Shared.Utils;
+  using Sidekick.Shared.Utils.Collections;
+  using Sidekick.Shared.Utils.LazyLoad;
+  using Sidekick.SpacedRepetition.Const;
+  using Sidekick.SpacedRepetition.Models;
+
+  /// <summary>
+  ///   ReviewList implementation for Learning cards.
+  ///   Uses <see cref="ReviewComparers.DueComparer" /> to sort cards by due date.
+  ///   <see cref="ReviewCount" /> returns the sum of all cards
+  ///   <see cref="Card.ReviewLeftToday" /> without any daily-limit (unlike
+  ///   <see cref="DueReviewList" /> or <see cref="NewReviewList" />).
+  /// </summary>
+  /// <seealso cref="Sidekick.SpacedRepetition.Review.ReviewAsyncDbListBase" />
   internal class LearnReviewList : ReviewAsyncDbListBase
   {
     #region Constructors
 
-    //
-    // Constructor
-
+    /// <summary>
+    ///   Initializes a new instance of the <see cref="LearnReviewList" /> class.
+    /// </summary>
+    /// <param name="db">Database instance</param>
     public LearnReviewList(IDatabase db) : base(db)
     {
       Comparer = ReviewComparers.DueComparer;
+
+      Initialize(true);
     }
 
     #endregion
 
-    #region Properties
 
-    //
-    // Properties
+
+    #region Properties
 
     private IComparer<Card> Comparer { get; }
 
     #endregion
 
+
+
     #region Methods
 
-    // 
-    // Core methods
-
     /// <summary>
-    ///     Number of cards available for iteration
-    ///     TODO: Check if loading ?
+    ///   Computes the number of available cards for iteration
     /// </summary>
+    /// <returns></returns>
+    /// <exception cref="System.InvalidOperationException">
+    ///   List is not properly initialized
+    /// </exception>
     public override int AvailableCount()
     {
       lock (LockObject)
       {
         if (Objects.Count == 0 && LoadCompletionSource != null
             && (Status == ReviewStatus.New || Status == ReviewStatus.MoveNext))
-          throw new InvalidOperationException();
+          throw new InvalidOperationException("List is not properly initialized");
 
-        return Objects
-          .Skip(Index + 1)
-          .Count();
+        return Objects.Skip(Index + 1).Count();
       }
     }
 
-
     /// <summary>
-    ///     Computes total review count left
+    ///   Computes total review count left
     /// </summary>
+    /// <returns></returns>
+    /// <exception cref="System.InvalidOperationException">
+    ///   List is not properly initialized
+    /// </exception>
     public override int ReviewCount()
     {
       lock (LockObject)
       {
         if (Objects.Count == 0 && LoadCompletionSource != null
             && (Status == ReviewStatus.New || Status == ReviewStatus.MoveNext))
-          throw new InvalidOperationException();
+          throw new InvalidOperationException("List is not properly initialized");
 
-        return Objects
-          .Where(c => !DismissedIds.Contains(c.Id))
-          .Sum(c => c.ReviewLeftToday());
+        return Objects.Where(c => !DismissedIds.Contains(c.Id)).Sum(c => c.ReviewLeftToday());
       }
     }
 
@@ -102,121 +114,133 @@ namespace Sidekick.SpacedRepetition.Review
     // AsyncDbListBase core methods implementation
 
     /// <summary>
-    ///     Learning cards may be reviewed more than once per day, overrides
-    ///     default behaviour to account for multiple reviews.
+    ///   Learning cards may be reviewed more than once per day, overrides
+    ///   default behaviour to account for multiple reviews.
     /// </summary>
     /// <returns>
-    ///     Whether any item is available
+    ///   Whether any item is available
     /// </returns>
-    public override Task<bool> MoveNext()
+    public override Task<bool> MoveNextAsync()
     {
       if (Current == null || Current.ReviewLeftToday() == 0)
-        return base.MoveNext();
+        return base.MoveNextAsync();
 
       lock (LockObject)
+      {
         Sort();
 
-      Current = Objects[Index];
+        Current = Objects[Index];
+      }
 
       return TaskConstants.BooleanTrue;
     }
 
     /// <summary>
-    ///     Load items.
+    ///   Load items.
     /// </summary>
     /// <param name="fullLoad">
-    ///     If true, full objects should be loaded.
-    ///     Only relevant when using lazy loading.
+    ///   If true, full objects should be loaded.
+    ///   Only relevant when using lazy loading.
     /// </param>
     /// <returns>Whether any item was loaded.</returns>
-    protected override bool DoLoadMore(bool fullLoad)
+    protected override async Task<bool> DoLoadMoreAsync(bool fullLoad)
     {
       bool firstLoad = Objects.Count == 0;
 
-      lock (LockObject)
-        return firstLoad && DoFirstLoad();
+      return firstLoad && await DoFirstLoadAsync().ConfigureAwait(false);
     }
 
     /// <summary>
-    ///     Fill the item list with its first items.
+    ///   Fill the item list with its first items.
     /// </summary>
     /// <returns>Whether any item was loaded.</returns>
-    protected bool DoFirstLoad()
+    protected async Task<bool> DoFirstLoadAsync()
     {
       int fullLoadCount = IncrementalFurtherLoadMax;
+      int tomorrow = DateTimeExtensions.Tomorrow.ToUnixTimestamp();
 
-      int tomorrow = DateTime.Today.AddDays(1).ToUnixTimestamp();
+      // Fully load up to IncrementalFurtherLoadMax items
+      int loadedCount =
+        await
+          AddItemsAsync(
+            () =>
+              Db.Table<Card>()
+                .Where(c => c.PracticeState >= CardPracticeState.Learning && c.Due < tomorrow)
+                .Take(fullLoadCount)
+                .OrderBy(c => c.Due)).ConfigureAwait(false);
 
-      using (Db.Lock())
-      {
-        ITableQuery<Card> tableQuery =
-          Db.Table<Card>()
-            .Where(c =>
-                   c.PracticeState >= CardPracticeState.Learning
-                   && c.Due < tomorrow)
-            .Take(fullLoadCount);
+      // Update fully loaded index accordingly
+      FurtherLoadedIndex = loadedCount - 1;
 
-        Objects.AddRange(tableQuery.OrderBy(c => c.Due));
-      }
-
-      FurtherLoadedIndex = Objects.Count - 1;
-
-      if (Objects.Count == fullLoadCount)
-      {
-        using (Db.Lock())
-        {
-          ITableQuery<Card> tableQuery =
-            Db.Table<Card>()
-              .ShallowLoad(LazyLoader)
-              .Where(c =>
-                     c.PracticeState >= CardPracticeState.Learning
-                     && c.Due < tomorrow
-                     && !Objects.Select(o => o.Id).Contains(c.Id));
-
-          Objects.AddRange(tableQuery.OrderBy(c => c.Due));
-        }
-      }
+      if (loadedCount == fullLoadCount)
+        loadedCount +=
+          await
+            AddItemsAsync(
+              () =>
+                Db.Table<Card>()
+                  .ShallowLoad(LazyLoader)
+                  .Where(
+                    c =>
+                      c.PracticeState >= CardPracticeState.Learning && c.Due < tomorrow
+                      && !Objects.Select(o => o.Id).Contains(c.Id))
+                  .OrderBy(c => c.Due)).ConfigureAwait(false);
 
       Status = ReviewStatus.MoveNextEndOfStore;
 
-      return Objects.Count > 0;
+      return loadedCount > 0;
     }
 
     /// <summary>
-    ///     Sort cards according to provided comparer.
-    ///     TODO: Use a more efficient backing type for sorting
-    ///     TODO: Should this be in implementing class
+    ///   Sort cards upon adding new cards. Object lock should already be in place when
+    ///   calling this.
+    ///   TODO: Use a more efficient backing type for sorting
+    ///   TODO: Should this be in implementing class
     /// </summary>
     protected override void Sort()
     {
-      int shift = Current == null || Current.ReviewLeftToday() == 0
-                    ? 1
-                    : 0;
-      Objects.Sort(
-        Index + shift,
-        Objects.Count - Index - shift,
-        Comparer);
+      int shift = Current == null || Current.ReviewLeftToday() == 0 ? 1 : 0;
+
+      Objects.Sort(Index + shift, Objects.Count - Index - shift, Comparer);
     }
 
 
     //
     // AsyncDbListBase load indicators implementation
 
+    /// <summary>
+    ///   Index threshold used in determining when asynchronous further item loading should be
+    ///   initiated. Only required when using lazy loading.
+    /// </summary>
+    /// <returns>Next load index threshold.</returns>
     protected override int GetNextFurtherLoadThreshold()
     {
       return GetFurtherLoadedIndex() - IncrementalFurtherLoadMin;
     }
 
+    /// <summary>
+    ///   Gets the maximum reachable index until awaiting item load to complete. If
+    ///   <see cref="AsyncDbListBase{T}.ReviewStatus.MoveNextEndOfStore" /> is set, this is
+    ///   ignored.
+    /// </summary>
+    /// <returns>Maximum reachable index.</returns>
     protected override int GetMaxIndexLoadThreshold()
     {
       return -1;
     }
 
+    /// <summary>
+    ///   Gets the index of last fully loaded item. Only required when using lazy loading.
+    /// </summary>
+    /// <returns>Index of last fully loaded item.</returns>
     protected override int GetFurtherLoadedIndex()
     {
       return FurtherLoadedIndex;
     }
 
+    /// <summary>
+    ///   Index threshold used in determining when asynchronous item loading should be initiated.
+    /// </summary>
+    /// <returns>Next load index threshold.</returns>
     protected override int GetNextLoadThreshold()
     {
       return -1;

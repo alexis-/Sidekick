@@ -1,6 +1,5 @@
 ﻿// 
 // The MIT License (MIT)
-// Copyright (c) 2016 Incogito
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -158,11 +157,11 @@ namespace Sidekick.MVVM.ViewModels.SpacedRepetition
 
     private async Task AnswerCard(Grade grade)
     {
-      if (await _reviewCollection.Answer(grade))
+      if (await _reviewCollection.AnswerAsync(grade).ConfigureAwait(true))
         DisplayCard();
 
       else
-        await _messageService.ShowInformationAsync("All cards reviewed.");
+        await _messageService.ShowInformationAsync("All cards reviewed.").ConfigureAwait(false);
     }
 
     protected override void OnViewModelCommandExecuted(

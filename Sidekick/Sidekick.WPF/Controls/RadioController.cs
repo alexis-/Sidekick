@@ -1,6 +1,5 @@
 ﻿// 
 // The MIT License (MIT)
-// Copyright (c) 2016 Incogito
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -20,23 +19,39 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using Catel.Collections;
-using Catel.Fody;
-
 namespace Sidekick.WPF.Controls
 {
+  using System.Collections.Generic;
+  using System.Linq;
+  using System.Threading.Tasks;
+  using System.Windows;
+  using System.Windows.Controls.Primitives;
+
+  using Catel.Collections;
+  using Catel.Fody;
+
   /// <summary>
-  /// Act as a controller for toggleable elements.
-  /// Ensure only a single time is checked at any time, like radio buttons.
+  ///   Callback interface for RadioController class.
+  /// </summary>
+  public interface IRadioControllerMonitor
+  {
+    #region Methods
+
+    /// <summary>
+    ///   Notify on selection changes and allows to asynchronously validate whether to endorse it
+    ///   or not.
+    /// </summary>
+    /// <param name="selectedItem">The selected item.</param>
+    /// <param name="parameter">Item context (e.g. binding).</param>
+    /// <returns>Waitable task for validation result.</returns>
+    Task<bool> RadioControllerOnSelectionChangedAsync(object selectedItem, object parameter);
+
+    #endregion
+  }
+
+  /// <summary>
+  ///   Act as a controller for toggleable elements.
+  ///   Ensure only a single time is checked at any time, like radio buttons.
   /// </summary>
   /// <seealso cref="System.Windows.DependencyObject" />
   public class RadioController : DependencyObject
@@ -47,17 +62,27 @@ namespace Sidekick.WPF.Controls
       new Dictionary<ToggleButton, object>();
 
     private readonly IRadioControllerMonitor _monitor;
+
     private bool _isSettingValue;
 
     #endregion
 
     #region Constructors
 
+    /// <summary>
+    ///   Initializes a new instance of the <see cref="RadioController" /> class.
+    ///   Default constructor with no monitor.
+    /// </summary>
     public RadioController()
       : this(null)
     {
     }
 
+    /// <summary>
+    ///   Initializes a new instance of the <see cref="RadioController" /> class.
+    ///   Allow to provide a monitor implementation instance.
+    /// </summary>
+    /// <param name="monitor">The monitor.</param>
     public RadioController(IRadioControllerMonitor monitor)
     {
       _monitor = monitor;
@@ -70,8 +95,12 @@ namespace Sidekick.WPF.Controls
     //
     // Core methods
 
-    public void AddElement(
-      [NotNull] ToggleButton toggleButton, object parameter)
+    /// <summary>
+    ///   Adds a new toggleable button to this controller.
+    /// </summary>
+    /// <param name="toggleButton">The toggle button.</param>
+    /// <param name="parameter">The parameter.</param>
+    public void AddElement([NotNull] ToggleButton toggleButton, object parameter)
     {
       if (_elements.ContainsKey(toggleButton))
         return;
@@ -84,8 +113,15 @@ namespace Sidekick.WPF.Controls
       _elements.Add(toggleButton, parameter);
     }
 
+    /// <summary>
+    ///   Removes a toggleable button from list.
+    /// </summary>
+    /// <param name="toggleButton">The toggle button.</param>
     public void RemoveElement([NotNull] ToggleButton toggleButton)
     {
+      if (!_elements.ContainsKey(toggleButton))
+        throw new System.InvalidOperationException("No such toggleable button instance.");
+
       toggleButton.Loaded -= OnElementLoaded;
       toggleButton.Unloaded -= OnElementUnloaded;
       toggleButton.Checked -= OnElementCheckChange;
@@ -98,13 +134,12 @@ namespace Sidekick.WPF.Controls
     {
       if (IsTrue(toggleButton.IsChecked))
       {
-        Task<bool> allowChangeTask =
-          _monitor?.RadioControllerOnSelectionChangedAsync(
-            toggleButton, _elements[toggleButton]);
+        Task<bool> allowChangeTask = _monitor?.RadioControllerOnSelectionChangedAsync(
+          toggleButton,
+          _elements[toggleButton]);
 
         if (allowChangeTask == null || allowChangeTask.IsCompleted)
-          OnToggledChecked(
-            toggleButton, allowChangeTask == null || allowChangeTask.Result);
+          OnToggledChecked(toggleButton, allowChangeTask == null || allowChangeTask.Result);
 
         else
 #pragma warning disable 4014
@@ -117,19 +152,17 @@ namespace Sidekick.WPF.Controls
     }
 
     private async Task EnsureCheckStateAsync(
-      [NotNull] ToggleButton toggleButton, Task<bool> allowChangeTask)
+      [NotNull] ToggleButton toggleButton,
+      Task<bool> allowChangeTask)
     {
       OnToggledChecked(toggleButton, await allowChangeTask);
     }
 
-    private void OnToggledChecked(
-      [NotNull] ToggleButton toggleButton, bool allowChange)
+    private void OnToggledChecked([NotNull] ToggleButton toggleButton, bool allowChange)
     {
       if (allowChange)
-        _elements
-          .Keys
-          .Where(e => !Equals(e, toggleButton) && IsTrue(e.IsChecked))
-          .ForEach(e => SetCheckedValue(e, false));
+        _elements.Keys.Where(e => !Equals(e, toggleButton) && IsTrue(e.IsChecked))
+                 .ForEach(e => SetCheckedValue(e, false));
 
       else
         SetCheckedValue(toggleButton, false);
@@ -147,12 +180,10 @@ namespace Sidekick.WPF.Controls
       return value != null && value.Value;
     }
 
-
     //
     // Elements events handler
 
-    private void OnElementCheckChange(
-      object sender, RoutedEventArgs routedEventArgs)
+    private void OnElementCheckChange(object sender, RoutedEventArgs routedEventArgs)
     {
       if (_isSettingValue)
         return;
@@ -160,93 +191,16 @@ namespace Sidekick.WPF.Controls
       EnsureCheckState(sender as ToggleButton);
     }
 
-    private void OnElementUnloaded(
-      object sender, RoutedEventArgs routedEventArgs)
+    private void OnElementUnloaded(object sender, RoutedEventArgs routedEventArgs)
     {
       RemoveElement(sender as ToggleButton);
     }
 
-    private void OnElementLoaded(
-      object sender, RoutedEventArgs routedEventArgs)
+    private void OnElementLoaded(object sender, RoutedEventArgs routedEventArgs)
     {
       EnsureCheckState(sender as ToggleButton);
     }
 
     #endregion
-  }
-
-  public interface IRadioControllerMonitor
-  {
-    #region Methods
-
-    Task<bool> RadioControllerOnSelectionChangedAsync(
-      object selectedItem, object parameter);
-
-    #endregion
-  }
-
-
-  /// <summary>
-  /// RadioController attached property and TypeConverter.
-  /// </summary>
-  public static class RadioControllerHelper
-  {
-    #region Fields
-
-    public static readonly DependencyProperty RadioControllerProperty =
-      DependencyProperty.RegisterAttached(
-        "RadioController", typeof(RadioController),
-        typeof(RadioControllerHelper),
-        new PropertyMetadata(null, RadioControllerPropertyChangedCallback));
-
-    #endregion
-
-    #region Methods
-
-    [Category("Sidekick")]
-    [AttachedPropertyBrowsableForType(typeof(Panel))]
-    [AttachedPropertyBrowsableForChildren]
-    [TypeConverter(typeof(RadioControllerConverter))]
-    public static RadioController GetRadioController(DependencyObject obj)
-    {
-      return (RadioController)obj.GetValue(RadioControllerProperty);
-    }
-
-    public static void SetRadioController(
-      DependencyObject obj, RadioController value)
-    {
-      obj.SetValue(RadioControllerProperty, value);
-    }
-
-    private static void RadioControllerPropertyChangedCallback(
-      DependencyObject dependencyObject,
-      DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
-    {
-    }
-
-    #endregion
-
-    /// <summary>
-    /// Convert string bool, or boolean values to RadioController
-    /// </summary>
-    /// <seealso cref="System.ComponentModel.TypeConverter" />
-    private class RadioControllerConverter : TypeConverter
-    {
-      #region Methods
-
-      public override bool CanConvertFrom(
-        ITypeDescriptorContext context, Type sourceType)
-      {
-        return sourceType == typeof(IRadioControllerMonitor);
-      }
-
-      public override object ConvertFrom(
-        ITypeDescriptorContext context, CultureInfo culture, object value)
-      {
-        return new RadioController(value as IRadioControllerMonitor);
-      }
-
-      #endregion
-    }
   }
 }

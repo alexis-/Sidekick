@@ -1,6 +1,5 @@
 ﻿// 
 // The MIT License (MIT)
-// Copyright (c) 2016 Incogito
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -20,26 +19,39 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using FluentAssertions;
-using Sidekick.Shared.Attributes.Database;
-using Sidekick.Shared.Utils;
-using Xunit;
-
 namespace SQLite.Net.Bridge.Tests
 {
+  using System.Collections.Generic;
+  using System.Linq;
+  using System.Threading.Tasks;
+
+  using FluentAssertions;
+
+  using Sidekick.Shared.Attributes.Database;
+  using Sidekick.Shared.Utils;
+
+  using Xunit;
+
+  /// <summary>
+  ///   SQLite.Net.Bridge-related tests
+  /// </summary>
   public class SQLiteBasicTest
   {
-    public SQLiteBasicTest()
-    {
-    }
+    /// <summary>
+    ///   Initializes a new instance of the <see cref="SQLiteBasicTest" /> class.
+    /// </summary>
+    public SQLiteBasicTest() { }
 
+    /// <summary>
+    ///   Basic object implementation for testing purposes
+    /// </summary>
     public class BasicObject
     {
       #region Constructors
 
+      /// <summary>
+      /// Initializes a new instance of the <see cref="BasicObject"/> class.
+      /// </summary>
       public BasicObject()
       {
         Idx = Faker.RandomInt();
@@ -48,14 +60,25 @@ namespace SQLite.Net.Bridge.Tests
 
       #endregion
 
+
+
       #region Properties
 
+      /// <summary>
+      ///   Auto-generated ID
+      /// </summary>
       [PrimaryKey, AutoIncrement]
       public int Id { get; set; }
 
+      /// <summary>
+      ///   Random indexed value
+      /// </summary>
       [Indexed]
       public int Idx { get; set; }
 
+      /// <summary>
+      ///   Random string
+      /// </summary>
       public string Value { get; set; }
 
       #endregion
@@ -73,11 +96,40 @@ namespace SQLite.Net.Bridge.Tests
       #endregion
     }
 
+    /// <summary>
+    ///   Simple asynchronous inserting and concurrent querying test.
+    /// </summary>
+    [Fact]
+    public async void AsyncOperations()
+    {
+      const int Count = 500;
+
+      BasicTestDb db = new BasicTestDb();
+      List<Task<bool>> tasks = new List<Task<bool>>();
+
+      await
+        Task.Run(
+              () => db.InsertAll(Faker.RandomCollection(() => new BasicObject(), Count, Count)))
+            .ConfigureAwait(true);
+
+      for (int i = 0; i < 20; i++)
+        tasks.Add(
+          Task.Run(
+            () =>
+            {
+              using (db.Lock())
+                return db.Table<BasicObject>().ToList().Count == Count;
+            }));
+
+      await Task.WhenAll(tasks.ToArray()).ConfigureAwait(true);
+
+      tasks.Should().OnlyContain(f => f.Result);
+    }
+    
     [Fact]
     public void CreateAndFetchObjects()
     {
-      IEnumerable<BasicObject> paramObjs = Faker.RandomCollection(
-        () => new BasicObject());
+      IEnumerable<BasicObject> paramObjs = Faker.RandomCollection(() => new BasicObject());
 
       BasicTestDb db = new BasicTestDb();
 
@@ -87,17 +139,10 @@ namespace SQLite.Net.Bridge.Tests
       // Fetch created objects without Id
       IEnumerable<BasicObject> fetchedObjs =
         db.Table<BasicObject>()
-          .SelectColumns(new[]
-          {
-            nameof(BasicObject.Idx),
-            nameof(BasicObject.Value)
-          });
+          .SelectColumns(new[] { nameof(BasicObject.Idx), nameof(BasicObject.Value) });
 
       paramObjs.ShouldAllBeEquivalentTo(
-        fetchedObjs,
-        config => config
-                    .Excluding(ctx => ctx.SelectedMemberPath.EndsWith(".Id"))
-        );
+        fetchedObjs, config => config.Excluding(ctx => ctx.SelectedMemberPath.EndsWith(".Id")));
 
       fetchedObjs.Should().OnlyContain(bo => bo.Id == 0);
 
@@ -105,51 +150,18 @@ namespace SQLite.Net.Bridge.Tests
       // Fetch created objects with Id
       fetchedObjs = db.Table<BasicObject>();
 
-      fetchedObjs.Should().OnlyContain(
-        bo =>
-        bo.Id != 0
-        && bo.Id <= paramObjs.Count());
-    }
-
-    [Fact]
-    public async void AsyncOperations()
-    {
-      const int count = 500;
-
-      BasicTestDb db = new BasicTestDb();
-      List<Task<bool>> tasks = new List<Task<bool>>();
-
-      db.InsertAll(Faker.RandomCollection(
-        () => new BasicObject(), count, count));
-
-      for (int i = 0; i < 20; i++)
-      {
-        Task<bool> task = new Task<bool>(
-          () =>
-          {
-            using (db.Lock())
-              return db.Table<BasicObject>().ToList().Count == count;
-          });
-
-        tasks.Add(task);
-        task.Start();
-      }
-
-      await Task.WhenAll(tasks.ToArray());
-
-      tasks.Should().OnlyContain(f => f.Result);
+      fetchedObjs.Should().OnlyContain(bo => bo.Id != 0 && bo.Id <= paramObjs.Count());
     }
 
 
     [Fact]
     public void SelectExpr()
     {
-      const int count = 500;
+      const int Count = 500;
 
       BasicTestDb db = new BasicTestDb();
 
-      var paramObjs = Faker.RandomCollection(
-        () => new BasicObject(), count, count);
+      var paramObjs = Faker.RandomCollection(() => new BasicObject(), Count, Count);
 
       // Create DB objects
       db.InsertAll(paramObjs);

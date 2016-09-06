@@ -1,6 +1,5 @@
 ﻿// 
 // The MIT License (MIT)
-// Copyright (c) 2016 Incogito
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -20,19 +19,23 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using FluentAssertions;
-using Sidekick.Shared.Attributes.Database;
-using Sidekick.Shared.Attributes.LazyLoad;
-using Sidekick.Shared.Utils;
-using Sidekick.Shared.Utils.LazyLoad;
-using SQLite.Net.Bridge.Tests;
-using Xunit;
-
 namespace Sidekick.Shared.Tests
 {
+  using System;
+  using System.Collections.Generic;
+  using System.Linq;
+
+  using FluentAssertions;
+
+  using Sidekick.Shared.Attributes.Database;
+  using Sidekick.Shared.Attributes.LazyLoad;
+  using Sidekick.Shared.Utils;
+  using Sidekick.Shared.Utils.LazyLoad;
+
+  using SQLite.Net.Bridge.Tests;
+
+  using Xunit;
+
   public class DbLazyLoadedTest
   {
     public class LazyObject
@@ -43,11 +46,15 @@ namespace Sidekick.Shared.Tests
 
       #endregion
 
+
+
       #region Constructors
 
-      public LazyObject() {}
+      public LazyObject() { }
 
       #endregion
+
+
 
       #region Properties
 
@@ -62,14 +69,16 @@ namespace Sidekick.Shared.Tests
 
       #endregion
 
+
+
+      #region Methods
+
       public static LazyObject Random()
       {
-        return new LazyObject()
-        {
-          Idx = _random.Next(),
-          Value = Faker.RandomString(20)
-        };
+        return new LazyObject() { Idx = _random.Next(), Value = Faker.RandomString(20) };
       }
+
+      #endregion
     }
 
     private class LazyObjectDb : TestBaseDb
@@ -87,57 +96,48 @@ namespace Sidekick.Shared.Tests
     [Fact]
     public void LazyLoadCollection()
     {
-      IEnumerable<LazyObject> paramObjs = Faker.RandomCollection(
-        LazyObject.Random);
+      IEnumerable<LazyObject> paramObjs = Faker.RandomCollection(LazyObject.Random);
 
       // Setup DB & LazyLoader
       LazyObjectDb db = new LazyObjectDb();
-      DbLazyLoad<LazyObject> lazyLoader =
-        DbLazyLoad<LazyObject>.GetOrCreateInstance(db);
+      DbLazyLoad<LazyObject> lazyLoader = DbLazyLoad<LazyObject>.GetOrCreateInstance(db);
 
       db.InsertAll(paramObjs);
 
       // Test shallow loading
-      IEnumerable<LazyObject> fetchedObjs = db.Table<LazyObject>()
-                                              .ShallowLoad(lazyLoader)
-                                              .ToList();
       // ToList() is necessary, as db.Table<T> return a custom Enumerable
       // implementation which apparently doesn't allow for true references
+      IEnumerable<LazyObject> fetchedObjs =
+        db.Table<LazyObject>().ShallowLoad(lazyLoader).ToList();
 
-      fetchedObjs.Should().OnlyContain(lo =>
-                                       lo.Value == null
-                                       && lo.Id > 0);
-      fetchedObjs.ShouldAllBeEquivalentTo(paramObjs,
-        config => config
-                    .Including(ctx => ctx.SelectedMemberPath.EndsWith(".Id"))
-                    .Including(ctx => ctx.SelectedMemberPath.EndsWith(".Idx"))
-        );
+      fetchedObjs.Should().OnlyContain(lo => lo.Value == null && lo.Id > 0);
+      fetchedObjs.ShouldAllBeEquivalentTo(
+        paramObjs,
+        config =>
+          config.Including(ctx => ctx.SelectedMemberPath.EndsWith(".Id"))
+                .Including(ctx => ctx.SelectedMemberPath.EndsWith(".Idx")));
 
       // Test further loading
-      IEnumerable<LazyObject> furtherObjs = db.Table<LazyObject>()
-                                              .FurtherLoad(lazyLoader);
+      IEnumerable<LazyObject> furtherObjs = db.Table<LazyObject>().FurtherLoad(lazyLoader);
 
       furtherObjs.Should().OnlyContain(lo => lo.Value != null);
 
       lazyLoader.UpdateFromFurtherLoad(fetchedObjs, furtherObjs, lo => lo.Id);
 
-      fetchedObjs.ShouldAllBeEquivalentTo(furtherObjs,
+      fetchedObjs.ShouldAllBeEquivalentTo(
+        furtherObjs,
+        config => config.Including(ctx => ctx.SelectedMemberPath.EndsWith(".Value")));
+      fetchedObjs.ShouldAllBeEquivalentTo(
+        paramObjs,
         config =>
-        config.Including(ctx => ctx.SelectedMemberPath.EndsWith(".Value"))
-        );
-      fetchedObjs.ShouldAllBeEquivalentTo(paramObjs,
-        config => config
-                    .Including(ctx => ctx.SelectedMemberPath.EndsWith(".Id"))
-                    .Including(ctx => ctx.SelectedMemberPath.EndsWith(".Idx"))
-        );
+          config.Including(ctx => ctx.SelectedMemberPath.EndsWith(".Id"))
+                .Including(ctx => ctx.SelectedMemberPath.EndsWith(".Idx")));
 
       // Test further unloading
       foreach (LazyObject fetchedObj in fetchedObjs)
         lazyLoader.LazyUnload(fetchedObj);
 
-      fetchedObjs.Should().OnlyContain(lo =>
-                                       lo.Value == null
-                                       && lo.Id > 0);
+      fetchedObjs.Should().OnlyContain(lo => lo.Value == null && lo.Id > 0);
     }
   }
 }

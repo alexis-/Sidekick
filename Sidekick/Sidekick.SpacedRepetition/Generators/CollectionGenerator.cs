@@ -1,42 +1,71 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Sidekick.Shared.Interfaces.Database;
-using Sidekick.SpacedRepetition.Models;
+﻿// 
+// The MIT License (MIT)
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the "Software"),
+// to deal in the Software without restriction, including without limitation
+// the rights to use, copy, modify, merge, publish, distribute, sublicense,
+// and/or sell copies of the Software, and to permit persons to whom the 
+// Software is furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+// DEALINGS IN THE SOFTWARE.
 
 namespace Sidekick.SpacedRepetition.Generators
 {
+  using System;
+  using System.Collections.Generic;
+  using System.Linq;
+
+  using Sidekick.Shared.Interfaces.Database;
+  using Sidekick.SpacedRepetition.Models;
+
+  /// <summary>
+  ///   Generates a random collection of notes and cards.
+  ///   Can be parametrized.
+  /// </summary>
   public class CollectionGenerator
   {
-    // Config
-    private int NoteCount { get; set; }
-    private int MaxCardPerNote { get; }
-
-    // Misc
-    private HashSet<int> NotesIds { get; }
-    
-    private CardGenerator CardGenerator { get; }
-    private TimeGenerator TimeGenerator { get; }
-    private CollectionConfig Config { get; }
-
-    private IDatabase Db { get; }
+    #region Fields
 
     private static readonly Random Random = new Random();
 
+    #endregion
+
+
+
+    #region Constructors
 
     //
     // Constructor
 
-    public CollectionGenerator(
-      CardGenerator cardGenerator,
-      int noteCount, int maxCardPerNote)
-      : this(cardGenerator, null, noteCount, maxCardPerNote)
-    {
-    }
+    /// <summary>
+    ///   Initializes a new instance of the <see cref="CollectionGenerator" /> class.
+    /// </summary>
+    /// <param name="cardGenerator">Parametrized card generator.</param>
+    /// <param name="noteCount">Note count to generate.</param>
+    /// <param name="maxCardPerNote">Maximum number of card per note.</param>
+    public CollectionGenerator(CardGenerator cardGenerator, int noteCount, int maxCardPerNote)
+      : this(cardGenerator, null, noteCount, maxCardPerNote) { }
 
+    /// <summary>
+    ///   Initializes a new instance of the <see cref="CollectionGenerator" /> class.
+    ///   Generated collection will be saved to provided <see cref="db" /> instance.
+    /// </summary>
+    /// <param name="cardGenerator">Parametrized card generator.</param>
+    /// <param name="db">Database instance.</param>
+    /// <param name="noteCount">Note count to generate.</param>
+    /// <param name="maxCardPerNote">Maximum number of card per note.</param>
     public CollectionGenerator(
-      CardGenerator cardGenerator, IDatabase db,
-      int noteCount, int maxCardPerNote)
+      CardGenerator cardGenerator, IDatabase db, int noteCount, int maxCardPerNote)
     {
       NotesIds = new HashSet<int>();
 
@@ -44,12 +73,41 @@ namespace Sidekick.SpacedRepetition.Generators
 
       CardGenerator = cardGenerator;
       TimeGenerator = CardGenerator.TimeGenerator;
-      Config = CardGenerator.Config;
 
       NoteCount = noteCount;
       MaxCardPerNote = maxCardPerNote;
     }
 
+    #endregion
+
+
+
+    #region Properties
+
+    // Config
+    private int NoteCount { get; set; }
+    private int MaxCardPerNote { get; }
+
+    // Misc
+    private HashSet<int> NotesIds { get; }
+
+    private CardGenerator CardGenerator { get; }
+    private TimeGenerator TimeGenerator { get; }
+
+    private IDatabase Db { get; }
+
+    #endregion
+
+
+
+    #region Methods
+
+    /// <summary>
+    ///   Generate a new collection based on specified parameters.
+    ///   If a <see cref="IDatabase" /> instance is specified, collection will also be saved
+    ///   to Database.
+    /// </summary>
+    /// <returns>Generated collection</returns>
     public IEnumerable<Note> Generate()
     {
       IEnumerable<Note> notes;
@@ -71,14 +129,16 @@ namespace Sidekick.SpacedRepetition.Generators
       foreach (Note note in notes)
       {
         int cardsLeft = CardGenerator.Left();
-        int minCards = Math.Min(cardsLeft,
-          (int)((float)cardsLeft / (float)NoteCount) >= MaxCardPerNote
-          ? MaxCardPerNote
-          : (NoteCount == 1 ? cardsLeft : 1));
-        int maxCards = 1 + Math.Min(
-          (int)((float)cardsLeft / (float)NoteCount) <= 1
-          ? 1 : MaxCardPerNote,
-          cardsLeft);
+
+        double lowerCardPerNoteRatio = Math.Floor(cardsLeft / (double)NoteCount);
+        double upperCardPerNoteRatio = Math.Ceiling(cardsLeft / (double)NoteCount);
+
+        int upperMinCardRange = upperCardPerNoteRatio >= MaxCardPerNote
+                                  ? MaxCardPerNote
+                                  : (NoteCount == 1 ? cardsLeft : 1);
+
+        int minCards = Math.Min(cardsLeft, upperMinCardRange);
+        int maxCards = 1 + Math.Min(lowerCardPerNoteRatio <= 1 ? 1 : MaxCardPerNote, cardsLeft);
 
         int cardCount = Random.Next(minCards, maxCards);
 
@@ -106,14 +166,12 @@ namespace Sidekick.SpacedRepetition.Generators
       {
         int id = TimeGenerator.RandomId(NotesIds);
 
-        notes.Add(new Note
-        {
-          Id = id,
-          LastModified = Math.Max(TimeGenerator.RandomTime(), id)
-        });
+        notes.Add(new Note { Id = id, LastModified = Math.Max(TimeGenerator.RandomTime(), id) });
       }
 
       return notes;
     }
+
+    #endregion
   }
 }

@@ -1,6 +1,5 @@
 ﻿// 
 // The MIT License (MIT)
-// Copyright (c) 2016 Incogito
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -39,7 +38,7 @@ namespace Sidekick.SpacedRepetition.Models
     {
       MiscState = MiscState | CardMiscStateFlag.Dismissed;
 
-      Due = Math.Max(Due, DateTime.Today.AddDays(1).ToUnixTimestamp());
+      Due = Math.Max(Due, DateTimeExtensions.Tomorrow.ToUnixTimestamp());
       // TODO: If card is overdue, interval bonus is lost
 
       using (db.Lock())

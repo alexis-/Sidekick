@@ -91,6 +91,7 @@
       <DependentUpon>FlatIconizableToggleButton.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\RadioController.cs" />
+    <Compile Include="Controls\RadioControllerHelper.cs" />
     <Compile Include="Controls\SafeRaise.cs" />
     <Compile Include="Controls\StackedTreeView.xaml.cs">
       <DependentUpon>StackedTreeView.xaml</DependentUpon>

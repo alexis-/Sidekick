@@ -1,6 +1,5 @@
 ﻿// 
 // The MIT License (MIT)
-// Copyright (c) 2016 Incogito
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -20,63 +19,69 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System.Threading.Tasks;
-using Sidekick.SpacedRepetition.Const;
-using Sidekick.SpacedRepetition.Models;
-
 namespace Sidekick.SpacedRepetition.Interfaces
 {
+  using System.Threading.Tasks;
+
+  using Sidekick.SpacedRepetition.Const;
+  using Sidekick.SpacedRepetition.Models;
+
+  /// <summary>
+  ///   Loads and schedule cards to be displayed for review.
+  /// </summary>
   public interface IReviewCollection
   {
     #region Properties
 
     /// <summary>
-    ///     Waitable Task to check whether ReviewCollection is ready.
-    ///     ReviewCollection should be initialized before calling other any
-    ///     other method.
+    ///   Waitable Task to check whether ReviewCollection is ready.
+    ///   ReviewCollection should be initialized before calling other any
+    ///   other method.
     /// </summary>
     /// <value>
-    ///     True if ReviewCollection is initialized and ready.
-    ///     False if no card is available for review.
+    ///   True if ReviewCollection is initialized and ready.
+    ///   False if no card is available for review.
     /// </value>
     Task<bool> Initialized { get; }
 
     /// <summary>
-    ///     Last fetched card.
+    ///   Last fetched card.
     /// </summary>
     Card Current { get; }
 
     #endregion
+
+
 
     #region Methods
 
     /// <summary>
     ///   Answer current card and fetch next one.
     /// </summary>
-    /// <param name="grade"></param>
+    /// <param name="grade">Answer grade (fail, good, easy, ...)</param>
     /// <returns>
     ///   Whether any cards are available
     /// </returns>
     /// <exception cref="System.InvalidOperationException">
     ///   No card available (Current is null).
     /// </exception>
-    Task<bool> Answer(Grade grade);
+    Task<bool> AnswerAsync(Grade grade);
 
     /// <summary>
-    ///     Dismiss current card and fetch next one.
+    ///   Dismiss current card and fetch next one.
     /// </summary>
     /// <returns>Whether any cards are available</returns>
     /// <exception cref="System.InvalidOperationException">
     ///   No card available (Current is null).
     /// </exception>
-    Task<bool> Dismiss();
+    Task<bool> DismissAsync();
 
     /// <summary>
-    ///     State-dependent counts of cards to be reviewed.
+    ///   State-dependent counts of cards to be reviewed.
     /// </summary>
     /// <param name="state">The state.</param>
     /// <returns>
-    ///     State-dependent card count.
+    ///   State-dependent card count.
     /// </returns>
     int CountByState(CardPracticeStateFilterFlag state);
 

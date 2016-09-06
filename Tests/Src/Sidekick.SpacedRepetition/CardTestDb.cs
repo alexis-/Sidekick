@@ -1,6 +1,5 @@
 ﻿// 
 // The MIT License (MIT)
-// Copyright (c) 2016 Incogito
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -20,36 +19,48 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System;
-using System.Linq;
-using System.Reflection;
-using Catel.Data;
-using FluentAssertions;
-using Sidekick.SpacedRepetition.Models;
-using SQLite.Net;
-using SQLite.Net.Bridge;
-using SQLite.Net.Bridge.Tests;
-
 namespace Sidekick.SpacedRepetition.Tests
 {
+  using System;
+  using System.Linq;
+  using System.Reflection;
+
+  using Catel.Data;
+
+  using FluentAssertions;
+
+  using Sidekick.SpacedRepetition.Models;
+
+  using SQLite.Net;
+  using SQLite.Net.Bridge;
+  using SQLite.Net.Bridge.Tests;
+
+  /// <summary>
+  ///   Test implementation of <see cref="SQLiteConnectionWithLockBridge"/>, based on
+  ///   <see cref="TestBaseDb"/>, with SpacedRepetition-related tables.
+  /// </summary>
+  /// <seealso cref="SQLite.Net.Bridge.Tests.TestBaseDb" />
   public class CardDb : TestBaseDb
   {
     #region Fields
 
     // Catel ModelBase public properties
-    public static readonly string[] ModelBaseProps =
-    { "IsDirty", "IsReadOnly" };
+    private static readonly string[] ModelBaseProps = { "IsDirty", "IsReadOnly" };
 
     #endregion
 
+
+
     #region Constructors
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CardDb"/> class.
+    /// </summary>
+    /// <param name="config">The configuration.</param>
     public CardDb(CollectionConfig config = null)
       : base(
         new CatelColumnProvider(),
-        new ContractResolver(
-          t => true,
-          (t, a) => CreateInstance(t, config, a)))
+        new ContractResolver(t => true, (t, a) => CreateInstance(t, config, a)))
     {
       CreateTable<Note>();
       CreateTable<Card>();
@@ -63,6 +74,8 @@ namespace Sidekick.SpacedRepetition.Tests
 
     #endregion
 
+
+
     #region Methods
 
     private static object CreateInstance(
@@ -75,6 +88,8 @@ namespace Sidekick.SpacedRepetition.Tests
     }
 
     #endregion
+
+
 
     private class CatelColumnProvider : ColumnInformationProviderBridge
     {
@@ -90,21 +105,5 @@ namespace Sidekick.SpacedRepetition.Tests
 
       #endregion
     }
-
-    //  {
-    //  const string[] ModelBaseExcludedProps =
-    //{
-
-    //public void CreateCardMapping()
-    //    nameof(ModelBase.)
-    //  }
-
-    //  IEnumerable<PropertyInfo> cardProps =
-    //    Platform.ReflectionService.GetPublicInstanceProperties(typeof(Card));
-    //  props.Where(pi => pi.Name)
-    //  TableMapping cardMapping = GetMapping<Card>();
-
-    //  cardMapping.Columns
-    //}
   }
 }

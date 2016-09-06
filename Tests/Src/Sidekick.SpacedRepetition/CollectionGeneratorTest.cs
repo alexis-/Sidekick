@@ -1,6 +1,5 @@
 // 
 // The MIT License (MIT)
-// Copyright (c) 2016 Incogito
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -20,15 +19,21 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System.Collections.Generic;
-using System.Linq;
-using FluentAssertions;
-using Sidekick.SpacedRepetition.Generators;
-using Sidekick.SpacedRepetition.Models;
-using Xunit;
-
 namespace Sidekick.SpacedRepetition.Tests
 {
+  using System.Collections.Generic;
+  using System.Linq;
+
+  using FluentAssertions;
+
+  using Sidekick.SpacedRepetition.Generators;
+  using Sidekick.SpacedRepetition.Models;
+
+  using Xunit;
+
+  /// <summary>
+  ///   Test collection and card generation methods
+  /// </summary>
   public class CollectionGeneratorTest
   {
     #region Methods
@@ -41,21 +46,18 @@ namespace Sidekick.SpacedRepetition.Tests
     [InlineData(5, 10, 3)]
     [InlineData(2, 10, 5)]
     [InlineData(100, 200, 4)]
-    public void CollectionGeneratorTests(
-      int noteCount, int cardCount, int maxCardPerNote)
+    public void CollectionGeneratorTests(int noteCount, int cardCount, int maxCardPerNote)
     {
-      IEnumerable<Note> notes = new CollectionGenerator(
-        new CardGenerator(new TimeGenerator(),
-          CollectionConfig.Default,
-          cardCount),
-        noteCount, maxCardPerNote).Generate();
+      IEnumerable<Note> notes =
+        new CollectionGenerator(
+          new CardGenerator(new TimeGenerator(), CollectionConfig.Default, cardCount), noteCount,
+          maxCardPerNote).Generate();
 
       notes.Count().Should().Be(noteCount);
       notes.Sum(n => n.Cards.Count).Should().Be(cardCount);
       notes.Max(n => n.Cards.Count).Should().BeLessOrEqualTo(maxCardPerNote);
       notes.Min(n => n.Cards.Count).Should().BeGreaterOrEqualTo(1);
-      notes.Average(n => n.Cards.Count).Should().Be(
-        (double)cardCount / (double)noteCount);
+      notes.Average(n => n.Cards.Count).Should().Be((double)cardCount / (double)noteCount);
     }
 
     #endregion
