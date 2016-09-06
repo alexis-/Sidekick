@@ -19,36 +19,44 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows.Input;
-using Catel.Collections;
-using Catel.MVVM;
-using Catel.Services;
-using Sidekick.FilterBuilder.Filters;
-using Sidekick.Shared.Interfaces.Database;
-using Sidekick.Windows.Models;
-
 namespace Sidekick.Windows.ViewModels.SpacedRepetition
 {
+  using System.Linq;
+  using System.Threading.Tasks;
+  using System.Windows.Input;
+
+  using Catel.Collections;
+  using Catel.MVVM;
+  using Catel.Services;
+
+  using Sidekick.FilterBuilder.Filters;
+  using Sidekick.Shared.Interfaces.Database;
+  using Sidekick.Windows.Models;
+
   public class BrowserQueryViewerViewModel : ViewModelBase
   {
-    private readonly IPleaseWaitService _pleaseWaitService;
+    #region Fields
+
     private readonly IDatabase _db;
+    private readonly IPleaseWaitService _pleaseWaitService;
+
+    #endregion
+
+
 
     #region Constructors
 
-    public BrowserQueryViewerViewModel(
-      IDatabase db, IPleaseWaitService pleaseWaitService)
+    public BrowserQueryViewerViewModel(IDatabase db, IPleaseWaitService pleaseWaitService)
     {
       _db = db;
       _pleaseWaitService = pleaseWaitService;
 
-      AddQueryCommand = new Command(
-        OnAddQueryCommandExecute, tag: "AddQuery");
+      AddQueryCommand = new Command(OnAddQueryCommandExecute, tag: "AddQuery");
     }
 
     #endregion
+
+
 
     #region Properties
 
@@ -58,26 +66,27 @@ namespace Sidekick.Windows.ViewModels.SpacedRepetition
 
     #endregion
 
+
+
     #region Methods
 
     protected override async Task InitializeAsync()
     {
       _pleaseWaitService.Push("Loading");
 
-      await Task.Run(
-        () =>
-        {
-          Queries = new FastObservableCollection<CollectionFilter>(
-            _db.Table<CollectionFilter>());
-        });
+      await
+        Task.Run(
+          () =>
+          {
+            Queries =
+              new FastObservableCollection<CollectionFilter>(_db.Table<CollectionFilter>());
+          });
       SelectedQuery = Queries.FirstOrDefault();
 
       _pleaseWaitService.Pop();
     }
 
-    private void OnAddQueryCommandExecute()
-    {
-    }
+    private void OnAddQueryCommandExecute() { }
 
     #endregion
   }

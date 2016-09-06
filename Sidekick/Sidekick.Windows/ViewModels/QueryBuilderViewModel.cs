@@ -19,63 +19,90 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Windows.Input;
-using Catel.IoC;
-using Catel.MVVM;
-using Catel.Runtime.Serialization.Json;
-using Sidekick.FilterBuilder.Conditions;
-using Sidekick.FilterBuilder.Filters;
-using Sidekick.FilterBuilder.Models.Interfaces;
-
 namespace Sidekick.Windows.ViewModels
 {
+  using System;
+  using System.Collections.Generic;
+  using System.Threading.Tasks;
+  using System.Windows.Input;
+
+  using Catel.IoC;
+  using Catel.MVVM;
+
+  using Sidekick.FilterBuilder.Conditions;
+  using Sidekick.FilterBuilder.Filters;
+  using Sidekick.FilterBuilder.Models.Interfaces;
+
+  /// <summary>
+  ///   View Model for generic QueryBuilder
+  /// </summary>
+  /// <seealso cref="Catel.MVVM.ViewModelBase" />
   public class QueryBuilderViewModel : ViewModelBase
   {
     #region Fields
 
     private readonly FilterScheme _currentQuery;
-
     private readonly Type _targetType;
 
     #endregion
 
+
+
     #region Constructors
 
+    /// <summary>
+    ///   Initializes a new instance of the <see cref="QueryBuilderViewModel"/> class.
+    /// </summary>
+    /// <param name="targetType">Type to which filters will be applied to</param>
     public QueryBuilderViewModel(Type targetType)
     {
       _targetType = targetType;
-      _currentQuery = TypeFactory
-        .Default.CreateInstance<FilterScheme>();
+      _currentQuery = TypeFactory.Default.CreateInstance<FilterScheme>();
 
       DeleteCommand = new Command<ConditionTreeItem>(
         OnDeleteCommandExecute, OnDeleteCommandCanExecute);
-      AddAndConditionCommand = new Command<ConditionTreeItem>(
-        OnAddAndConditionCommandExecute);
-      AddOrConditionCommand = new Command<ConditionTreeItem>(
-        OnAddOrConditionCommandExecute);
+      AddAndConditionCommand = new Command<ConditionTreeItem>(OnAddAndConditionCommandExecute);
+      AddOrConditionCommand = new Command<ConditionTreeItem>(OnAddOrConditionCommandExecute);
     }
 
     #endregion
 
+
+
     #region Properties
 
-    public IEnumerable<ConditionTreeItem> ItemCollection =>
-      _currentQuery.ItemCollection;
+    /// <summary>
+    ///   Filter items to display.
+    /// </summary>
+    public IEnumerable<ConditionTreeItem> ItemCollection => _currentQuery.ItemCollection;
 
-    public IEnumerable<IPropertyMetadata> TargetProperties =>
-      _currentQuery.TargetProperties;
+    /// <summary>
+    ///   Target type properties, used to display items in property combobox.
+    /// </summary>
+    public IEnumerable<IPropertyMetadata> TargetProperties => _currentQuery.TargetProperties;
 
+    /// <summary>
+    ///   Command for adding a new And condition.
+    /// </summary>
     public ICommand AddAndConditionCommand { get; set; }
+
+    /// <summary>
+    ///   Command for adding a new or condition.
+    /// </summary>
     public ICommand AddOrConditionCommand { get; set; }
+
+    /// <summary>
+    ///   Command for removing a given item.
+    /// </summary>
     public ICommand DeleteCommand { get; set; }
 
     #endregion
 
+
+
     #region Methods
 
+    /// <inheritdoc />
     protected override Task InitializeAsync()
     {
       return _currentQuery.InitializeAsync(_targetType);

@@ -19,29 +19,45 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Catel.Collections;
-using Catel.Data;
-
 namespace Sidekick.MVVM.Models
 {
+  using System;
+  using System.Collections.Generic;
+  using System.Threading.Tasks;
+
+  using Catel.Collections;
+  using Catel.Data;
+
+  /// <summary>
+  ///   Base class for collection paging helper
+  /// </summary>
+  /// <typeparam name="T">Collection items type</typeparam>
+  /// <seealso cref="Catel.Data.ModelBase" />
   public abstract class PageableCollectionBase<T> : ModelBase
   {
     #region Fields
 
+    /// <summary>
+    ///   Default number of item per page.
+    /// </summary>
     protected const int DefaultPageSize = 25;
 
     #endregion
 
+
+
     #region Constructors
 
-    protected PageableCollectionBase()
-      : this(DefaultPageSize)
-    {
-    }
+    /// <summary>
+    ///   Initializes a new instance of the <see cref="PageableCollectionBase{T}"/> class.
+    ///   Sets page size to default value <see cref="DefaultPageSize"/>.
+    /// </summary>
+    protected PageableCollectionBase() : this(DefaultPageSize) { }
 
+    /// <summary>
+    ///   Initializes a new instance of the <see cref="PageableCollectionBase{T}"/> class.
+    /// </summary>
+    /// <param name="pageSize">Item count per page</param>
     protected PageableCollectionBase(int pageSize)
     {
       HandlePropertyAndCollectionChanges = false;
@@ -54,53 +70,129 @@ namespace Sidekick.MVVM.Models
 
     #endregion
 
+
+
     #region Properties
 
+    /// <summary>
+    ///   Item count per page.
+    /// </summary>
     public int PageSize { get; set; }
+
+    /// <summary>
+    ///   Current page number.
+    /// </summary>
     public int CurrentPage { get; set; }
+
+    /// <summary>
+    ///   Total page count (total item count / page size).
+    /// </summary>
     public abstract int TotalPageCount { get; }
 
+    /// <summary>
+    ///   Item collection for current page.
+    /// </summary>
     public FastObservableCollection<T> CurrentPageItems { get; set; }
 
     #endregion
 
+
+
     #region Methods
 
+    /// <summary>
+    ///   Removes an item from collection/store.
+    /// </summary>
+    /// <param name="item">Item to remove</param>
+    /// <returns></returns>
+    public abstract Task<bool> RemoveAsync(T item);
+
+    /// <summary>
+    ///   Add an item to collection/store.
+    /// </summary>
+    /// <param name="item">Item to add</param>
+    /// <returns></returns>
+    public abstract Task<bool> AddAsync(T item);
+
+    /// <summary>
+    ///   Removes items from collection/store.
+    /// </summary>
+    /// <param name="items">Items to remove</param>
+    /// <returns></returns>
+    public abstract Task<bool> RemoveAsync(IEnumerable<T> items);
+
+    /// <summary>
+    ///   Add items to collection/store.
+    /// </summary>
+    /// <param name="items">Items to add</param>
+    /// <returns></returns>
+    public abstract Task<bool> AddAsync(IEnumerable<T> items);
+
+    /// <summary>
+    ///   Update page item according to current page.
+    /// </summary>
+    /// <returns></returns>
+    public abstract Task UpdateCurrentPageItemsAsync();
+
+    /// <summary>
+    ///   Load next page if available.
+    /// </summary>
     public void GoToNextPage()
     {
       if (CurrentPage < TotalPageCount)
         CurrentPage++;
     }
 
+    /// <summary>
+    ///   Load previous page if available.
+    /// </summary>
     public void GoToPreviousPage()
     {
       if (CurrentPage > 1)
         CurrentPage--;
     }
 
-    public void Reset()
+    /// <summary>
+    ///   Load first page.
+    /// </summary>
+    public void GoToFirstPage()
     {
       CurrentPage = 1;
     }
 
-    protected Task OnCurrentPageChanged()
+    /// <summary>
+    ///   Load last page.
+    /// </summary>
+    public void GoToLastPage()
+    {
+      CurrentPage = TotalPageCount;
+    }
+
+    /// <summary>
+    ///   Called when <see cref="CurrentPage"/> changed and updates page collection,
+    ///   <see cref="UpdateCurrentPageItemsAsync"/>
+    /// </summary>
+    /// <returns>Waitable task</returns>
+    protected Task OnCurrentPageChangedAsync()
     {
       return UpdateCurrentPageItemsAsync();
     }
 
-    protected Task OnPageSizeChanged()
+    /// <summary>
+    ///   Called when <see cref="PageSize"/> changed and updates page collection,
+    ///   <see cref="UpdateCurrentPageItemsAsync"/>
+    /// </summary>
+    /// <returns>Waitable task</returns>
+    protected Task OnPageSizeChangedAsync()
     {
       return UpdateCurrentPageItemsAsync();
     }
 
-    public abstract Task<bool> RemoveAsync(T item);
-    public abstract Task<bool> AddAsync(T item);
-
-    public abstract Task<bool> RemoveAsync(IEnumerable<T> items);
-    public abstract Task<bool> AddAsync(IEnumerable<T> items);
-
-    public abstract Task UpdateCurrentPageItemsAsync();
-
+    /// <summary>
+    ///   Removes item-s using <see cref="removeAction"/> and update accordingly.
+    /// </summary>
+    /// <param name="removeAction">The remove action.</param>
+    /// <returns>Waitable task which define success state</returns>
     protected virtual async Task<bool> DoRemoveAsync(Func<bool> removeAction)
     {
       int lastTotalPageNumber = TotalPageCount;
@@ -116,11 +208,16 @@ namespace Sidekick.MVVM.Models
       if (lastTotalPageNumber != TotalPageCount)
         RaisePropertyChanged(() => TotalPageCount);
 
-      await UpdateCurrentPageItemsAsync();
+      await UpdateCurrentPageItemsAsync().ConfigureAwait(false);
 
       return true;
     }
 
+    /// <summary>
+    ///   Adds item-s using <see cref="addAction"/> and update accordingly.
+    /// </summary>
+    /// <param name="addAction">The add action.</param>
+    /// <returns>Waitable task which define success state</returns>
     protected virtual async Task<bool> DoAddAsync(Func<bool> addAction)
     {
       int lastTotalPageNumber = TotalPageCount;
@@ -132,7 +229,7 @@ namespace Sidekick.MVVM.Models
       if (lastTotalPageNumber != TotalPageCount)
         RaisePropertyChanged(() => TotalPageCount);
 
-      await UpdateCurrentPageItemsAsync();
+      await UpdateCurrentPageItemsAsync().ConfigureAwait(false);
 
       return true;
     }

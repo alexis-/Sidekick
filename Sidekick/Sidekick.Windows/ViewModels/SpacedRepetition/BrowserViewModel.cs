@@ -19,13 +19,20 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using Catel.IoC;
-using Catel.MVVM;
-using Sidekick.MVVM.ViewModels;
-using Sidekick.SpacedRepetition.Models;
-
 namespace Sidekick.Windows.ViewModels.SpacedRepetition
 {
+  using Catel.IoC;
+  using Catel.MVVM;
+
+  using Sidekick.MVVM.ViewModels;
+  using Sidekick.SpacedRepetition.Models;
+
+  /// <summary>
+  ///   View Model for main browser view.
+  ///   Handles navigation between the different parts of browser
+  ///   (display content, add queries, ...)
+  /// </summary>
+  /// <seealso cref="Sidekick.MVVM.ViewModels.MainContentViewModelBase" />
   [InterestedIn(typeof(BrowserQueryViewerViewModel))]
   public class BrowserViewModel : MainContentViewModelBase
   {
@@ -36,34 +43,55 @@ namespace Sidekick.Windows.ViewModels.SpacedRepetition
 
     #endregion
 
+
+
     #region Constructors
 
+    /// <summary>
+    ///   Initializes a new instance of the <see cref="BrowserViewModel"/> class.
+    ///   TODO: BrowserQueryBuilder w/ buttons, preview, ...
+    /// </summary>
     public BrowserViewModel()
     {
       _browserQueryViewerViewModel =
         TypeFactory.Default.CreateInstance<BrowserQueryViewerViewModel>();
       _browserQueryBuilderViewModel = new QueryBuilderViewModel(typeof(Card));
-      // TODO: BrowserQueryBuilder w/ buttons, preview, ...
 
       CurrentModel = _browserQueryViewerViewModel;
     }
 
     #endregion
 
+
+
     #region Properties
 
+    /// <summary>
+    ///   Currently displayed ViewModel.
+    /// </summary>
     public ViewModelBase CurrentModel { get; set; }
 
     #endregion
 
+
+
+    #region Methods
+
+    /// <inheritdoc />
+    /// <summary>
+    ///   Handles commands from child ViewModels (Add query, ...)
+    /// </summary>
     protected override void OnViewModelCommandExecuted(
       IViewModel viewModel, ICatelCommand command, object commandParameter)
     {
       switch (command.Tag as string)
       {
         case "AddQuery":
+          CurrentModel = _browserQueryBuilderViewModel;
           break;
       }
     }
+
+    #endregion
   }
 }

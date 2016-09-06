@@ -24,7 +24,10 @@ namespace Sidekick.SpacedRepetition.Review
   using System;
   using System.Collections.Generic;
   using System.Linq;
+  using System.Threading;
   using System.Threading.Tasks;
+
+  using MethodTimer;
 
   using Sidekick.Shared.Extensions;
   using Sidekick.Shared.Interfaces.Database;
@@ -152,6 +155,7 @@ namespace Sidekick.SpacedRepetition.Review
     ///   Fill the item list with its first items.
     /// </summary>
     /// <returns>Whether any item was loaded.</returns>
+    [Time]
     protected async Task<bool> DoFirstLoadAsync()
     {
       int totalLoadCount = DueCardsLeft + IncrementalLoadMax;
@@ -200,6 +204,7 @@ namespace Sidekick.SpacedRepetition.Review
     ///   Only relevant when using lazy loading.
     /// </param>
     /// <returns>Whether more items were loaded.</returns>
+    [Time]
     protected async Task<bool> DoRegularLoadAsync(bool fullLoad)
     {
       int loadCount = IncrementalLoadMax - ReserveSize;

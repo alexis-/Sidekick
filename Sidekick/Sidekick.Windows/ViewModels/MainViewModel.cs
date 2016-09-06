@@ -50,6 +50,8 @@ namespace Sidekick.Windows.ViewModels
 
     #endregion
 
+
+
     #region Constructors
 
     /// <summary>
@@ -69,30 +71,35 @@ namespace Sidekick.Windows.ViewModels
 
     #endregion
 
+
+
     #region Properties
 
-    // Properties
+    /// <summary>
+    ///   Displayed ViewModel.
+    /// </summary>
     public MainContentViewModelBase CurrentModel { get; set; }
 
+    /// <summary>
+    ///   Navigation menu controller.
+    /// </summary>
     public RadioController MenuController { get; set; }
 
     #endregion
 
+
+
     #region Methods
 
     /// <summary>
-    ///   The radio controller on selection changed async.
+    ///   Notify on selection changes and allows to asynchronously validate whether to endorse it
+    ///   or not.
     /// </summary>
-    /// <param name="selectedItem">
-    ///   The selected item.
-    /// </param>
-    /// <param name="parameter">
-    ///   The parameter.
-    /// </param>
-    /// <returns>
-    ///   Waitable <see cref="Task" />.
-    /// </returns>
-    public Task<bool> RadioControllerOnSelectionChangedAsync(object selectedItem, object parameter)
+    /// <param name="selectedItem">The selected item.</param>
+    /// <param name="parameter">Item context (e.g. binding).</param>
+    /// <returns>Waitable task for validation result.</returns>
+    public Task<bool> RadioControllerOnSelectionChangedAsync(
+      object selectedItem, object parameter)
     {
       Argument.IsNotNull(() => parameter);
       Argument.IsOfType("parameter", parameter, typeof(string));
@@ -105,15 +112,13 @@ namespace Sidekick.Windows.ViewModels
           return
             SetCurrentModelAsync(
               _navViewModels.GetOrAdd(
-                buttonName,
-                () => TypeFactory.Default.CreateInstance<CollectionViewModel>()));
+                buttonName, () => TypeFactory.Default.CreateInstance<CollectionViewModel>()));
 
         case "NavigationBrowseButton":
           return
             SetCurrentModelAsync(
               _navViewModels.GetOrAdd(
-                buttonName,
-                () => TypeFactory.Default.CreateInstance<BrowserViewModel>()));
+                buttonName, () => TypeFactory.Default.CreateInstance<BrowserViewModel>()));
 
         case "NavigationKnowledgeNetworkButton":
           // return SetCurrentModelAsync(_navViewModels.GetOrAdd(
@@ -125,34 +130,16 @@ namespace Sidekick.Windows.ViewModels
           return
             SetCurrentModelAsync(
               _navViewModels.GetOrAdd(
-                buttonName,
-                () => TypeFactory.Default.CreateInstance<SettingsViewModel>()));
+                buttonName, () => TypeFactory.Default.CreateInstance<SettingsViewModel>()));
       }
 
       return TaskConstants.BooleanFalse;
     }
 
-    /// <summary>
-    ///   Initializes the view model. Normally the initialization is done in the constructor, but
-    ///   sometimes this must be delayed
-    ///   to a state where the associated UI element (user control, window, ...) is actually loaded.
-    ///   <para />
-    ///   This method is called as soon as the associated UI element is loaded.
-    /// </summary>
-    /// <returns></returns>
-    /// <remarks>
-    ///   It's not recommended to implement the initialization of properties in this method. The
-    ///   initialization of properties
-    ///   should be done in the constructor. This method should be used to start the retrieval of data
-    ///   from a web service or something
-    ///   similar.
-    ///   <para />
-    ///   During unit tests, it is recommended to manually call this method because there is no external
-    ///   container calling this method.
-    /// </remarks>
+    /// <inheritdoc />
     protected override Task InitializeAsync()
     {
-      RadioControllerOnSelectionChangedAsync(null, "NavigationBrowseButton");
+      RadioControllerOnSelectionChangedAsync(null, "NavigationCollectionButton");
 
       return base.InitializeAsync();
     }
@@ -175,8 +162,7 @@ namespace Sidekick.Windows.ViewModels
     }
 
     private async void SetCurrentModelAsync(
-      MainContentViewModelBase viewModel,
-      Task<bool> allowChangeTask)
+      MainContentViewModelBase viewModel, Task<bool> allowChangeTask)
     {
       if (await allowChangeTask.ConfigureAwait(true))
         CurrentModel = viewModel;

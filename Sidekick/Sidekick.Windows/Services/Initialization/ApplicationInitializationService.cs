@@ -19,23 +19,30 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System.Threading.Tasks;
-using Catel;
-using Catel.IoC;
-using Catel.Logging;
-using Catel.MVVM;
-using Catel.Runtime.Serialization.Json;
-using Catel.Threading;
-using Catel.Windows.Controls;
-using MethodTimer;
-using Orchestra.Services;
-using Sidekick.Shared.Interfaces.Database;
-using Sidekick.Windows.Services.Interfaces;
-
 namespace Sidekick.Windows.Services.Initialization
 {
-  public class ApplicationInitializationService
-    : ApplicationInitializationServiceBase
+  using System.Threading.Tasks;
+
+  using Catel;
+  using Catel.IoC;
+  using Catel.Logging;
+  using Catel.MVVM;
+  using Catel.Runtime.Serialization.Json;
+  using Catel.Threading;
+  using Catel.Windows.Controls;
+
+  using MethodTimer;
+
+  using Orchestra.Services;
+
+  using Sidekick.Shared.Interfaces.Database;
+  using Sidekick.Windows.Services.Interfaces;
+
+  /// <summary>
+  ///   Core initialization methods
+  /// </summary>
+  /// <seealso cref="Orchestra.Services.ApplicationInitializationServiceBase" />
+  public class ApplicationInitializationService : ApplicationInitializationServiceBase
   {
     #region Fields
 
@@ -45,14 +52,17 @@ namespace Sidekick.Windows.Services.Initialization
 
     #endregion
 
-    //
-    // Constructors
+
 
     #region Constructors
 
+    /// <summary>
+    ///   Initializes a new instance of the <see cref="ApplicationInitializationService" /> class.
+    /// </summary>
+    /// <param name="serviceLocator">The service locator.</param>
+    /// <param name="commandManager">The command manager.</param>
     public ApplicationInitializationService(
-      IServiceLocator serviceLocator,
-      ICommandManager commandManager)
+      IServiceLocator serviceLocator, ICommandManager commandManager)
     {
       Argument.IsNotNull(() => serviceLocator);
       Argument.IsNotNull(() => commandManager);
@@ -63,14 +73,17 @@ namespace Sidekick.Windows.Services.Initialization
 
     #endregion
 
-    //
-    // Core methods
+
 
     #region Methods
 
     //
     // States override
 
+    /// <summary>
+    /// Initializes the before creating shell asynchronous.
+    /// </summary>
+    /// <returns></returns>
     public override async Task InitializeBeforeCreatingShellAsync()
     {
       // Non-async first
@@ -80,16 +93,19 @@ namespace Sidekick.Windows.Services.Initialization
       InitializeCommands();
       InitializeViewPaths();
       InitializeViewModelPaths();
-      //InitializeNavigationMenu();
 
-      await TaskHelper.RunAndWaitAsync(
-        InitializeDatabase,
-        InitializePerformance);
+      await
+        TaskHelper.RunAndWaitAsync(InitializeDatabaseAsync, InitializePerformanceAsync)
+                  .ConfigureAwait(false);
     }
 
+    /// <summary>
+    /// Initializes the after creating shell asynchronous.
+    /// </summary>
+    /// <returns></returns>
     public override async Task InitializeAfterCreatingShellAsync()
     {
-      await base.InitializeAfterCreatingShellAsync();
+      await base.InitializeAfterCreatingShellAsync().ConfigureAwait(false);
     }
 
 
@@ -98,17 +114,12 @@ namespace Sidekick.Windows.Services.Initialization
 
     private void RegisterTypes()
     {
-      _serviceLocator.RegisterType<
-        IConfigurationInitializationService,
-        ConfigurationInitializationService>();
-      _serviceLocator.RegisterType<
-        IApplicationConfigurationService,
-        ApplicationConfigurationService>();
+      _serviceLocator
+        .RegisterType<IConfigurationInitializationService, ConfigurationInitializationService>();
+      _serviceLocator
+        .RegisterType<IApplicationConfigurationService, ApplicationConfigurationService>();
 
-      //_serviceLocator.RegisterTypeAndInstantiate<NavigationMenuService>();
-
-      _serviceLocator.RegisterType<IDatabase>(
-        slr => new DatabaseService());
+      _serviceLocator.RegisterType<IDatabase>(slr => new DatabaseService());
     }
 
     private void PreloadTypes()
@@ -118,58 +129,50 @@ namespace Sidekick.Windows.Services.Initialization
 
     private void InitializeConfiguration()
     {
-      var configInitService =
-        _serviceLocator.ResolveType<IConfigurationInitializationService>();
+      var configInitService = _serviceLocator.ResolveType<IConfigurationInitializationService>();
 
       configInitService.Initialize();
     }
 
     private void InitializeCommands()
     {
-      var commandManager = _serviceLocator.ResolveType<ICommandManager>();
+      // var commandManager = _serviceLocator.ResolveType<ICommandManager>();
 
-      //commandManager.CreateCommand("File.Refresh", new InputGesture(Key.R, ModifierKeys.Control),
-      //  throwExceptionWhenCommandIsAlreadyCreated: false);
-      //commandManager.CreateCommand("File.Save", new InputGesture(Key.S, ModifierKeys.Control),
-      //  throwExceptionWhenCommandIsAlreadyCreated: false);
-      //commandManager.CreateCommand("File.Exit", throwExceptionWhenCommandIsAlreadyCreated: false);
+      // commandManager.CreateCommand("File.Refresh", new InputGesture(Key.R, ModifierKeys.Control),
+      //   throwExceptionWhenCommandIsAlreadyCreated: false);
+      // commandManager.CreateCommand("File.Save", new InputGesture(Key.S, ModifierKeys.Control),
+      //   throwExceptionWhenCommandIsAlreadyCreated: false);
+      // commandManager.CreateCommand("File.Exit", throwExceptionWhenCommandIsAlreadyCreated: false);
     }
 
     private void InitializeViewPaths()
     {
       //
       // ViewModels
-      IViewLocator viewLocator =
-        _serviceLocator.ResolveType<IViewLocator>();
+      IViewLocator viewLocator = _serviceLocator.ResolveType<IViewLocator>();
 
-      viewLocator.NamingConventions.Add(
-        "Sidekick.Windows.Views.DataTemplates.[VM]View");
-      viewLocator.NamingConventions.Add(
-        "Sidekick.Windows.Views.Settings.[VM]View");
-      viewLocator.NamingConventions.Add(
-        "Sidekick.Windows.Views.SpacedRepetition.[VM]View");
-      viewLocator.NamingConventions.Add(
-        "Sidekick.WPF.Views.DataTemplates.[VM]View");
+      viewLocator.NamingConventions.Add("Sidekick.Windows.Views.DataTemplates.[VM]View");
+      viewLocator.NamingConventions.Add("Sidekick.Windows.Views.Settings.[VM]View");
+      viewLocator.NamingConventions.Add("Sidekick.Windows.Views.SpacedRepetition.[VM]View");
+      viewLocator.NamingConventions.Add("Sidekick.WPF.Views.DataTemplates.[VM]View");
     }
 
     private void InitializeViewModelPaths()
     {
       //
       // ViewModels
-      IViewModelLocator viewModelLocator =
-        _serviceLocator.ResolveType<IViewModelLocator>();
+      IViewModelLocator viewModelLocator = _serviceLocator.ResolveType<IViewModelLocator>();
 
       viewModelLocator.NamingConventions.Add(
-        "Sidekick.Windows.ViewModels.DataTemplates.[VW]ViewModel");
+                        "Sidekick.Windows.ViewModels.DataTemplates.[VW]ViewModel");
       viewModelLocator.NamingConventions.Add(
-        "Sidekick.Windows.ViewModels.Settings.[VW]ViewModel");
+                        "Sidekick.Windows.ViewModels.Settings.[VW]ViewModel");
       viewModelLocator.NamingConventions.Add(
-        "Sidekick.Windows.ViewModels.SpacedRepetition.[VW]ViewModel");
+                        "Sidekick.Windows.ViewModels.SpacedRepetition.[VW]ViewModel");
 
+      viewModelLocator.NamingConventions.Add("Sidekick.MVVM.ViewModels.[VW]ViewModel");
       viewModelLocator.NamingConventions.Add(
-        "Sidekick.MVVM.ViewModels.[VW]ViewModel");
-      viewModelLocator.NamingConventions.Add(
-        "Sidekick.MVVM.ViewModels.SpacedRepetition.[VW]ViewModel");
+                        "Sidekick.MVVM.ViewModels.SpacedRepetition.[VW]ViewModel");
     }
 
 #if false
@@ -193,16 +196,16 @@ namespace Sidekick.Windows.Services.Initialization
     // Async init
 
     [Time]
-    private async Task InitializeDatabase()
+    private async Task InitializeDatabaseAsync()
     {
-      await Task.Run(() => _serviceLocator.ResolveType<IDatabase>());
+      await Task.Run(() => _serviceLocator.ResolveType<IDatabase>()).ConfigureAwait(false);
     }
 
     [Time]
-    private async Task InitializePerformance()
+    private async Task InitializePerformanceAsync()
     {
-      //Catel.Data.ModelBase.DefaultSuspendValidationValue = true;
-      //UserControl.DefaultCreateWarningAndErrorValidatorForViewModelValue = false;
+      // Catel.Data.ModelBase.DefaultSuspendValidationValue = true;
+      // UserControl.DefaultCreateWarningAndErrorValidatorForViewModelValue = false;
       UserControl.DefaultSkipSearchingForInfoBarMessageControlValue = true;
     }
 

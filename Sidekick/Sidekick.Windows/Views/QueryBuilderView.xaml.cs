@@ -20,17 +20,23 @@
 // DEALINGS IN THE SOFTWARE.
 
 
-using Catel.Windows.Controls;
-
 namespace Sidekick.Windows.Views
 {
+  using Catel.Windows.Controls;
+
   /// <summary>
-  /// Interaction logic for QueryBuilderView.xaml
+  ///   Interaction logic for QueryBuilderView.xaml
   /// </summary>
   public partial class QueryBuilderView : UserControl
   {
     #region Constructors
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="QueryBuilderView"/> class.
+    /// </summary>
+    /// <remarks>
+    /// This method is required for design time support.
+    /// </remarks>
     public QueryBuilderView()
     {
       InitializeComponent();
