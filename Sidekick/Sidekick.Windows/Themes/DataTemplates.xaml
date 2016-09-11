@@ -9,9 +9,13 @@
   xmlns:spacedRepetition="clr-namespace:Sidekick.Windows.Views.SpacedRepetition"
   xmlns:settingsViewModels="clr-namespace:Sidekick.Windows.ViewModels.Settings"
   xmlns:settings="clr-namespace:Sidekick.Windows.Views.Settings"
-  xmlns:conditionsViewModels="clr-namespace:Sidekick.FilterBuilder.Conditions"
-  xmlns:expressionsViewModels="clr-namespace:Sidekick.FilterBuilder.Expressions"
-  xmlns:wpfDataTemplates="clr-namespace:Sidekick.WPF.Views.DataTemplates;assembly=Sidekick.WPF">
+  xmlns:wpfDataTemplates="clr-namespace:Sidekick.WPF.Views.DataTemplates;assembly=Sidekick.WPF"
+  xmlns:filterBuilderViews="clr-namespace:Orc.FilterBuilder.Views;assembly=Orc.FilterBuilder"
+  xmlns:filterBuilderViewModels="clr-namespace:Orc.FilterBuilder.ViewModels;assembly=Orc.FilterBuilder">
+
+  <ResourceDictionary.MergedDictionaries>
+    <ResourceDictionary Source="pack://application:,,,/Sidekick.Windows;component/Views/DataTemplates/FilterSchemeView.xaml" />
+  </ResourceDictionary.MergedDictionaries>
 
 
   <!--Settings-->
@@ -36,8 +40,11 @@
   <DataTemplate DataType="{x:Type winSpacedRepetitionViewModels:BrowserQueryViewerViewModel}">
     <spacedRepetition:BrowserQueryViewerView />
   </DataTemplate>
-  <DataTemplate DataType="{x:Type viewModels:QueryBuilderViewModel}">
-    <views:QueryBuilderView />
+  <DataTemplate DataType="{x:Type winSpacedRepetitionViewModels:BrowserQueryBuilderViewModel}">
+    <spacedRepetition:BrowserQueryBuilderView />
+  </DataTemplate>
+  <DataTemplate DataType="{x:Type filterBuilderViewModels:FilterBuilderViewModel}">
+    <filterBuilderViews:FilterBuilderView />
   </DataTemplate>
   
 

@@ -19,16 +19,22 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Windows;
-using Catel.Data;
-using Catel.MVVM;
-using MahApps.Metro;
-using Sidekick.Windows.Services.Interfaces;
-
 namespace Sidekick.Windows.ViewModels.Settings
 {
+  using System.Collections.Generic;
+  using System.Threading.Tasks;
+  using System.Windows;
+
+  using Catel.MVVM;
+
+  using MahApps.Metro;
+
+  using Sidekick.Windows.Services.Interfaces;
+
+  /// <summary>
+  ///   App-appearance related settings panel View Model
+  /// </summary>
+  /// <seealso cref="Catel.MVVM.ViewModelBase" />
   public class SettingsThemeViewModel : ViewModelBase
   {
     #region Fields
@@ -38,14 +44,23 @@ namespace Sidekick.Windows.ViewModels.Settings
 
     #endregion
 
+
+
     #region Constructors
 
+    /// <summary>
+    ///   Initializes a new instance of the <see cref="SettingsThemeViewModel" /> class.
+    /// </summary>
+    /// <param name="applicationConfigService">The application configuration service.</param>
     public SettingsThemeViewModel(IApplicationConfigurationService applicationConfigService)
+      : base(false)
     {
       _applicationConfigService = applicationConfigService;
     }
 
     #endregion
+
+
 
     #region Properties
 
@@ -56,6 +71,8 @@ namespace Sidekick.Windows.ViewModels.Settings
     public Accent SelectedAccent { get; set; }
 
     #endregion
+
+
 
     #region Methods
 
@@ -79,10 +96,7 @@ namespace Sidekick.Windows.ViewModels.Settings
       if (_isInitializing)
         return;
 
-      ThemeManager.ChangeAppStyle(
-        Application.Current,
-        SelectedAccent,
-        SelectedTheme);
+      ThemeManager.ChangeAppStyle(Application.Current, SelectedAccent, SelectedTheme);
 
       _applicationConfigService.Theme = SelectedTheme;
     }
@@ -92,14 +106,11 @@ namespace Sidekick.Windows.ViewModels.Settings
       if (_isInitializing)
         return;
 
-      ThemeManager.ChangeAppStyle(
-        Application.Current,
-        SelectedAccent,
-        SelectedTheme);
+      ThemeManager.ChangeAppStyle(Application.Current, SelectedAccent, SelectedTheme);
 
       _applicationConfigService.Accent = SelectedAccent;
     }
-    
+
     #endregion
   }
 }

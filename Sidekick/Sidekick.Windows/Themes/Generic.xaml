@@ -19,6 +19,9 @@
     <ResourceDictionary Source="pack://application:,,,/Sidekick.WPF;component/Controls/FlatIconizableToggleButton.xaml" />
     <ResourceDictionary Source="pack://application:,,,/Sidekick.WPF;component/Controls/FlatIconizableButton.xaml" />
     <ResourceDictionary Source="pack://application:,,,/Sidekick.WPF;component/Controls/StackedTreeView.xaml" />
+    
+    <!--FilterBuilder style-->
+    <ResourceDictionary Source="pack://application:,,,/Sidekick.Windows;component/Styles/FilterBuilder.xaml" />
 
   </ResourceDictionary.MergedDictionaries>
 

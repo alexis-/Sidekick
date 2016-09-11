@@ -2,4 +2,6 @@
 <Weavers>
   <ModuleInit />
   <MethodTimer />
+  <Anotar.Catel />
+  <AsyncErrorHandler />
 </Weavers>

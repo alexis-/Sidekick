@@ -69,7 +69,7 @@ namespace Sidekick.SpacedRepetition.Review
     ///   Initializes a new instance of the <see cref="ReviewAsyncDbListBase" /> class.
     /// </summary>
     /// <param name="db">The database.</param>
-    protected ReviewAsyncDbListBase(IDatabase db) : base(db, true)
+    protected ReviewAsyncDbListBase(IDatabaseAsync db) : base(db, true)
     {
       FurtherLoadedIndex = -1;
       DismissedIds = new HashSet<int>();
@@ -163,7 +163,7 @@ namespace Sidekick.SpacedRepetition.Review
         // Find siblings indices
         while (
           (cardIndex =
-           Objects.FindIndex(cardIndex + 1, c => c.NoteId == noteId && c.Id != cardId)) > 0)
+             Objects.FindIndex(cardIndex + 1, c => c.NoteId == noteId && c.Id != cardId)) > 0)
           cardIndices.Add(cardIndex);
 
         // No siblings
@@ -217,7 +217,6 @@ namespace Sidekick.SpacedRepetition.Review
     /// </summary>
     public abstract int ReviewCount();
 
-    
 
     //
     // AsyncDbListBase core methods implementation
@@ -241,18 +240,13 @@ namespace Sidekick.SpacedRepetition.Review
         cardsId = new HashSet<int>(cards.Select(c => c.Id));
       }
 
-      IEnumerable<Card> updateCards = await Task.Run(
-        () =>
-        {
-          using (Db.Lock())
-          {
-            return
-              Db.Table<Card>()
-                .FurtherLoad(LazyLoader)
-                .Where(c => cardsId.Contains(c.Id))
-                .ToList();
-          }
-        }).ConfigureAwait(false);
+      IEnumerable<Card> updateCards =
+        await
+          Db.Table<Card>()
+            .FurtherLoad(LazyLoader)
+            .Where(c => cardsId.Contains(c.Id))
+            .ToListAsync()
+            .ConfigureAwait(false);
 
       lock (LockObject)
       {

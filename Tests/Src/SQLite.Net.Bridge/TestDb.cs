@@ -19,11 +19,12 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System;
-using PCLStorage;
-
 namespace SQLite.Net.Bridge.Tests
 {
+  using System;
+
+  using PCLStorage;
+
   public class TestBaseDb : SQLiteConnectionWithLockBridge
   {
     #region Constructors
@@ -32,14 +33,12 @@ namespace SQLite.Net.Bridge.Tests
       IColumnInformationProvider columnInformationProvider = null,
       IContractResolver contractResolver = null)
       : base(
-        new SQLitePlatformTest(),
-        CreateTemporaryDatabase(),
-        columnInformationProvider,
-        resolver: contractResolver)
-    {
-    }
+        new SQLitePlatformTest(), CreateTemporaryDatabase(), columnInformationProvider,
+        resolver: contractResolver) { }
 
     #endregion
+
+
 
     #region Methods
 
@@ -48,18 +47,13 @@ namespace SQLite.Net.Bridge.Tests
       var desiredName = fileName ?? CreateDefaultTempFilename() + ".db";
       var localStorage = FileSystem.Current.LocalStorage;
 
-      if (localStorage.CheckExistsAsync("temp").Result !=
-          ExistenceCheckResult.FolderExists)
-        localStorage.CreateFolderAsync(
-          "temp",
-          CreationCollisionOption.OpenIfExists)
-                    .Wait();
+      if (localStorage.CheckExistsAsync("temp").Result != ExistenceCheckResult.FolderExists)
+        localStorage.CreateFolderAsync("temp", CreationCollisionOption.OpenIfExists).Wait();
 
       IFolder tempFolder = localStorage.GetFolderAsync("temp").Result;
-      return tempFolder.CreateFileAsync(
-        desiredName,
-        CreationCollisionOption.FailIfExists)
-                       .Result.Path;
+      return
+        tempFolder.CreateFileAsync(desiredName, CreationCollisionOption.FailIfExists)
+                  .Result.Path;
     }
 
     public static Guid CreateDefaultTempFilename()

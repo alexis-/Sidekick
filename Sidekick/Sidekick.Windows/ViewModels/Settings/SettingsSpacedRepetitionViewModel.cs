@@ -19,38 +19,53 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System.Windows.Input;
-using Catel.MVVM;
-using Catel.Services;
-using Sidekick.Shared.Interfaces.Database;
-using Sidekick.SpacedRepetition.Generators;
-using Sidekick.SpacedRepetition.Models;
-
 namespace Sidekick.Windows.ViewModels.Settings
 {
+  using System.Threading.Tasks;
+  using System.Windows.Input;
+
+  using Catel.MVVM;
+  using Catel.Services;
+
+  using Sidekick.Shared.Interfaces.Database;
+  using Sidekick.SpacedRepetition.Generators;
+  using Sidekick.SpacedRepetition.Models;
+
+  /// <summary>
+  ///   SpacedRepetition-related settings panel View Model
+  /// </summary>
+  /// <seealso cref="Catel.MVVM.ViewModelBase" />
   public class SettingsSpacedRepetitionViewModel : ViewModelBase
   {
     #region Fields
 
-    private readonly IDatabase _database;
+    private readonly IDatabaseAsync _database;
     private readonly IMessageService _messageService;
 
     #endregion
 
+
+
     #region Constructors
 
+    /// <summary>
+    ///   Initializes a new instance of the <see cref="SettingsSpacedRepetitionViewModel" /> class.
+    /// </summary>
+    /// <param name="database">Database instance.</param>
+    /// <param name="messageService">The message service.</param>
     public SettingsSpacedRepetitionViewModel(
-      IDatabase database,
-      IMessageService messageService)
+      IDatabaseAsync database, IMessageService messageService) : base(false)
     {
       _database = database;
       _messageService = messageService;
 
-      GenerateTestCollectionCommand = new Command(
-        OnGenerateTestCollectionCommandExecute);
+      GenerateTestCollectionCommand =
+        new TaskCommand(OnGenerateTestCollectionCommandExecuteAsync);
     }
 
     #endregion
+
+
 
     #region Properties
 
@@ -58,21 +73,22 @@ namespace Sidekick.Windows.ViewModels.Settings
 
     #endregion
 
+
+
     #region Methods
 
-    public void OnGenerateTestCollectionCommandExecute()
+    private async Task OnGenerateTestCollectionCommandExecuteAsync()
     {
-      var collectionGenerator = new CollectionGenerator(
-        new CardGenerator(new TimeGenerator(90),
-          CollectionConfig.Default,
-          200),
-        _database,
-        100, 3);
+      var collectionGenerator =
+        new CollectionGenerator(
+          new CardGenerator(new TimeGenerator(90), CollectionConfig.Default, 200), 100, 3);
 
-      collectionGenerator.Generate();
+      await collectionGenerator.GenerateAsync(_database).ConfigureAwait(true);
 
-      _messageService.ShowInformationAsync(
-        "Collection successfully Generated", "PageableCollection Debugging");
+      await
+        _messageService.ShowInformationAsync(
+                         "Collection successfully Generated", "PageableCollection Debugging")
+                       .ConfigureAwait(true);
     }
 
     #endregion

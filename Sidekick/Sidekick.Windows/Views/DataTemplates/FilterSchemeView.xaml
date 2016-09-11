@@ -1,0 +1,13 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:filters="clr-namespace:Orc.FilterBuilder.Models;assembly=Orc.FilterBuilder">
+  
+  <DataTemplate DataType="{x:Type filters:FilterScheme}">
+    
+    <Label Content="{Binding Title}"
+           FontSize="16"
+           FontWeight="DemiBold" />
+    
+  </DataTemplate>
+    
+</ResourceDictionary>

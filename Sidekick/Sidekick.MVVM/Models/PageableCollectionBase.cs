@@ -193,11 +193,11 @@ namespace Sidekick.MVVM.Models
     /// </summary>
     /// <param name="removeAction">The remove action.</param>
     /// <returns>Waitable task which define success state</returns>
-    protected virtual async Task<bool> DoRemoveAsync(Func<bool> removeAction)
+    protected virtual async Task<bool> DoRemoveAsync(Func<Task<bool>> removeAction)
     {
       int lastTotalPageNumber = TotalPageCount;
 
-      if (!removeAction())
+      if (await removeAction().ConfigureAwait(false) == false)
         return false;
 
       // if the last item on the last page is removed
@@ -218,11 +218,11 @@ namespace Sidekick.MVVM.Models
     /// </summary>
     /// <param name="addAction">The add action.</param>
     /// <returns>Waitable task which define success state</returns>
-    protected virtual async Task<bool> DoAddAsync(Func<bool> addAction)
+    protected virtual async Task<bool> DoAddAsync(Func<Task<bool>> addAction)
     {
       int lastTotalPageNumber = TotalPageCount;
 
-      if (!addAction())
+      if (await addAction().ConfigureAwait(false) == false)
         return false;
 
       // Update the total number of pages

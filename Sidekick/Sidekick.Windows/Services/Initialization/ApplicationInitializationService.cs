@@ -28,6 +28,7 @@ namespace Sidekick.Windows.Services.Initialization
   using Catel.Logging;
   using Catel.MVVM;
   using Catel.Runtime.Serialization.Json;
+  using Catel.Services;
   using Catel.Threading;
   using Catel.Windows.Controls;
 
@@ -36,19 +37,22 @@ namespace Sidekick.Windows.Services.Initialization
   using Orchestra.Services;
 
   using Sidekick.Shared.Interfaces.Database;
+  using Sidekick.Windows.Services.Database;
   using Sidekick.Windows.Services.Interfaces;
+  using Sidekick.Windows.ViewModels.SpacedRepetition;
+  using Sidekick.Windows.Views.SpacedRepetition;
 
   /// <summary>
-  ///   Core initialization methods
+  ///   Core initialization methods.
   /// </summary>
   /// <seealso cref="Orchestra.Services.ApplicationInitializationServiceBase" />
   public class ApplicationInitializationService : ApplicationInitializationServiceBase
   {
     #region Fields
-
-    private static readonly ILog Log = LogManager.GetCurrentClassLogger();
+    
     private readonly IServiceLocator _serviceLocator;
     private readonly ICommandManager _commandManager;
+    private readonly IUIVisualizerService _uiVisualizer;
 
     #endregion
 
@@ -61,14 +65,17 @@ namespace Sidekick.Windows.Services.Initialization
     /// </summary>
     /// <param name="serviceLocator">The service locator.</param>
     /// <param name="commandManager">The command manager.</param>
+    /// <param name="uiVisualizer">The UI visualizer.</param>
     public ApplicationInitializationService(
-      IServiceLocator serviceLocator, ICommandManager commandManager)
+      IServiceLocator serviceLocator, ICommandManager commandManager,
+      IUIVisualizerService uiVisualizer)
     {
       Argument.IsNotNull(() => serviceLocator);
       Argument.IsNotNull(() => commandManager);
 
       _serviceLocator = serviceLocator;
       _commandManager = commandManager;
+      _uiVisualizer = uiVisualizer;
     }
 
     #endregion
@@ -81,7 +88,7 @@ namespace Sidekick.Windows.Services.Initialization
     // States override
 
     /// <summary>
-    /// Initializes the before creating shell asynchronous.
+    ///   Initializes the before creating shell asynchronous.
     /// </summary>
     /// <returns></returns>
     public override async Task InitializeBeforeCreatingShellAsync()
@@ -93,14 +100,19 @@ namespace Sidekick.Windows.Services.Initialization
       InitializeCommands();
       InitializeViewPaths();
       InitializeViewModelPaths();
+      InitializeWindows();
+
+      // First initialize database
+      await InitializeDatabaseAsync().ConfigureAwait(false);
 
       await
-        TaskHelper.RunAndWaitAsync(InitializeDatabaseAsync, InitializePerformanceAsync)
-                  .ConfigureAwait(false);
+        TaskHelper.RunAndWaitAsync(
+                    InitializeCollectionFilterManagerAsync,
+                    InitializePerformanceAsync).ConfigureAwait(false);
     }
 
     /// <summary>
-    /// Initializes the after creating shell asynchronous.
+    ///   Initializes the after creating shell asynchronous.
     /// </summary>
     /// <returns></returns>
     public override async Task InitializeAfterCreatingShellAsync()
@@ -119,7 +131,8 @@ namespace Sidekick.Windows.Services.Initialization
       _serviceLocator
         .RegisterType<IApplicationConfigurationService, ApplicationConfigurationService>();
 
-      _serviceLocator.RegisterType<IDatabase>(slr => new DatabaseService());
+      _serviceLocator.RegisterType<IDatabaseAsync, DatabaseAsyncService>();
+      _serviceLocator.RegisterType<CollectionQueryManagerService>();
     }
 
     private void PreloadTypes()
@@ -175,6 +188,11 @@ namespace Sidekick.Windows.Services.Initialization
                         "Sidekick.MVVM.ViewModels.SpacedRepetition.[VW]ViewModel");
     }
 
+    private void InitializeWindows()
+    {
+      _uiVisualizer.Register<BrowserViewModel, BrowserWindow>();
+    }
+
 #if false
     private void InitializeNavigationMenu()
     {
@@ -198,7 +216,15 @@ namespace Sidekick.Windows.Services.Initialization
     [Time]
     private async Task InitializeDatabaseAsync()
     {
-      await Task.Run(() => _serviceLocator.ResolveType<IDatabase>()).ConfigureAwait(false);
+      await Task.Run(() => _serviceLocator.ResolveType<IDatabaseAsync>()).ConfigureAwait(false);
+    }
+
+    [Time]
+    private async Task InitializeCollectionFilterManagerAsync()
+    {
+      var filterManager = _serviceLocator.ResolveType<CollectionQueryManagerService>();
+
+      await filterManager.InitializeAsync().ConfigureAwait(false);
     }
 
     [Time]

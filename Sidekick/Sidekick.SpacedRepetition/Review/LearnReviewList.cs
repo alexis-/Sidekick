@@ -52,7 +52,7 @@ namespace Sidekick.SpacedRepetition.Review
     ///   Initializes a new instance of the <see cref="LearnReviewList" /> class.
     /// </summary>
     /// <param name="db">Database instance</param>
-    public LearnReviewList(IDatabase db) : base(db)
+    public LearnReviewList(IDatabaseAsync db) : base(db)
     {
       Comparer = ReviewComparers.DueComparer;
 
@@ -166,11 +166,10 @@ namespace Sidekick.SpacedRepetition.Review
       int loadedCount =
         await
           AddItemsAsync(
-            () =>
-              Db.Table<Card>()
-                .Where(c => c.PracticeState >= CardPracticeState.Learning && c.Due < tomorrow)
-                .Take(fullLoadCount)
-                .OrderBy(c => c.Due)).ConfigureAwait(false);
+            Db.Table<Card>()
+              .Where(c => c.PracticeState >= CardPracticeState.Learning && c.Due < tomorrow)
+              .Take(fullLoadCount)
+              .OrderBy(c => c.Due)).ConfigureAwait(false);
 
       // Update fully loaded index accordingly
       FurtherLoadedIndex = loadedCount - 1;
@@ -179,14 +178,13 @@ namespace Sidekick.SpacedRepetition.Review
         loadedCount +=
           await
             AddItemsAsync(
-              () =>
-                Db.Table<Card>()
-                  .ShallowLoad(LazyLoader)
-                  .Where(
-                    c =>
-                      c.PracticeState >= CardPracticeState.Learning && c.Due < tomorrow
-                      && !Objects.Select(o => o.Id).Contains(c.Id))
-                  .OrderBy(c => c.Due)).ConfigureAwait(false);
+              Db.Table<Card>()
+                .ShallowLoad(LazyLoader)
+                .Where(
+                  c =>
+                    c.PracticeState >= CardPracticeState.Learning && c.Due < tomorrow
+                    && !Objects.Select(o => o.Id).Contains(c.Id))
+                .OrderBy(c => c.Due)).ConfigureAwait(false);
 
       Status = ReviewStatus.MoveNextEndOfStore;
 

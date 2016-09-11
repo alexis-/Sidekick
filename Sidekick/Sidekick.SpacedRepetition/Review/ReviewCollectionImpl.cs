@@ -19,19 +19,21 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using MethodTimer;
-using Sidekick.Shared.Extensions;
-using Sidekick.Shared.Interfaces.Database;
-using Sidekick.Shared.Utils;
-using Sidekick.SpacedRepetition.Const;
-using Sidekick.SpacedRepetition.Interfaces;
-using Sidekick.SpacedRepetition.Models;
-
 namespace Sidekick.SpacedRepetition.Review
 {
+  using System;
+  using System.Collections.Generic;
+  using System.Threading.Tasks;
+
+  using MethodTimer;
+
+  using Sidekick.Shared.Extensions;
+  using Sidekick.Shared.Interfaces.Database;
+  using Sidekick.Shared.Utils;
+  using Sidekick.SpacedRepetition.Const;
+  using Sidekick.SpacedRepetition.Interfaces;
+  using Sidekick.SpacedRepetition.Models;
+
   /// <summary>
   ///   Loads and schedule cards to be displayed for review.
   /// </summary>
@@ -41,11 +43,11 @@ namespace Sidekick.SpacedRepetition.Review
     #region Fields
 
     private const int MaxEvalTime = 60;
-
-    private readonly string _cardTableName;
-    private readonly IDatabase _db;
+    private readonly IDatabaseAsync _db;
     private readonly bool _fakeLog;
     private readonly Random _random;
+
+    private string _cardTableName;
 
     #endregion
 
@@ -66,19 +68,18 @@ namespace Sidekick.SpacedRepetition.Review
     ///   ReviewLog Id field is based on current timestamp, and may lead to unique
     ///   constraint conflict.
     /// </param>
-    public ReviewCollectionImpl(IDatabase db, CollectionConfig config, bool fakeLog = false)
+    public ReviewCollectionImpl(
+      IDatabaseAsync db, CollectionConfig config, bool fakeLog = false)
     {
       _db = db;
       _fakeLog = fakeLog;
-      LastEval = -1;
       _random = new Random();
 
-      _cardTableName = _db.GetTableMapping<Card>().GetTableName();
-
+      LastEval = -1;
       CurrentList = null;
       NextAction = new Dictionary<ReviewAsyncDbListBase, Func<Task<bool>>>();
 
-      Initialized = InitializeAsync(db, config);
+      Initialized = InitializeAsync(config);
     }
 
     #endregion
@@ -164,7 +165,9 @@ namespace Sidekick.SpacedRepetition.Review
       NextAction[CurrentList] = () => CurrentList.MoveNextAsync();
       CurrentList = null;
 
-      card.Answer(grade, _db);
+#pragma warning disable 4014
+      card.AnswerAsync(grade, _db);
+#pragma warning restore 4014
 
       log.CompleteReview(
         grade, card.Due, card.PracticeState, card.Interval, card.EFactor, evalTime);
@@ -174,20 +177,11 @@ namespace Sidekick.SpacedRepetition.Review
         LearnReviewList.AddManual(card);
 
       // Dismiss sibling cards & insert review log
-      Task.Run(
-        () =>
-        {
-          using (_db.Lock())
-          {
-            _db.Insert(log);
-
-            _db.Query<Card>(
-              @"UPDATE """ + _cardTableName + @""" SET ""Due"" = ? WHERE ""Due"" < ?"
-              + @" AND ""NoteId"" = ? AND ""Id"" <> ?",
-              DateTimeExtensions.Tomorrow.ToUnixTimestamp(),
-              DateTimeExtensions.Tomorrow.ToUnixTimestamp(), noteId, card.Id);
-          }
-        });
+      _db.InsertAsync(log);
+      _db.QueryAsync<Card>(
+        @"UPDATE """ + _cardTableName + @""" SET ""Due"" = ? WHERE ""Due"" < ?"
+        + @" AND ""NoteId"" = ? AND ""Id"" <> ?", DateTimeExtensions.Tomorrow.ToUnixTimestamp(),
+        DateTimeExtensions.Tomorrow.ToUnixTimestamp(), noteId, card.Id);
 
       NewReviewList.DismissSiblings(card);
       LearnReviewList.DismissSiblings(card);
@@ -215,7 +209,9 @@ namespace Sidekick.SpacedRepetition.Review
       NextAction[CurrentList] = () => CurrentList.DismissAsync();
       CurrentList = null;
 
-      card.Dismiss(_db);
+#pragma warning disable 4014
+      card.DismissAsync(_db);
+#pragma warning restore 4014
 
       return DoNextAsync();
     }
@@ -247,21 +243,26 @@ namespace Sidekick.SpacedRepetition.Review
     // Internal
 
     [Time]
-    private async Task<bool> InitializeAsync(IDatabase db, CollectionConfig config)
+    private async Task<bool> InitializeAsync(CollectionConfig config)
     {
-      ReviewSession reviewSession = new ReviewSession(_db, config);
+      _cardTableName =
+        (await _db.GetTableMappingAsync<Card>().ConfigureAwait(false)).GetTableName();
 
-      NewReviewList = new NewReviewList(db, config, reviewSession.New);
-      LearnReviewList = new LearnReviewList(db);
-      DueReviewList = new DueReviewList(db, reviewSession.Due);
+      ReviewSession reviewSession =
+        await ReviewSession.ComputeSessionAsync(_db, config).ConfigureAwait(false);
+
+      NewReviewList = new NewReviewList(_db, config, reviewSession.New);
+      LearnReviewList = new LearnReviewList(_db);
+      DueReviewList = new DueReviewList(_db, reviewSession.Due);
 
       NextAction[NewReviewList] = () => NewReviewList.MoveNextAsync();
       NextAction[LearnReviewList] = () => LearnReviewList.MoveNextAsync();
       NextAction[DueReviewList] = () => DueReviewList.MoveNextAsync();
 
-      await Task.WhenAll(
-                  NewReviewList.IsInitializedAsync(), LearnReviewList.IsInitializedAsync(),
-                  DueReviewList.IsInitializedAsync()).ConfigureAwait(false);
+      await
+        Task.WhenAll(
+              NewReviewList.IsInitializedAsync(), LearnReviewList.IsInitializedAsync(),
+              DueReviewList.IsInitializedAsync()).ConfigureAwait(false);
 
       return await DoNextAsync().ConfigureAwait(false);
     }

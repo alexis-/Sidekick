@@ -25,7 +25,6 @@ namespace Sidekick.SpacedRepetition.Tests
   using System.Collections.Generic;
   using System.Linq;
 
-  using Catel.ExceptionHandling;
   using Catel.Logging;
 
   using FluentAssertions;
@@ -43,7 +42,7 @@ namespace Sidekick.SpacedRepetition.Tests
   public class ReviewCollectionImplTest
   {
     /// <summary>
-    /// Initializes a new instance of the <see cref="ReviewCollectionImplTest"/> class.
+    ///   Initializes a new instance of the <see cref="ReviewCollectionImplTest" /> class.
     /// </summary>
     public ReviewCollectionImplTest()
     {
@@ -55,16 +54,16 @@ namespace Sidekick.SpacedRepetition.Tests
     public async void RandomCollectionReview(int noteCount)
     {
       // Setup DB & LazyLoader
-      CardDb db = new CardDb();
+      CardDbAsync db = new CardDbAsync();
 
       // Setup collection
       CollectionConfig config = CollectionConfig.Default;
       CollectionGenerator generator =
         new CollectionGenerator(
-          new CardGenerator(new TimeGenerator(3 * 30, true), config, noteCount * 2), db,
-          noteCount, 3);
+          new CardGenerator(new TimeGenerator(3 * 30, true), config, noteCount * 2), noteCount,
+          3);
 
-      IEnumerable<Note> notes = generator.Generate();
+      IEnumerable<Note> notes = await generator.GenerateAsync(db).ConfigureAwait(true);
 
       // Collection review testing
 
@@ -89,11 +88,13 @@ namespace Sidekick.SpacedRepetition.Tests
     public async void DismissCard(int cardCount)
     {
       // Create context
-      CardDb db = new CardDb();
+      CardDbAsync db = new CardDbAsync();
       CollectionConfig config = CollectionConfig.Default;
       IEnumerable<Note> notes =
-        new CollectionGenerator(
-          new CardGenerator(new TimeGenerator(), config, cardCount), db, cardCount, 1).Generate();
+        await
+          new CollectionGenerator(
+              new CardGenerator(new TimeGenerator(), config, cardCount), cardCount, 1)
+            .GenerateAsync(db).ConfigureAwait(true);
 
       // Ensure context
       notes.Count().Should().Be(cardCount);
@@ -139,11 +140,13 @@ namespace Sidekick.SpacedRepetition.Tests
       Grade grade = gradeValue;
 
       // Create context
-      CardDb db = new CardDb();
+      CardDbAsync db = new CardDbAsync();
       CollectionConfig config = CollectionConfig.Default;
       IEnumerable<Note> notes =
-        new CollectionGenerator(
-          new CardGenerator(new TimeGenerator(), config, cardCount), db, cardCount, 1).Generate();
+        await
+          new CollectionGenerator(
+              new CardGenerator(new TimeGenerator(), config, cardCount), cardCount, 1)
+            .GenerateAsync(db).ConfigureAwait(true);
 
       // Ensure context
       notes.Count().Should().Be(cardCount);
@@ -218,7 +221,7 @@ namespace Sidekick.SpacedRepetition.Tests
     public async void ReviewCount()
     {
       // Create context
-      CardDb db = new CardDb();
+      CardDbAsync db = new CardDbAsync();
       CollectionConfig config = CollectionConfig.Default;
 
       int newCardCount = config.NewCardPerDay * 2;
@@ -226,10 +229,11 @@ namespace Sidekick.SpacedRepetition.Tests
       int cardCount = newCardCount + dueCardCount;
 
       IEnumerable<Note> notes =
-        new CollectionGenerator(
-          new CardGenerator(
-            new TimeGenerator(), config, cardCount, newCardCount, 0, dueCardCount, 0), db,
-          cardCount, 1).Generate();
+        await
+          new CollectionGenerator(
+              new CardGenerator(
+                new TimeGenerator(), config, cardCount, newCardCount, 0, dueCardCount, 0),
+              cardCount, 1).GenerateAsync(db).ConfigureAwait(true);
 
       // Ensure context
       notes.Count().Should().Be(cardCount);

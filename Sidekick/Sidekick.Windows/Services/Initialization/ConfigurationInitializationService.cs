@@ -19,20 +19,26 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using Catel.Configuration;
-using Catel.Fody;
-using Sidekick.Windows.Services.Interfaces;
-
 namespace Sidekick.Windows.Services.Initialization
 {
-  internal class ConfigurationInitializationService :
-    IConfigurationInitializationService
+  using Catel.Configuration;
+  using Catel.Fody;
+
+  using Sidekick.Windows.Services.Interfaces;
+
+  /// <summary>
+  ///   Initial setup of application settings
+  /// </summary>
+  /// <seealso cref="Sidekick.Windows.Services.Interfaces.IConfigurationInitializationService" />
+  internal class ConfigurationInitializationService : IConfigurationInitializationService
   {
     #region Fields
 
     private readonly IConfigurationService _configurationService;
 
     #endregion
+
+
 
     #region Constructors
 
@@ -44,23 +50,22 @@ namespace Sidekick.Windows.Services.Initialization
 
     #endregion
 
+
+
     #region Methods
 
     public void Initialize()
     {
       // Theme
       InitializeConfigurationKey(
-        Settings.Application.Theme.AppTheme,
-        Settings.Application.Theme.AppThemeDefaultValue);
+        Settings.Application.Theme.AppTheme, Settings.Application.Theme.AppThemeDefaultValue);
       InitializeConfigurationKey(
-        Settings.Application.Theme.Accent,
-        Settings.Application.Theme.AccentDefaultValue);
+        Settings.Application.Theme.Accent, Settings.Application.Theme.AccentDefaultValue);
     }
 
     private void InitializeConfigurationKey(string key, object defaultValue)
     {
-      _configurationService.InitializeValue(
-        ConfigurationContainer.Local, key, defaultValue);
+      _configurationService.InitializeValue(ConfigurationContainer.Local, key, defaultValue);
     }
 
     #endregion

@@ -19,11 +19,11 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using Sidekick.Shared.Interfaces.Database;
-using Sidekick.SpacedRepetition.Models;
-
 namespace Sidekick.SpacedRepetition.Interfaces
 {
+  using Sidekick.Shared.Interfaces.Database;
+  using Sidekick.SpacedRepetition.Models;
+
   public interface ISpacedRepetition
   {
     #region Properties
@@ -37,13 +37,16 @@ namespace Sidekick.SpacedRepetition.Interfaces
 
     #endregion
 
+
+
     #region Methods
 
     //
     // Core methods
 
     Note CreateNote();
-    IReviewCollection GetReviewCollection(IDatabase db);
+
+    IReviewCollection GetReviewCollection(IDatabaseAsync db);
 
     #endregion
   }

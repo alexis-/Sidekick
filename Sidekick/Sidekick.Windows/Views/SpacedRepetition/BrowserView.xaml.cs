@@ -20,17 +20,23 @@
 // DEALINGS IN THE SOFTWARE.
 
 
-using Catel.Windows.Controls;
-
 namespace Sidekick.Windows.Views.SpacedRepetition
 {
+  using Catel.Windows.Controls;
+
   /// <summary>
-  /// Interaction logic for BrowserView.xaml
+  ///   Interaction logic for BrowserView.xaml
   /// </summary>
   public partial class BrowserView : UserControl
   {
     #region Constructors
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BrowserView"/> class.
+    /// </summary>
+    /// <remarks>
+    /// This method is required for design time support.
+    /// </remarks>
     public BrowserView()
     {
       InitializeComponent();

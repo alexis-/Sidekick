@@ -19,49 +19,39 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System;
-using Sidekick.Shared.Extensions;
-using Sidekick.Shared.Interfaces.Database;
-using Sidekick.SpacedRepetition.Const;
-
 namespace Sidekick.SpacedRepetition.Models
 {
+  using System;
+  using System.Threading.Tasks;
+
+  using Sidekick.Shared.Extensions;
+  using Sidekick.Shared.Interfaces.Database;
+  using Sidekick.SpacedRepetition.Const;
+
   public partial class Card
   {
     #region Methods
 
     /// <summary>
-    /// Dismisses card and postpone review to next day.
+    ///   Dismisses card and postpone review to next day.
     /// </summary>
     /// <param name="db">The database.</param>
-    public void Dismiss(IDatabase db)
+    public async Task DismissAsync(IDatabaseAsync db)
     {
       MiscState = MiscState | CardMiscStateFlag.Dismissed;
 
-      Due = Math.Max(Due, DateTimeExtensions.Tomorrow.ToUnixTimestamp());
       // TODO: If card is overdue, interval bonus is lost
+      Due = Math.Max(Due, DateTimeExtensions.Tomorrow.ToUnixTimestamp());
 
-      using (db.Lock())
-        db.Update(this);
+      await db.UpdateAsync(this).ConfigureAwait(false);
     }
 
     /// <summary>
-    /// Answers current card with specified grade and calculate outcomes.
-    /// No modification saved.
+    ///   Answers current card with specified grade and calculate outcomes.
+    ///   No modification saved.
     /// </summary>
     /// <param name="grade">The grade.</param>
-    public void Answer(Grade grade)
-    {
-      Answer(grade, null);
-    }
-
-    /// <summary>
-    /// Answers current card with specified grade and calculate outcomes.
-    /// Modifications are saved to database.
-    /// </summary>
-    /// <param name="grade">The grade.</param>
-    /// <param name="db">Database instance</param>
-    public void Answer(Grade grade, IDatabase db)
+    public CardAction Answer(Grade grade)
     {
       CardAction cardAction = CardAction.Invalid;
       CurrentReviewTime = DateTime.Now.UnixTimestamp();
@@ -113,22 +103,31 @@ namespace Sidekick.SpacedRepetition.Models
       Reviews++;
       LastModified = CurrentReviewTime;
 
+      if (cardAction == CardAction.Delete)
+        PracticeState = CardPracticeState.Deleted;
+
+      return cardAction;
+    }
+
+    /// <summary>
+    ///   Answers current card with specified grade and calculate outcomes.
+    ///   Modifications are saved to database.
+    /// </summary>
+    /// <param name="grade">The grade.</param>
+    /// <param name="db">Database instance</param>
+    public async Task AnswerAsync(Grade grade, IDatabaseAsync db)
+    {
+      CardAction cardAction = Answer(grade);
 
       if (db != null)
         switch (cardAction)
         {
           case CardAction.Delete:
-            PracticeState = CardPracticeState.Deleted;
-
-            using (db.Lock())
-              db.Delete<Card>(Id);
-
+            await db.DeleteAsync<Card>(Id).ConfigureAwait(false);
             break;
 
           case CardAction.Update:
-            using (db.Lock())
-              db.Update(this);
-
+            await db.UpdateAsync(this).ConfigureAwait(false);
             break;
 
           default:
@@ -138,8 +137,8 @@ namespace Sidekick.SpacedRepetition.Models
     }
 
     /// <summary>
-    /// Computes all grading options for given card, according to its State.
-    /// Card values are unaffected.
+    ///   Computes all grading options for given card, according to its State.
+    ///   Card values are unaffected.
     /// </summary>
     /// <returns>Description of all grading options outcomes</returns>
     public GradeInfo[] ComputeGrades()
@@ -149,20 +148,12 @@ namespace Sidekick.SpacedRepetition.Models
 
       // Learning grades
       if (IsNew() || IsLearning())
-        gradeInfos = new[]
-        {
-          GradeInfo.GradeFail,
-          GradeInfo.GradeGood, GradeInfo.GradeEasy
-        };
+        gradeInfos = new[] { GradeInfo.GradeFail, GradeInfo.GradeGood, GradeInfo.GradeEasy };
 
       // Due grades
       else
         gradeInfos = new[]
-        {
-          GradeInfo.GradeFail,
-          GradeInfo.GradeHard, GradeInfo.GradeGood,
-          GradeInfo.GradeEasy
-        };
+          { GradeInfo.GradeFail, GradeInfo.GradeHard, GradeInfo.GradeGood, GradeInfo.GradeEasy };
 
       // Compute outcomes of each grade option
       for (int i = 0; i < gradeInfos.Length; i++)
@@ -171,7 +162,7 @@ namespace Sidekick.SpacedRepetition.Models
         Card cardClone = Clone();
 
         cardClone.CurrentReviewTime = currentReviewTime;
-        cardClone.Answer(gradeInfo.Grade, null);
+        cardClone.Answer(gradeInfo.Grade);
 
         gradeInfo.NextReview = cardClone.DueDateTime;
         // TODO: Set GradeInfo.CardValueAftermath

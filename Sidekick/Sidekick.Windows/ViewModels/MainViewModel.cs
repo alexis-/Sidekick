@@ -62,6 +62,7 @@ namespace Sidekick.Windows.ViewModels
     ///   Language service used to setup Title
     /// </param>
     public MainViewModel(ILanguageService languageService)
+      : base(false)
     {
       _navViewModels = new Dictionary<string, MainContentViewModelBase>();
 
@@ -137,11 +138,16 @@ namespace Sidekick.Windows.ViewModels
     }
 
     /// <inheritdoc />
-    protected override Task InitializeAsync()
+    protected override async Task InitializeAsync()
     {
-      RadioControllerOnSelectionChangedAsync(null, "NavigationCollectionButton");
+      await
+        RadioControllerOnSelectionChangedAsync(null, "NavigationCollectionButton")
+          .ConfigureAwait(true);
 
-      return base.InitializeAsync();
+      await
+        ServiceLocator.Default.ResolveType<IUIVisualizerService>()
+                      .ShowAsync<BrowserViewModel>()
+                      .ConfigureAwait(true);
     }
 
     private Task<bool> SetCurrentModelAsync(MainContentViewModelBase viewModel)

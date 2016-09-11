@@ -19,32 +19,46 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Catel.Collections;
-using Catel.Logging;
-using Sidekick.Shared.Interfaces.Database;
-
 namespace Sidekick.MVVM.Models
 {
+  using System;
+  using System.Collections.Generic;
+  using System.Threading.Tasks;
+
+  using Anotar.Catel;
+
+  using Catel.Collections;
+
+  using Sidekick.Shared.Interfaces.Database;
+
+  /// <summary>
+  ///   Pageable collection for IDatabaseAsync store.
+  /// </summary>
+  /// <typeparam name="T">Collection objects type</typeparam>
+  /// <seealso cref="Sidekick.MVVM.Models.PageableCollectionBase{T}" />
   public class DbPageableCollection<T> : PageableCollectionBase<T>
     where T : class
   {
     #region Fields
 
-    private readonly IDatabase _db;
-    private readonly Func<ITableQuery<T>, ITableQuery<T>> _queryFunc;
+    private readonly IDatabaseAsync _db;
+    private readonly Func<ITableQueryAsync<T>, ITableQueryAsync<T>> _queryFunc;
 
     private int _itemCount = 0;
 
     #endregion
 
+
+
     #region Constructors
 
+    /// <summary>
+    ///   Initializes a new instance of the <see cref="DbPageableCollection{T}" /> class.
+    /// </summary>
+    /// <param name="db">Database instance;</param>
+    /// <param name="queryFunc">(Optional) query function.</param>
     public DbPageableCollection(
-      IDatabase db, Func<ITableQuery<T>, ITableQuery<T>> queryFunc = null)
+      IDatabaseAsync db, Func<ITableQueryAsync<T>, ITableQueryAsync<T>> queryFunc = null)
     {
       _db = db;
       _queryFunc = queryFunc;
@@ -54,9 +68,14 @@ namespace Sidekick.MVVM.Models
       DisablePropertyChangeNotifications = false;
     }
 
+    /// <summary>
+    ///   Initializes a new instance of the <see cref="DbPageableCollection{T}" /> class.
+    /// </summary>
+    /// <param name="db">Database instance;</param>
+    /// <param name="queryFunc">(Optional) query function.</param>
+    /// <param name="pageSize">Item count per page.</param>
     public DbPageableCollection(
-      IDatabase db, Func<ITableQuery<T>, ITableQuery<T>> queryFunc,
-      int pageSize)
+      IDatabaseAsync db, Func<ITableQueryAsync<T>, ITableQueryAsync<T>> queryFunc, int pageSize)
       : base(pageSize)
     {
       _db = db;
@@ -69,102 +88,146 @@ namespace Sidekick.MVVM.Models
 
     #endregion
 
+
+
     #region Properties
 
-    public override int TotalPageCount =>
-      PageSize > 0
-        ? (int)Math.Ceiling(_itemCount / (float)PageSize)
-        : 0;
+    /// <summary>
+    ///   Total page count (total item count / page size).
+    /// </summary>
+    public override int TotalPageCount
+      => PageSize > 0 ? (int)Math.Ceiling(_itemCount / (float)PageSize) : 0;
 
     #endregion
 
+
+
     #region Methods
 
+    /// <summary>
+    ///   Removes an item from collection/store.
+    /// </summary>
+    /// <param name="item">Item to remove</param>
+    /// <returns></returns>
     public override Task<bool> RemoveAsync(T item)
     {
-      return DoRemoveAsync(() => RemoveFromDb(item));
+      return DoRemoveAsync(() => RemoveFromDbAsync(item));
     }
 
+    /// <summary>
+    ///   Removes items from collection/store.
+    /// </summary>
+    /// <param name="items">Items to remove</param>
+    /// <returns></returns>
     public override Task<bool> RemoveAsync(IEnumerable<T> items)
     {
-      return DoRemoveAsync(() => RemoveFromDb(items));
+      return DoRemoveAsync(() => RemoveFromDbAsync(items));
     }
 
+    /// <summary>
+    ///   Add an item to collection/store.
+    /// </summary>
+    /// <param name="item">Item to add</param>
+    /// <returns></returns>
     public override Task<bool> AddAsync(T item)
     {
-      return DoAddAsync(() => AddToDb(item));
+      return DoAddAsync(() => AddToDbAsync(item));
     }
 
+    /// <summary>
+    ///   Add items to collection/store.
+    /// </summary>
+    /// <param name="items">Items to add</param>
+    /// <returns></returns>
     public override Task<bool> AddAsync(IEnumerable<T> items)
     {
-      return DoAddAsync(() => AddToDb(items));
+      return DoAddAsync(() => AddToDbAsync(items));
     }
 
+    /// <summary>
+    ///   Update page item according to current page.
+    /// </summary>
+    /// <returns></returns>
     public override async Task UpdateCurrentPageItemsAsync()
     {
       // Create base query
-      ITableQuery<T> baseQuery = _db.Table<T>();
+      ITableQueryAsync<T> baseQuery = _db.Table<T>();
 
       if (_queryFunc != null)
         baseQuery = _queryFunc(baseQuery);
 
 
       // Count items
-      baseQuery.Count();
+      await baseQuery.CountAsync().ConfigureAwait(true);
 
 
       // Fetch and add items
       int skip = (CurrentPage - 1) * PageSize;
-      ITableQuery<T> fetchQuery = baseQuery.Skip(skip)
-                                           .Take(PageSize);
+      ITableQueryAsync<T> fetchQuery = baseQuery.Skip(skip).Take(PageSize);
 
-      IEnumerable<T> newItems;
-
-      using (_db.Lock())
-      {
-        newItems = await Task.Run(() => fetchQuery.ToList());
-      }
+      IEnumerable<T> newItems = await fetchQuery.ToListAsync().ConfigureAwait(true);
 
       ((ICollection<T>)CurrentPageItems).ReplaceRange(newItems);
     }
 
+
     // 
     // Allows to override Add/Remove behavior to add features
-    protected bool RemoveFromDb(T item)
+
+    /// <summary>
+    ///   Removes from database.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <returns></returns>
+    protected async Task<bool> RemoveFromDbAsync(T item)
     {
-      return _db.Delete(item) > 1;
+      return await _db.DeleteAsync(item).ConfigureAwait(false) > 1;
     }
 
-    protected bool RemoveFromDb(IEnumerable<T> items)
+    /// <summary>
+    ///   Removes from database.
+    /// </summary>
+    /// <param name="items">The items.</param>
+    /// <returns></returns>
+    protected async Task<bool> RemoveFromDbAsync(IEnumerable<T> items)
     {
       try
       {
-        _db.BeginTransaction();
-
-        foreach (T item in items)
-        {
-          _db.Delete(item);
-        }
-
-        _db.CommitTransaction();
+        await _db.RunInTransactionAsync(
+                   dbSync =>
+                   {
+                     foreach (T item in items)
+                       dbSync.Delete(item);
+                   }).ConfigureAwait(false);
       }
       catch (Exception ex)
       {
-        LogManager.GetCurrentClassLogger().Error(ex);
+        LogTo.Error(ex, "RemoveFromDb");
+
         return false;
       }
 
       return true;
     }
 
-    protected bool AddToDb(T item)
+    /// <summary>
+    ///   Adds to database.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <returns></returns>
+    protected async Task<bool> AddToDbAsync(T item)
     {
-      return _db.Insert(item) > 0;
+      return await _db.InsertAsync(item).ConfigureAwait(false) > 0;
     }
 
-    protected bool AddToDb(IEnumerable<T> items)
+    /// <summary>
+    ///   Adds to database.
+    /// </summary>
+    /// <param name="items">The items.</param>
+    /// <returns></returns>
+    protected async Task<bool> AddToDbAsync(IEnumerable<T> items)
     {
-      return _db.InsertAll(items) > 0;
+      return await _db.InsertAllAsync(items).ConfigureAwait(false) > 0;
     }
 
     #endregion

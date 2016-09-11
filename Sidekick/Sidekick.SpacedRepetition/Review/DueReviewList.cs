@@ -61,7 +61,7 @@ namespace Sidekick.SpacedRepetition.Review
     /// </summary>
     /// <param name="db">Database instance.</param>
     /// <param name="dueCardsLeft">Due card count for currenet session.</param>
-    public DueReviewList(IDatabase db, int dueCardsLeft) : base(db)
+    public DueReviewList(IDatabaseAsync db, int dueCardsLeft) : base(db)
     {
       DueCardsLeft = dueCardsLeft;
       Comparer = ReviewComparers.DueComparer;
@@ -168,8 +168,7 @@ namespace Sidekick.SpacedRepetition.Review
       int loadedCount =
         await
           AddItemsAsync(
-            () =>
-              Db.Table<Card>()
+            Db.Table<Card>()
                 .Where(c => c.PracticeState == CardPracticeState.Due && c.Due < tomorrow)
                 .Take(fullLoadCount)
                 .OrderBy(c => c.Due)).ConfigureAwait(false);
@@ -180,7 +179,6 @@ namespace Sidekick.SpacedRepetition.Review
         loadedCount +=
           await
             AddItemsAsync(
-              () =>
                 Db.Table<Card>()
                   .ShallowLoad(LazyLoader)
                   .Where(
@@ -210,23 +208,20 @@ namespace Sidekick.SpacedRepetition.Review
       int loadCount = IncrementalLoadMax - ReserveSize;
       int tomorrow = DateTimeExtensions.Tomorrow.ToUnixTimestamp();
 
-      int loadedCount = await AddItemsAsync(
-                          () =>
-                          {
-                            var tableQuery =
-                              Db.Table<Card>()
-                                .Where(
-                                  c =>
-                                    c.PracticeState == CardPracticeState.Due
-                                    && c.Due < tomorrow
-                                    && !Objects.Select(o => o.Id).Contains(c.Id))
-                                .Take(loadCount);
+      // Prepare query
+      ITableQueryAsync<Card> tableQuery =
+        Db.Table<Card>()
+          .Where(
+            c =>
+              c.PracticeState == CardPracticeState.Due
+              && c.Due < tomorrow
+              && !Objects.Select(o => o.Id).Contains(c.Id))
+          .Take(loadCount);
 
-                            if (!fullLoad)
-                              tableQuery = tableQuery.ShallowLoad(LazyLoader);
+      if (!fullLoad)
+        tableQuery = tableQuery.ShallowLoad(LazyLoader);
 
-                            return tableQuery.OrderBy(c => c.Due);
-                          }).ConfigureAwait(false);
+      int loadedCount = await AddItemsAsync(tableQuery.OrderBy(c => c.Due)).ConfigureAwait(false);
 
       if (loadedCount < loadCount)
         Status = ReviewStatus.MoveNextEndOfStore;

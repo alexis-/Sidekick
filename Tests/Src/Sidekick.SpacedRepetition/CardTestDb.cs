@@ -36,74 +36,92 @@ namespace Sidekick.SpacedRepetition.Tests
   using SQLite.Net.Bridge.Tests;
 
   /// <summary>
-  ///   Test implementation of <see cref="SQLiteConnectionWithLockBridge"/>, based on
-  ///   <see cref="TestBaseDb"/>, with SpacedRepetition-related tables.
+  ///   Async database wrapper.
   /// </summary>
-  /// <seealso cref="SQLite.Net.Bridge.Tests.TestBaseDb" />
-  public class CardDb : TestBaseDb
+  public class CardDbAsync : SQLiteConnectionAsync
   {
-    #region Fields
-
-    // Catel ModelBase public properties
-    private static readonly string[] ModelBaseProps = { "IsDirty", "IsReadOnly" };
-
-    #endregion
-
-
-
     #region Constructors
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="CardDb"/> class.
+    ///   Initializes a new instance of the <see cref="CardDbAsync" /> class.
     /// </summary>
     /// <param name="config">The configuration.</param>
-    public CardDb(CollectionConfig config = null)
-      : base(
-        new CatelColumnProvider(),
-        new ContractResolver(t => true, (t, a) => CreateInstance(t, config, a)))
-    {
-      CreateTable<Note>();
-      CreateTable<Card>();
-      CreateTable<ReviewLog>();
-
-      TableMapping tableMapping = GetMapping<Card>();
-      TableMapping.Column[] columns = tableMapping.Columns;
-
-      columns.Should().NotContain(c => ModelBaseProps.Contains(c.Name));
-    }
+    public CardDbAsync(CollectionConfig config = null) : base(new CardDb(config)) { }
 
     #endregion
 
 
 
-    #region Methods
-
-    private static object CreateInstance(
-      Type type, CollectionConfig config, params object[] args)
+    /// <summary>
+    ///   Test implementation of <see cref="SQLiteConnectionWithLockBridge" />, based on
+    ///   <see cref="TestBaseDb" />, with SpacedRepetition-related tables.
+    /// </summary>
+    /// <seealso cref="SQLite.Net.Bridge.Tests.TestBaseDb" />
+    private class CardDb : TestBaseDb
     {
-      if (type == typeof(Card))
-        return new Card(config ?? CollectionConfig.Default);
+      #region Fields
 
-      return Activator.CreateInstance(type, args);
-    }
+      // Catel ModelBase public properties
+      private static readonly string[] ModelBaseProps = { "IsDirty", "IsReadOnly" };
 
-    #endregion
-
+      #endregion
 
 
-    private class CatelColumnProvider : ColumnInformationProviderBridge
-    {
-      #region Methods
 
-      public override bool IsIgnored(PropertyInfo p)
+      #region Constructors
+
+      /// <summary>
+      ///   Initializes a new instance of the <see cref="CardDb" /> class.
+      /// </summary>
+      /// <param name="config">The configuration.</param>
+      public CardDb(CollectionConfig config = null)
+        : base(
+          new CatelColumnProvider(),
+          new ContractResolver(t => true, (t, a) => CreateInstance(t, config, a)))
       {
-        if (p.DeclaringType == typeof(ModelBase))
-          return true;
+        CreateTable<Note>();
+        CreateTable<Card>();
+        CreateTable<ReviewLog>();
 
-        return base.IsIgnored(p);
+        TableMapping tableMapping = GetMapping<Card>();
+        TableMapping.Column[] columns = tableMapping.Columns;
+
+        columns.Should().NotContain(c => ModelBaseProps.Contains(c.Name));
       }
 
       #endregion
+
+
+
+      #region Methods
+
+      private static object CreateInstance(
+        Type type, CollectionConfig config, params object[] args)
+      {
+        if (type == typeof(Card))
+          return new Card(config ?? CollectionConfig.Default);
+
+        return Activator.CreateInstance(type, args);
+      }
+
+      #endregion
+
+
+
+      private class CatelColumnProvider : ColumnInformationProviderBridge
+      {
+        #region Methods
+
+        public override bool IsIgnored(PropertyInfo p)
+        {
+          if (p.DeclaringType == typeof(ModelBase))
+            return true;
+
+          return base.IsIgnored(p);
+        }
+
+        #endregion
+      }
     }
   }
 }

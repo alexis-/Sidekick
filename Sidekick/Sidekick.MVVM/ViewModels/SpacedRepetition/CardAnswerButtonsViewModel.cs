@@ -19,19 +19,23 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using Catel.Fody;
-using Catel.MVVM;
-using Sidekick.SpacedRepetition;
-using Sidekick.SpacedRepetition.Const;
-
 namespace Sidekick.MVVM.ViewModels.SpacedRepetition
 {
+  using Catel.Fody;
+  using Catel.MVVM;
+
+  using Sidekick.SpacedRepetition.Const;
+
+  /// <summary>
+  ///   Review buttons handling View Model
+  /// </summary>
+  /// <seealso cref="Catel.MVVM.ViewModelBase" />
   public class CardAnswerButtonsViewModel : ViewModelBase
   {
     #region Constructors
 
-    public CardAnswerButtonsViewModel(
-      [NotNull] GradeInfo[] gradeInfos)
+    public CardAnswerButtonsViewModel([NotNull] GradeInfo[] gradeInfos)
+      : base(false)
     {
       GradeInfos = gradeInfos;
 
@@ -39,6 +43,8 @@ namespace Sidekick.MVVM.ViewModels.SpacedRepetition
     }
 
     #endregion
+
+
 
     #region Properties
 
@@ -48,11 +54,11 @@ namespace Sidekick.MVVM.ViewModels.SpacedRepetition
 
     #endregion
 
+
+
     #region Methods
 
-    public void OnAnswerCommandExecute()
-    {
-    }
+    public void OnAnswerCommandExecute() { }
 
     #endregion
   }

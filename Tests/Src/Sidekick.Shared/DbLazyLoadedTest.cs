@@ -23,7 +23,6 @@ namespace Sidekick.Shared.Tests
 {
   using System;
   using System.Collections.Generic;
-  using System.Linq;
 
   using FluentAssertions;
 
@@ -32,6 +31,7 @@ namespace Sidekick.Shared.Tests
   using Sidekick.Shared.Utils;
   using Sidekick.Shared.Utils.LazyLoad;
 
+  using SQLite.Net.Bridge;
   using SQLite.Net.Bridge.Tests;
 
   using Xunit;
@@ -94,21 +94,22 @@ namespace Sidekick.Shared.Tests
     }
 
     [Fact]
-    public void LazyLoadCollection()
+    public async void LazyLoadCollection()
     {
       IEnumerable<LazyObject> paramObjs = Faker.RandomCollection(LazyObject.Random);
 
       // Setup DB & LazyLoader
-      LazyObjectDb db = new LazyObjectDb();
-      DbLazyLoad<LazyObject> lazyLoader = DbLazyLoad<LazyObject>.GetOrCreateInstance(db);
+      SQLiteConnectionAsync db = new SQLiteConnectionAsync(new LazyObjectDb());
+      DbLazyLoad<LazyObject> lazyLoader =
+        await DbLazyLoad<LazyObject>.GetOrCreateInstanceAsync(db).ConfigureAwait(true);
 
-      db.InsertAll(paramObjs);
+      await db.InsertAllAsync(paramObjs).ConfigureAwait(true);
 
       // Test shallow loading
       // ToList() is necessary, as db.Table<T> return a custom Enumerable
       // implementation which apparently doesn't allow for true references
       IEnumerable<LazyObject> fetchedObjs =
-        db.Table<LazyObject>().ShallowLoad(lazyLoader).ToList();
+        await db.Table<LazyObject>().ShallowLoad(lazyLoader).ToListAsync().ConfigureAwait(true);
 
       fetchedObjs.Should().OnlyContain(lo => lo.Value == null && lo.Id > 0);
       fetchedObjs.ShouldAllBeEquivalentTo(
@@ -118,7 +119,8 @@ namespace Sidekick.Shared.Tests
                 .Including(ctx => ctx.SelectedMemberPath.EndsWith(".Idx")));
 
       // Test further loading
-      IEnumerable<LazyObject> furtherObjs = db.Table<LazyObject>().FurtherLoad(lazyLoader);
+      IEnumerable<LazyObject> furtherObjs =
+        await db.Table<LazyObject>().FurtherLoad(lazyLoader).ToListAsync().ConfigureAwait(true);
 
       furtherObjs.Should().OnlyContain(lo => lo.Value != null);
 

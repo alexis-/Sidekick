@@ -59,7 +59,8 @@ namespace Sidekick.SpacedRepetition.Review
     /// <param name="db">Database instance</param>
     /// <param name="config">Current session collection configuration</param>
     /// <param name="newCardsLeft">New cards count for current session</param>
-    public NewReviewList(IDatabase db, CollectionConfig config, int newCardsLeft) : base(db)
+    public NewReviewList(IDatabaseAsync db, CollectionConfig config, int newCardsLeft)
+      : base(db)
     {
       NewCardsLeft = newCardsLeft;
       Random = config.InsertionOption == CardOrderingOption.Random;
@@ -157,39 +158,33 @@ namespace Sidekick.SpacedRepetition.Review
       int fullLoadCount = Math.Min(totalLoadCount, IncrementalFurtherLoadMax);
       int shallowLoadCount = totalLoadCount - fullLoadCount;
 
-      // Fully load up to IncrementalFurtherLoadMax items
-      int loadedCount = await AddItemsAsync(
-                          () =>
-                          {
-                            var tableQuery =
-                              Db.Table<Card>()
-                                .Where(c => c.PracticeState == CardPracticeState.New)
-                                .Take(fullLoadCount);
+      ITableQueryAsync<Card> tableQuery =
+        Db.Table<Card>()
+          .Where(c => c.PracticeState == CardPracticeState.New)
+          .Take(fullLoadCount);
 
-                            return Random
-                                     ? tableQuery.OrderByRand()
-                                     : tableQuery.OrderBy(c => c.Due);
-                          }).ConfigureAwait(false);
+      tableQuery = Random ? tableQuery.OrderByRand() : tableQuery.OrderBy(c => c.Due);
+
+      // Fully load up to IncrementalFurtherLoadMax items
+      int loadedCount = await AddItemsAsync(tableQuery).ConfigureAwait(false);
 
       FurtherLoadedIndex = loadedCount - 1;
 
       if (shallowLoadCount > 0 && loadedCount == fullLoadCount)
-        loadedCount += await AddItemsAsync(
-                         () =>
-                         {
-                           var tableQuery =
-                             Db.Table<Card>()
-                               .ShallowLoad(LazyLoader)
-                               .Where(
-                                 c =>
-                                   c.PracticeState == CardPracticeState.New
-                                   && !Objects.Select(o => o.Id).Contains(c.Id))
-                               .Take(shallowLoadCount);
+      {
+        tableQuery =
+          Db.Table<Card>()
+            .ShallowLoad(LazyLoader)
+            .Where(
+              c =>
+                c.PracticeState == CardPracticeState.New
+                && !Objects.Select(o => o.Id).Contains(c.Id))
+            .Take(shallowLoadCount);
 
-                           return Random
-                                    ? tableQuery.OrderByRand()
-                                    : tableQuery.OrderBy(c => c.Due);
-                         }).ConfigureAwait(false);
+        tableQuery = Random ? tableQuery.OrderByRand() : tableQuery.OrderBy(c => c.Due);
+
+        loadedCount += await AddItemsAsync(tableQuery).ConfigureAwait(false);
+      }
 
       if (loadedCount < totalLoadCount)
         Status = ReviewStatus.MoveNextEndOfStore;
@@ -210,24 +205,20 @@ namespace Sidekick.SpacedRepetition.Review
     {
       int loadCount = IncrementalLoadMax - ReserveSize;
 
-      int loadedCount = await AddItemsAsync(
-                          () =>
-                          {
-                            var tableQuery =
-                              Db.Table<Card>()
-                                .Where(
-                                  c =>
-                                    c.PracticeState == CardPracticeState.New
-                                    && !Objects.Select(o => o.Id).Contains(c.Id))
-                                .Take(loadCount);
+      ITableQueryAsync<Card> tableQuery =
+        Db.Table<Card>()
+          .Where(
+            c =>
+              c.PracticeState == CardPracticeState.New
+              && !Objects.Select(o => o.Id).Contains(c.Id))
+          .Take(loadCount);
 
-                            if (!fullLoad)
-                              tableQuery = tableQuery.ShallowLoad(LazyLoader);
+      if (!fullLoad)
+        tableQuery = tableQuery.ShallowLoad(LazyLoader);
 
-                            return Random
-                                     ? tableQuery.OrderByRand()
-                                     : tableQuery.OrderBy(c => c.Due);
-                          }).ConfigureAwait(false);
+      tableQuery = Random ? tableQuery.OrderByRand() : tableQuery.OrderBy(c => c.Due);
+
+      int loadedCount = await AddItemsAsync(tableQuery).ConfigureAwait(false);
 
       if (loadedCount < loadCount)
         Status = ReviewStatus.MoveNextEndOfStore;

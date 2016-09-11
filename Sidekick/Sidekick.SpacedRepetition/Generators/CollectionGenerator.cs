@@ -23,7 +23,7 @@ namespace Sidekick.SpacedRepetition.Generators
 {
   using System;
   using System.Collections.Generic;
-  using System.Linq;
+  using System.Threading.Tasks;
 
   using Sidekick.Shared.Interfaces.Database;
   using Sidekick.SpacedRepetition.Models;
@@ -44,7 +44,7 @@ namespace Sidekick.SpacedRepetition.Generators
 
     #region Constructors
 
-    //
+    // 
     // Constructor
 
     /// <summary>
@@ -54,26 +54,11 @@ namespace Sidekick.SpacedRepetition.Generators
     /// <param name="noteCount">Note count to generate.</param>
     /// <param name="maxCardPerNote">Maximum number of card per note.</param>
     public CollectionGenerator(CardGenerator cardGenerator, int noteCount, int maxCardPerNote)
-      : this(cardGenerator, null, noteCount, maxCardPerNote) { }
-
-    /// <summary>
-    ///   Initializes a new instance of the <see cref="CollectionGenerator" /> class.
-    ///   Generated collection will be saved to provided <see cref="db" /> instance.
-    /// </summary>
-    /// <param name="cardGenerator">Parametrized card generator.</param>
-    /// <param name="db">Database instance.</param>
-    /// <param name="noteCount">Note count to generate.</param>
-    /// <param name="maxCardPerNote">Maximum number of card per note.</param>
-    public CollectionGenerator(
-      CardGenerator cardGenerator, IDatabase db, int noteCount, int maxCardPerNote)
     {
-      NotesIds = new HashSet<int>();
-
-      Db = db;
-
       CardGenerator = cardGenerator;
       TimeGenerator = CardGenerator.TimeGenerator;
 
+      NotesIds = new HashSet<int>();
       NoteCount = noteCount;
       MaxCardPerNote = maxCardPerNote;
     }
@@ -94,8 +79,6 @@ namespace Sidekick.SpacedRepetition.Generators
     private CardGenerator CardGenerator { get; }
     private TimeGenerator TimeGenerator { get; }
 
-    private IDatabase Db { get; }
-
     #endregion
 
 
@@ -104,27 +87,44 @@ namespace Sidekick.SpacedRepetition.Generators
 
     /// <summary>
     ///   Generate a new collection based on specified parameters.
-    ///   If a <see cref="IDatabase" /> instance is specified, collection will also be saved
+    ///   If a <see cref="IDatabaseAsync" /> instance is specified, collection will also be saved
     ///   to Database.
+    /// </summary>
+    /// <param name="db">Database instance.</param>
+    /// <returns>
+    ///   Generated collection
+    /// </returns>
+    public async Task<IEnumerable<Note>> GenerateAsync(IDatabaseAsync db)
+    {
+      if (db == null)
+        return Generate();
+
+      IEnumerable<Note> notes = MakeNotes();
+
+      // Generate notes
+      await db.InsertAllAsync(notes).ConfigureAwait(false);
+
+      // Generate cards
+      await db.RunInTransactionAsync(dbSync => CreateCards(notes, dbSync));
+
+      return notes;
+    }
+
+    /// <summary>
+    ///   Generate a new collection based on specified parameters.
     /// </summary>
     /// <returns>Generated collection</returns>
     public IEnumerable<Note> Generate()
     {
-      IEnumerable<Note> notes;
+      IEnumerable<Note> notes = MakeNotes();
 
-      // Generate notes
-      if (Db != null)
-      {
-        Db.InsertAll(MakeNotes());
+      CreateCards(notes, null);
 
-        notes = Db.Table<Note>().ToList();
+      return notes;
+    }
 
-        Db.BeginTransaction();
-      }
-      else
-        notes = MakeNotes();
-
-
+    private void CreateCards(IEnumerable<Note> notes, IDatabase db)
+    {
       // Generate cards
       foreach (Note note in notes)
       {
@@ -147,15 +147,11 @@ namespace Sidekick.SpacedRepetition.Generators
           Card card = CardGenerator.Generate(note.Id);
 
           note.Cards.Add(card);
-          Db?.Insert(card);
+          db?.Insert(card);
         }
 
         NoteCount--;
       }
-
-      Db?.CommitTransaction();
-
-      return notes;
     }
 
     private IEnumerable<Note> MakeNotes()

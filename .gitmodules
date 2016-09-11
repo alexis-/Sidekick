@@ -1,3 +1,6 @@
 [submodule "Libs/SQLite.Net-PCL"]
 	path = Libs/SQLite.Net-PCL
 	url = https://github.com/alexis-/SQLite.Net-PCL.git
+[submodule "Libs/Orc.FilterBuilder"]
+	path = Libs/Orc.FilterBuilder
+	url = git@github.com:alexis-/Orc.FilterBuilder.git

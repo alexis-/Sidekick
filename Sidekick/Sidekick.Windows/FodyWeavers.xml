@@ -3,4 +3,8 @@
   <Catel />
   <MethodTimer />
   <ModuleInit />
+  <LoadAssembliesOnStartup />
+  <Anotar.Catel />
+  <Stamp />
+  <AsyncErrorHandler />
 </Weavers>

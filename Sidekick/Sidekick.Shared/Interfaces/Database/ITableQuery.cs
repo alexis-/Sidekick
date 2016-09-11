@@ -19,48 +19,57 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-
 namespace Sidekick.Shared.Interfaces.Database
 {
+  using System;
+  using System.Collections.Generic;
+  using System.Linq.Expressions;
+
+  /// <summary>
+  ///   Builds query on a given table.
+  /// </summary>
+  /// <typeparam name="T"></typeparam>
+  /// <seealso cref="System.Collections.Generic.IEnumerable{T}" />
   public interface ITableQuery<T> : IEnumerable<T>
   {
     #region Methods
 
     object Clone();
+
     int Count();
-    int Count(Expression<Func<T, bool>> predExpr);
-    int Delete(Expression<Func<T, bool>> predExpr);
+
+    int Delete();
+
     T ElementAt(int index);
+
     T First();
+
     T FirstOrDefault();
 
     ITableQuery<TResult> Join<TInner, TKey, TResult>(
-      ITableQuery<TInner> inner,
-      Expression<Func<T, TKey>> outerKeySelector,
+      ITableQuery<TInner> inner, Expression<Func<T, TKey>> outerKeySelector,
       Expression<Func<TInner, TKey>> innerKeySelector,
       Expression<Func<T, TInner, TResult>> resultSelector);
 
-    IEnumerable<U> MapTo<U>(bool selectFromAvailableProperties = true);
+    IEnumerable<TMapped> MapTo<TMapped>(bool selectFromAvailableProperties = true);
+
     ITableQuery<T> OrderBy<TValue>(Expression<Func<T, TValue>> orderExpr);
 
-    ITableQuery<T> OrderByDescending<TValue>(
-      Expression<Func<T, TValue>> orderExpr);
+    ITableQuery<T> OrderByDescending<TValue>(Expression<Func<T, TValue>> orderExpr);
 
     ITableQuery<T> OrderByRand();
+
     ITableQuery<T> SelectColumns(params string[] propertiesName);
 
-    ITableQuery<T> SelectColumns(string selectSqlStatement,
-      params string[] propertiesName);
+    ITableQuery<T> SelectColumns(string selectSqlStatement, params string[] propertiesName);
 
     ITableQuery<T> Skip(int n);
+
     ITableQuery<T> Take(int n);
+
     ITableQuery<T> ThenBy<TValue>(Expression<Func<T, TValue>> orderExpr);
 
-    ITableQuery<T> ThenByDescending<TValue>(
-      Expression<Func<T, TValue>> orderExpr);
+    ITableQuery<T> ThenByDescending<TValue>(Expression<Func<T, TValue>> orderExpr);
 
     ITableQuery<T> Where(Expression<Func<T, bool>> predExpr);
 

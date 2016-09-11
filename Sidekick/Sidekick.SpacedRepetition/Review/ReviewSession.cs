@@ -19,16 +19,18 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Sidekick.Shared.Extensions;
-using Sidekick.Shared.Interfaces.Database;
-using Sidekick.SpacedRepetition.Const;
-using Sidekick.SpacedRepetition.Models;
-
 namespace Sidekick.SpacedRepetition.Review
 {
+  using System;
+  using System.Collections.Generic;
+  using System.Linq;
+  using System.Threading.Tasks;
+
+  using Sidekick.Shared.Extensions;
+  using Sidekick.Shared.Interfaces.Database;
+  using Sidekick.SpacedRepetition.Const;
+  using Sidekick.SpacedRepetition.Models;
+
   /// <summary>
   ///   Defines all reviews on a given day (session)
   /// </summary>
@@ -36,48 +38,54 @@ namespace Sidekick.SpacedRepetition.Review
   {
     #region Constructors
 
-    public ReviewSession(IDatabase db, CollectionConfig config)
+    /// <summary>
+    ///   Initializes a new instance of the <see cref="ReviewSession" /> class.
+    /// </summary>
+    protected ReviewSession(int newCount, int dueCount)
     {
-      ComputeSessionInfos(db, config);
+      New = newCount;
+      Due = dueCount;
     }
 
     #endregion
 
+
+
     #region Properties
 
-    public int New { get; set; }
-    public int Due { get; set; }
+    public int New { get; }
+    public int Due { get; }
 
     #endregion
 
+
+
     #region Methods
 
-    public void ComputeSessionInfos(
-      IDatabase db, CollectionConfig config)
+    public static async Task<ReviewSession> ComputeSessionAsync(
+      IDatabaseAsync db, CollectionConfig config)
     {
       int todayStart = DateTime.Today.ToUnixTimestamp();
       int todayEnd = DateTimeExtensions.Tomorrow.ToUnixTimestamp();
 
-      IEnumerable<ReviewLog> logs;
-
-      using (db.Lock())
-      {
-        logs =
+      IEnumerable<ReviewLog> logs =
+        await
           db.Table<ReviewLog>()
-            .Where(l =>
-                   l.Id >= todayStart && l.Id < todayEnd
-                   && (l.LastState == CardPracticeState.New
-                       || l.LastState == CardPracticeState.Due))
+            .Where(
+              l =>
+                l.Id >= todayStart && l.Id < todayEnd
+                && (l.LastState == CardPracticeState.New || l.LastState == CardPracticeState.Due))
             .SelectColumns(nameof(ReviewLog.LastState))
-            .ToList();
-      }
+            .ToListAsync()
+            .ConfigureAwait(false);
 
-      int newReviewedToday = logs.Count(
-        l => l.LastState == CardPracticeState.New);
+      int newReviewedToday = logs.Count(l => l.LastState == CardPracticeState.New);
       int dueReviewedToday = logs.Count() - newReviewedToday;
 
-      New = config.NewCardPerDay - newReviewedToday;
-      Due = config.DueCardPerDay - dueReviewedToday;
+      int newCount = config.NewCardPerDay - newReviewedToday;
+      int dueCount = config.DueCardPerDay - dueReviewedToday;
+
+      return new ReviewSession(newCount, dueCount);
     }
 
     #endregion

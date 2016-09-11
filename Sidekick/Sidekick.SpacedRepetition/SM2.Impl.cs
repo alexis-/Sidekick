@@ -56,7 +56,7 @@ namespace Sidekick.SpacedRepetition
       return new Note();
     }
 
-    public IReviewCollection GetReviewCollection(IDatabase db)
+    public IReviewCollection GetReviewCollection(IDatabaseAsync db)
     {
       return new ReviewCollectionImpl(db, CollectionConfig.Default);
     }

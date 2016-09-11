@@ -19,49 +19,69 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System.Threading.Tasks;
-using Catel.Collections;
-using Catel.MVVM;
-using Catel.Services;
-using Sidekick.MVVM.Models;
-using Sidekick.Shared.Interfaces.Database;
-using Sidekick.SpacedRepetition.Models;
-using Sidekick.Windows.Models;
-
 namespace Sidekick.Windows.ViewModels.SpacedRepetition
 {
+  using System.Threading.Tasks;
+
+  using Catel;
+  using Catel.Collections;
+  using Catel.MVVM;
+  using Catel.Services;
+
+  using Sidekick.MVVM.Models;
+  using Sidekick.Shared.Interfaces.Database;
+  using Sidekick.SpacedRepetition.Models;
+  using Sidekick.Windows.Models;
+
+  /// <summary>
+  ///   Displays card collection in a DataGrid.
+  /// </summary>
+  /// <seealso cref="Catel.MVVM.ViewModelBase" />
   public class CollectionDataGridViewModel : ViewModelBase
   {
     #region Fields
 
-    private readonly IDatabase _db;
+    private readonly IDatabaseAsync _db;
     private readonly IPleaseWaitService _pleaseWaitService;
-    private readonly CollectionFilter _filter;
+    private readonly CollectionQuery _query;
 
     #endregion
+
+
 
     #region Constructors
 
-    public CollectionDataGridViewModel(
-      IDatabase db, IPleaseWaitService pleaseWaitService)
-      : this(db, pleaseWaitService, null)
-    {
-    }
+    /// <summary>
+    ///   Initializes a new instance of the <see cref="CollectionDataGridViewModel" /> class.
+    /// </summary>
+    /// <param name="db">Database instance.</param>
+    /// <param name="pleaseWaitService">The please wait service.</param>
+    public CollectionDataGridViewModel(IDatabaseAsync db, IPleaseWaitService pleaseWaitService)
+      : this(null, db, pleaseWaitService) { }
 
+    /// <summary>
+    ///   Initializes a new instance of the <see cref="CollectionDataGridViewModel" /> class.
+    /// </summary>
+    /// <param name="query">Optional collection query</param>
+    /// <param name="db">Database instance.</param>
+    /// <param name="pleaseWaitService">The please wait service.</param>
     public CollectionDataGridViewModel(
-      IDatabase db, IPleaseWaitService pleaseWaitService,
-      CollectionFilter filter)
+      CollectionQuery query, IDatabaseAsync db, IPleaseWaitService pleaseWaitService)
       : base(false)
     {
+      Argument.IsNotNull(() => db);
+      Argument.IsNotNull(() => pleaseWaitService);
+
       _db = db;
       _pleaseWaitService = pleaseWaitService;
-      _filter = filter;
+      _query = query;
 
-      PageableCollection = new DbPageableCollection<Card>(
-        _db, FilterCollection);
+      PageableCollection = new DbPageableCollection<Card>(_db, FilterCollection);
     }
 
     #endregion
+
+
 
     #region Properties
 
@@ -82,22 +102,23 @@ namespace Sidekick.Windows.ViewModels.SpacedRepetition
 
     #endregion
 
+
+
     #region Methods
 
+    /// <inheritdoc />
     protected override async Task InitializeAsync()
     {
       _pleaseWaitService.Push("Loading collection");
 
-      await PageableCollection.UpdateCurrentPageItemsAsync();
+      await PageableCollection.UpdateCurrentPageItemsAsync().ConfigureAwait(false);
 
       _pleaseWaitService.Pop();
     }
 
-    private ITableQuery<Card> FilterCollection(ITableQuery<Card> query)
+    private ITableQueryAsync<Card> FilterCollection(ITableQueryAsync<Card> query)
     {
-      return _filter != null
-               ? _filter.Apply(query)
-               : query;
+      return _query != null && _query.IsExpressionValid ? _query.Apply(query) : query;
     }
 
     #endregion

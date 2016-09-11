@@ -19,17 +19,23 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using Catel.Windows.Controls;
-
 namespace Sidekick.Windows.Views.SpacedRepetition
 {
+  using Catel.Windows.Controls;
+
   /// <summary>
-  /// Interaction logic for BrowserQueryViewerView.xaml
+  ///   Interaction logic for BrowserQueryViewerView.xaml
   /// </summary>
   public partial class BrowserQueryViewerView : UserControl
   {
     #region Constructors
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BrowserQueryViewerView"/> class.
+    /// </summary>
+    /// <remarks>
+    /// This method is required for design time support.
+    /// </remarks>
     public BrowserQueryViewerView()
     {
       InitializeComponent();

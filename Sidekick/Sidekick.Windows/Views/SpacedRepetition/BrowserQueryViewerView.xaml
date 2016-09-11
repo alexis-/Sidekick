@@ -6,8 +6,7 @@
              xmlns:local="clr-namespace:Sidekick.Windows.Views.SpacedRepetition"
              xmlns:catel="http://catel.codeplex.com"
              xmlns:controls="clr-namespace:Sidekick.WPF.Controls;assembly=Sidekick.WPF"
-             mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             mc:Ignorable="d">
   
   <Grid Name="BrowserRootGrid">
     <Grid.ColumnDefinitions>

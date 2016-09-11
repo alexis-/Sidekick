@@ -24,8 +24,9 @@ namespace Sidekick.Windows.ViewModels.SpacedRepetition
   using Catel.IoC;
   using Catel.MVVM;
 
+  using Orc.FilterBuilder.Models;
+  
   using Sidekick.MVVM.ViewModels;
-  using Sidekick.SpacedRepetition.Models;
 
   /// <summary>
   ///   View Model for main browser view.
@@ -34,11 +35,11 @@ namespace Sidekick.Windows.ViewModels.SpacedRepetition
   /// </summary>
   /// <seealso cref="Sidekick.MVVM.ViewModels.MainContentViewModelBase" />
   [InterestedIn(typeof(BrowserQueryViewerViewModel))]
+  [InterestedIn(typeof(BrowserQueryBuilderViewModel))]
   public class BrowserViewModel : MainContentViewModelBase
   {
     #region Fields
 
-    private readonly QueryBuilderViewModel _browserQueryBuilderViewModel;
     private readonly BrowserQueryViewerViewModel _browserQueryViewerViewModel;
 
     #endregion
@@ -48,14 +49,13 @@ namespace Sidekick.Windows.ViewModels.SpacedRepetition
     #region Constructors
 
     /// <summary>
-    ///   Initializes a new instance of the <see cref="BrowserViewModel"/> class.
+    ///   Initializes a new instance of the <see cref="BrowserViewModel" /> class.
     ///   TODO: BrowserQueryBuilder w/ buttons, preview, ...
     /// </summary>
     public BrowserViewModel()
     {
       _browserQueryViewerViewModel =
         TypeFactory.Default.CreateInstance<BrowserQueryViewerViewModel>();
-      _browserQueryBuilderViewModel = new QueryBuilderViewModel(typeof(Card));
 
       CurrentModel = _browserQueryViewerViewModel;
     }
@@ -87,9 +87,26 @@ namespace Sidekick.Windows.ViewModels.SpacedRepetition
       switch (command.Tag as string)
       {
         case "AddQuery":
-          CurrentModel = _browserQueryBuilderViewModel;
+          ShowQueryBuilder();
+          break;
+
+        case "EditQuery":
+          ShowQueryBuilder(commandParameter as FilterScheme);
+          break;
+
+        case "QueryBuilderDone":
+          CurrentModel = _browserQueryViewerViewModel;
           break;
       }
+    }
+
+    private void ShowQueryBuilder(FilterScheme filterScheme = null)
+    {
+      CurrentModel = filterScheme == null
+                       ? TypeFactory.Default.CreateInstance<BrowserQueryBuilderViewModel>()
+                       : TypeFactory.Default.CreateInstanceWithParametersAndAutoCompletion(
+                                      typeof(BrowserQueryBuilderViewModel), filterScheme) as
+                           BrowserQueryBuilderViewModel;
     }
 
     #endregion

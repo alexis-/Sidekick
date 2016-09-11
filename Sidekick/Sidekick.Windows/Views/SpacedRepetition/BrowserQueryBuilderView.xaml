@@ -1,0 +1,94 @@
+﻿<catel:UserControl x:Class="Sidekick.Windows.Views.SpacedRepetition.BrowserQueryBuilderView"
+                   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                   xmlns:catel="http://catel.codeplex.com"
+                   xmlns:views="clr-namespace:Sidekick.Windows.Views"
+                   xmlns:models="clr-namespace:Sidekick.SpacedRepetition.Models;assembly=Sidekick.SpacedRepetition"
+                   xmlns:controls="clr-namespace:Sidekick.WPF.Controls;assembly=Sidekick.WPF"
+                   mc:Ignorable="d">
+
+  <Grid Background="{DynamicResource GrayBrush10}">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="*" />
+    </Grid.RowDefinitions>
+
+
+    <!--Command panel-->
+    <Border Background="{DynamicResource WhiteBrush}"
+            BorderBrush="{DynamicResource GrayBrush9}"
+            BorderThickness="0 0 0 1"
+            Grid.Row="0">
+
+      <Grid>
+
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="Auto" />
+          <ColumnDefinition Width="Auto" />
+          <ColumnDefinition Width="Auto" />
+          <ColumnDefinition Width="1" />
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="Auto" />
+          <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Orientation="Horizontal"
+                    Grid.Column="0">
+
+          <controls:FlatIconizableToggleButton Content="Builder"
+                                               RadioController="{Binding RadioController}"
+                                               RadioControllerParameter="Builder"
+                                               FontSize="16"
+                                               FontWeight="DemiBold"
+                                               Width="120"
+                                               IsChecked="True" />
+
+          <controls:FlatIconizableToggleButton Content="Preview"
+                                               RadioController="{Binding RadioController}"
+                                               RadioControllerParameter="Preview"
+                                               IsEnabled="{Binding IsQueryValid}"
+                                               FontSize="16"
+                                               FontWeight="DemiBold"
+                                               Width="120" />
+        </StackPanel>
+
+        <Label Content="Title:"
+               FontSize="16"
+               FontWeight="DemiBold"
+               Margin="14 14 14 14"
+               Grid.Column="1" />
+
+        <TextBox Text="{Binding QueryTitle}"
+                 VerticalAlignment="Center"
+                 Width="240"
+                 Grid.Column="2" />
+        
+        <Rectangle Style="{DynamicResource VerticalSeparator}"
+                   Grid.Column="3" />
+
+        <Button Content="Cancel"
+                Command="{Binding CancelCommand}"
+                Margin="0 14 0 14"
+                Width="100"
+                Grid.Column="5" />
+
+        <Button Content="Save"
+                Command="{Binding SaveCommand}"
+                Margin="20 14 14 14"
+                Width="100"
+                Grid.Column="6" />
+
+      </Grid>
+
+    </Border>
+
+
+    <!--Content view (builder or preview)-->
+    <ContentPresenter Content="{Binding CurrentModel, Mode=OneWay}"
+                      Grid.Row="1" />
+
+  </Grid>
+
+</catel:UserControl>

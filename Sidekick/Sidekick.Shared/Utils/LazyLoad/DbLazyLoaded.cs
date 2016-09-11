@@ -19,115 +19,77 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using Sidekick.Shared.Attributes.LazyLoad;
-using Sidekick.Shared.Interfaces.Database;
-
 namespace Sidekick.Shared.Utils.LazyLoad
 {
-  public class DbLazyLoad<T> where T : class
+  using System;
+  using System.Collections.Generic;
+  using System.Linq;
+  using System.Reflection;
+  using System.Threading.Tasks;
+
+  using Sidekick.Shared.Attributes.LazyLoad;
+  using Sidekick.Shared.Interfaces.Database;
+
+  /// <summary>
+  ///   Helps handling lazy operations in combination with a <see cref="IDatabaseAsync" /> provider.
+  /// </summary>
+  /// <typeparam name="T">Table type</typeparam>
+  public class DbLazyLoad<T>
+    where T : class
   {
-    #region Fields
-
-    protected readonly string[] LazyLoadedProperties;
-    protected readonly string[] LazyUnloadedProperties;
-    protected readonly string[] PermanentProperties;
-    protected readonly string PrimaryKeyPropName;
-    protected readonly Dictionary<string, PropertyInfo> PropertyInfoMap;
-
-    #endregion
-
     #region Constructors
 
-    protected DbLazyLoad(IDatabase db)
+    /// <summary>
+    ///   Initializes a new instance of the <see cref="DbLazyLoad{T}" /> class.
+    /// </summary>
+    protected DbLazyLoad()
     {
-      ITableMapping tableMapping = db.GetTableMapping<T>();
-      PrimaryKeyPropName = tableMapping.GetPrimaryKeyProp();
-
-      PropertyInfoMap = new Dictionary<string, PropertyInfo>();
-
-      List<string> permanentPropertiesList = new List<string>();
-      List<string> lazyLoadedPropertiesList = new List<string>();
-      List<string> lazyUnloadedPropertiesList = new List<string>();
-
-      foreach (string propName in tableMapping.GetColumnMarkedProperties())
-      {
-        PropertyInfo propInfo = tableMapping.GetPropertyInfo(propName);
-
-        var lazyLoadedAttribute =
-          propInfo.GetCustomAttribute<LazyLoadedAttribute>();
-        var lazyUnloadedAttribute =
-          propInfo.GetCustomAttribute<LazyUnloadedAttribute>();
-
-        if (propName == PrimaryKeyPropName)
-        {
-          permanentPropertiesList.Add(propName);
-          lazyLoadedPropertiesList.Add(propName);
-          lazyUnloadedPropertiesList.Add(propName);
-        }
-
-        else if (lazyUnloadedAttribute != null && lazyLoadedAttribute != null)
-        {
-          lazyLoadedPropertiesList.Add(propName);
-          lazyUnloadedPropertiesList.Add(propName);
-        }
-
-        else if (lazyLoadedAttribute != null)
-          lazyLoadedPropertiesList.Add(propName);
-
-        else
-          permanentPropertiesList.Add(propName);
-
-        PropertyInfoMap.Add(propName, propInfo);
-      }
-
-      PermanentProperties = permanentPropertiesList.ToArray();
-      LazyLoadedProperties = lazyLoadedPropertiesList.ToArray();
-      LazyUnloadedProperties = lazyUnloadedPropertiesList.ToArray();
+      Instance = Task.FromResult(this);
     }
 
     #endregion
+
+
 
     #region Properties
 
-    protected static DbLazyLoad<T> Instance { get; set; }
+    protected static Task<DbLazyLoad<T>> Instance { get; set; }
+
+    protected string[] LazyLoadedProperties { get; set; }
+    protected string[] LazyUnloadedProperties { get; set; }
+    protected string[] PermanentProperties { get; set; }
+    protected string PrimaryKeyPropName { get; set; }
+    protected Dictionary<string, PropertyInfo> PropertyInfoMap { get; set; }
 
     #endregion
 
+
+
     #region Methods
 
-    public static DbLazyLoad<T> GetOrCreateInstance(IDatabase db)
+    public static Task<DbLazyLoad<T>> GetOrCreateInstanceAsync(IDatabaseAsync db)
     {
-      return Instance ?? (Instance = new DbLazyLoad<T>(db));
+      return Instance ?? new DbLazyLoad<T>().InitializeAsync(db);
     }
 
-    public ITableQuery<T> ShallowLoad(ITableQuery<T> query)
+    public ITableQueryAsync<T> ShallowLoad(ITableQueryAsync<T> query)
     {
       return query.SelectColumns(PermanentProperties);
     }
 
-    public ITableQuery<T> FurtherLoad(ITableQuery<T> query)
+    public ITableQueryAsync<T> FurtherLoad(ITableQueryAsync<T> query)
     {
       return query.SelectColumns(LazyLoadedProperties);
     }
 
     public void UpdateFromFurtherLoad<TPk>(
-      IEnumerable<T> toUpdateList,
-      IEnumerable<T> furtherLoadedList,
-      Func<T, TPk> keySelector)
+      IEnumerable<T> toUpdateList, IEnumerable<T> furtherLoadedList, Func<T, TPk> keySelector)
     {
-      Dictionary<TPk, T> toUpdateDictionary =
-        toUpdateList.ToDictionary(keySelector);
-      Dictionary<TPk, T> furtherLoadedDictionary =
-        furtherLoadedList.ToDictionary(keySelector);
+      Dictionary<TPk, T> toUpdateDictionary = toUpdateList.ToDictionary(keySelector);
+      Dictionary<TPk, T> furtherLoadedDictionary = furtherLoadedList.ToDictionary(keySelector);
 
       foreach (TPk key in toUpdateDictionary.Keys)
-        UpdateFromFurtherLoad(
-          toUpdateDictionary[key],
-          furtherLoadedDictionary[key]);
+        UpdateFromFurtherLoad(toUpdateDictionary[key], furtherLoadedDictionary[key]);
     }
 
     public void UpdateFromFurtherLoad(T toUpdate, T furtherLoaded)
@@ -157,6 +119,53 @@ namespace Sidekick.Shared.Utils.LazyLoad
       }
     }
 
+    protected async Task<DbLazyLoad<T>> InitializeAsync(IDatabaseAsync db)
+    {
+      ITableMapping tableMapping = await db.GetTableMappingAsync<T>().ConfigureAwait(false);
+      PrimaryKeyPropName = tableMapping.GetPrimaryKeyProp();
+
+      PropertyInfoMap = new Dictionary<string, PropertyInfo>();
+
+      List<string> permanentPropertiesList = new List<string>();
+      List<string> lazyLoadedPropertiesList = new List<string>();
+      List<string> lazyUnloadedPropertiesList = new List<string>();
+
+      foreach (string propName in tableMapping.GetColumnMarkedProperties())
+      {
+        PropertyInfo propInfo = tableMapping.GetPropertyInfo(propName);
+
+        var lazyLoadedAttribute = propInfo.GetCustomAttribute<LazyLoadedAttribute>();
+        var lazyUnloadedAttribute = propInfo.GetCustomAttribute<LazyUnloadedAttribute>();
+
+        if (propName == PrimaryKeyPropName)
+        {
+          permanentPropertiesList.Add(propName);
+          lazyLoadedPropertiesList.Add(propName);
+          lazyUnloadedPropertiesList.Add(propName);
+        }
+
+        else if (lazyUnloadedAttribute != null && lazyLoadedAttribute != null)
+        {
+          lazyLoadedPropertiesList.Add(propName);
+          lazyUnloadedPropertiesList.Add(propName);
+        }
+
+        else if (lazyLoadedAttribute != null)
+          lazyLoadedPropertiesList.Add(propName);
+
+        else
+          permanentPropertiesList.Add(propName);
+
+        PropertyInfoMap.Add(propName, propInfo);
+      }
+
+      PermanentProperties = permanentPropertiesList.ToArray();
+      LazyLoadedProperties = lazyLoadedPropertiesList.ToArray();
+      LazyUnloadedProperties = lazyUnloadedPropertiesList.ToArray();
+
+      return this;
+    }
+
     #endregion
   }
 
@@ -164,16 +173,14 @@ namespace Sidekick.Shared.Utils.LazyLoad
   {
     #region Methods
 
-    public static ITableQuery<T> ShallowLoad<T>(
-      this ITableQuery<T> query, DbLazyLoad<T> lazyLoad)
-      where T : class
+    public static ITableQueryAsync<T> ShallowLoad<T>(
+      this ITableQueryAsync<T> query, DbLazyLoad<T> lazyLoad) where T : class
     {
       return lazyLoad.ShallowLoad(query);
     }
 
-    public static ITableQuery<T> FurtherLoad<T>(
-      this ITableQuery<T> query, DbLazyLoad<T> lazyLoad)
-      where T : class
+    public static ITableQueryAsync<T> FurtherLoad<T>(
+      this ITableQueryAsync<T> query, DbLazyLoad<T> lazyLoad) where T : class
     {
       return lazyLoad.FurtherLoad(query);
     }

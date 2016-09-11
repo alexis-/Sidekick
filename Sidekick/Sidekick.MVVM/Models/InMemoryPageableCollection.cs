@@ -19,109 +19,156 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Threading.Tasks;
-using Catel.Collections;
-using Sidekick.Shared.Utils;
-
 namespace Sidekick.MVVM.Models
 {
+  using System;
+  using System.Collections.Generic;
+  using System.Linq;
+  using System.Threading.Tasks;
+
+  using Catel.Collections;
+
+  using Sidekick.Shared.Utils;
+
+  /// <summary>
+  ///   Pageable implementation which holds all items in memory.
+  /// </summary>
+  /// <typeparam name="T">Objects type</typeparam>
+  /// <seealso cref="Sidekick.MVVM.Models.PageableCollectionBase{T}" />
   public class InMemoryPageableCollection<T> : PageableCollectionBase<T>
   {
     #region Constructors
 
-    public InMemoryPageableCollection(
-      IEnumerable<T> allObjects = null)
+    /// <summary>
+    ///   Initializes a new instance of the <see cref="InMemoryPageableCollection{T}" /> class.
+    /// </summary>
+    /// <param name="allObjects">All objects.</param>
+    public InMemoryPageableCollection(IEnumerable<T> allObjects = null)
     {
       AllObjects = new FastObservableCollection<T>(allObjects);
     }
 
-    public InMemoryPageableCollection(
-      IEnumerable<T> allObjects, int pageSize)
-      : base(pageSize)
+    /// <summary>
+    ///   Initializes a new instance of the <see cref="InMemoryPageableCollection{T}" /> class.
+    /// </summary>
+    /// <param name="allObjects">All objects.</param>
+    /// <param name="pageSize">Size of the page.</param>
+    public InMemoryPageableCollection(IEnumerable<T> allObjects, int pageSize) : base(pageSize)
     {
       AllObjects = new FastObservableCollection<T>(allObjects);
     }
 
     #endregion
 
+
+
     #region Properties
 
-    protected FastObservableCollection<T> AllObjects { get; set; }
-
-    public override int TotalPageCount =>
+    /// <summary>
+    ///   Total page count (total item count / page size).
+    /// </summary>
+    public override int TotalPageCount
+      =>
       AllObjects != null && PageSize > 0
         ? (int)Math.Ceiling(AllObjects.Count / (float)PageSize)
         : 0;
 
+    /// <summary>
+    ///   Holds objects to page
+    /// </summary>
+    protected FastObservableCollection<T> AllObjects { get; set; }
+
     #endregion
+
+
 
     #region Methods
 
+    /// <summary>
+    ///   Removes an item from collection/store.
+    /// </summary>
+    /// <param name="item">Item to remove</param>
+    /// <returns></returns>
     public override Task<bool> RemoveAsync(T item)
     {
       return DoRemoveAsync(() => RemoveFromList(item));
     }
 
+    /// <summary>
+    ///   Removes items from collection/store.
+    /// </summary>
+    /// <param name="items">Items to remove</param>
+    /// <returns></returns>
     public override Task<bool> RemoveAsync(IEnumerable<T> items)
     {
       return DoRemoveAsync(() => RemoveFromList(items));
     }
 
+    /// <summary>
+    ///   Add an item to collection/store.
+    /// </summary>
+    /// <param name="item">Item to add</param>
+    /// <returns></returns>
     public override Task<bool> AddAsync(T item)
     {
       return DoAddAsync(() => AddToList(item));
     }
 
+    /// <summary>
+    ///   Add items to collection/store.
+    /// </summary>
+    /// <param name="items">Items to add</param>
+    /// <returns></returns>
     public override Task<bool> AddAsync(IEnumerable<T> items)
     {
       return DoAddAsync(() => AddToList(items));
     }
 
+    /// <summary>
+    ///   Update page item according to current page.
+    /// </summary>
+    /// <returns></returns>
     public override Task UpdateCurrentPageItemsAsync()
     {
       int skip = (CurrentPage - 1) * PageSize;
 
-      ((ICollection<T>)CurrentPageItems).ReplaceRange(
-        AllObjects.Skip(skip)
-                  .Take(PageSize));
+      ((ICollection<T>)CurrentPageItems).ReplaceRange(AllObjects.Skip(skip).Take(PageSize));
 
       return TaskConstants.Completed;
     }
 
+
     // 
     // Allows to override Add/Remove behavior to add features (such as DB)
-    protected bool RemoveFromList(T item)
+
+    protected Task<bool> RemoveFromList(T item)
     {
       AllObjects.Remove(item);
-      return true;
+      return TaskConstants.BooleanTrue;
     }
 
-    protected bool RemoveFromList(IEnumerable<T> items)
+    protected Task<bool> RemoveFromList(IEnumerable<T> items)
     {
       AllObjects.RemoveItems(items);
-      return true;
+      return TaskConstants.BooleanTrue;
     }
 
-    protected bool AddToList(T item)
+    protected Task<bool> AddToList(T item)
     {
       int insertPosition = (CurrentPage - 1) * PageSize;
 
       AllObjects.Insert(insertPosition, item);
 
-      return true;
+      return TaskConstants.BooleanTrue;
     }
 
-    protected bool AddToList(IEnumerable<T> items)
+    protected Task<bool> AddToList(IEnumerable<T> items)
     {
       int insertPosition = (CurrentPage - 1) * PageSize;
 
       AllObjects.InsertItems(items, insertPosition);
 
-      return true;
+      return TaskConstants.BooleanTrue;
     }
 
     #endregion

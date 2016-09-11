@@ -19,25 +19,27 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Shapes;
-using Catel.IoC;
-using Catel.Services;
-using Sidekick.MVVM.Extensions.SpacedRepetition;
-using Sidekick.MVVM.ViewModels.SpacedRepetition;
-using Sidekick.SpacedRepetition;
-using Sidekick.SpacedRepetition.Const;
-using Sidekick.Windows.Utils;
-using UserControl = Catel.Windows.Controls.UserControl;
-
 namespace Sidekick.Windows.Views.SpacedRepetition
 {
+  using System;
+  using System.Windows;
+  using System.Windows.Controls;
+  using System.Windows.Input;
+  using System.Windows.Media;
+  using System.Windows.Shapes;
+
+  using Catel.IoC;
+  using Catel.Services;
+
+  using Sidekick.MVVM.Extensions.SpacedRepetition;
+  using Sidekick.MVVM.ViewModels.SpacedRepetition;
+  using Sidekick.SpacedRepetition.Const;
+  using Sidekick.Windows.Utils;
+
+  using UserControl = Catel.Windows.Controls.UserControl;
+
   /// <summary>
-  /// Interaction logic for CardAnswerButtonsView.xaml
+  ///   Interaction logic for CardAnswerButtonsView.xaml
   /// </summary>
   public partial class CardAnswerButtonsView : UserControl
   {
@@ -50,11 +52,19 @@ namespace Sidekick.Windows.Views.SpacedRepetition
 
     #endregion
 
+
+
     #region Constructors
 
     //
     // Constructor
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CardAnswerButtonsView"/> class.
+    /// </summary>
+    /// <remarks>
+    /// This method is required for design time support.
+    /// </remarks>
     public CardAnswerButtonsView()
     {
       IServiceLocator serviceLocator = ServiceLocator.Default;
@@ -66,14 +76,16 @@ namespace Sidekick.Windows.Views.SpacedRepetition
 
     #endregion
 
+
+
     #region Methods
 
     //
     // Methods
 
     /// <summary>
-    /// Called a new card is displayed, thus resulting in a new set of
-    /// <see cref="GradeInfo" /> and thus changing ViewModel.
+    ///   Called a new card is displayed, thus resulting in a new set of
+    ///   <see cref="GradeInfo" /> and thus changing ViewModel.
     /// </summary>
     protected override void OnViewModelChanged()
     {
@@ -88,15 +100,14 @@ namespace Sidekick.Windows.Views.SpacedRepetition
     }
 
     /// <summary>
-    /// Builds grading buttons and associated controls.
+    ///   Builds grading buttons and associated controls.
     /// </summary>
     private UIElement BuildView()
     {
       //
       // Get ViewModel
 
-      CardAnswerButtonsViewModel viewModel =
-        ViewModel as CardAnswerButtonsViewModel;
+      CardAnswerButtonsViewModel viewModel = ViewModel as CardAnswerButtonsViewModel;
 
       if (viewModel == null)
         throw new InvalidOperationException("ViewModel is NULL.");
@@ -117,14 +128,12 @@ namespace Sidekick.Windows.Views.SpacedRepetition
 
       for (int i = 0; i < elementCount; i++)
       {
-        UIElement element =
-          (i % 2 == 0)
-          // Button (Even)
-          ? (UIElement)BuildButton(
-            viewModel.GradeInfos[i / 2],
-            viewModel.AnswerCommand)
-          // Separator (Odd)
-          : BuildSeparator();
+        UIElement element = i % 2 == 0
+                              //// Button (Even)
+                              ? (UIElement)
+                              BuildButton(viewModel.GradeInfos[i / 2], viewModel.AnswerCommand)
+                              //// Separator (Odd)
+                              : BuildSeparator();
 
         Grid.SetColumn(element, i); // Grid.Column="{i}"
         grid.Children.Add(element); // Add UIElement to Grid
@@ -134,8 +143,8 @@ namespace Sidekick.Windows.Views.SpacedRepetition
     }
 
     /// <summary>
-    /// Builds Grid UI control with appropriate ColumnDefinition for buttons
-    /// and separators
+    ///   Builds Grid UI control with appropriate ColumnDefinition for buttons
+    ///   and separators
     /// </summary>
     /// <param name="elementCount">Button count</param>
     /// <returns>Setup Grid</returns>
@@ -145,31 +154,27 @@ namespace Sidekick.Windows.Views.SpacedRepetition
 
       for (int i = 0; i < elementCount; i++)
         grid.ColumnDefinitions.Add(
-          new ColumnDefinition()
-          {
-            Width = (i % 2 == 0)
-                      ? new GridLength(1, GridUnitType.Star)
-                      : new GridLength(1)
-          });
+              new ColumnDefinition()
+              {
+                Width = i % 2 == 0 ? new GridLength(1, GridUnitType.Star) : new GridLength(1)
+              });
 
       return grid;
     }
 
     /// <summary>
-    /// Builds a button based on GradeInfo's color and text
+    ///   Builds a button based on GradeInfo's color and text
     /// </summary>
     /// <param name="gradeInfo">Grading info</param>
+    /// <param name="command">The command.</param>
     /// <returns>Setup Button</returns>
-    private Button BuildButton(
-      GradeInfo gradeInfo,
-      ICommand command)
+    private Button BuildButton(GradeInfo gradeInfo, ICommand command)
     {
       Grade grade = gradeInfo.Grade;
 
       Button button = new Button();
 
-      SolidColorBrush buttonColorBrush = new SolidColorBrush(
-        grade.GetColor().ToWPFColor());
+      SolidColorBrush buttonColorBrush = new SolidColorBrush(grade.GetColor().ToWPFColor());
       string buttonText = gradeInfo.LocalizableText;
 
       button.Content = _languageService.GetString(buttonText);
@@ -182,9 +187,9 @@ namespace Sidekick.Windows.Views.SpacedRepetition
     }
 
     /// <summary>
-    /// Builds a button separator
+    ///   Builds a button separator
     /// </summary>
-    /// <returns>Separator</returns>
+    /// <returns>Separator instance</returns>
     private Rectangle BuildSeparator()
     {
       Rectangle rectangle = new Rectangle();

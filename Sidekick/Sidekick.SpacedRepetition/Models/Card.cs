@@ -19,17 +19,25 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System;
-using System.Text;
-using Catel.ComponentModel;
-using Catel.Data;
-using Newtonsoft.Json;
-using Sidekick.Shared.Attributes.Database;
-using Sidekick.Shared.Extensions;
-using Sidekick.SpacedRepetition.Const;
-
 namespace Sidekick.SpacedRepetition.Models
 {
+  using System;
+  using System.Text;
+
+  using Catel.ComponentModel;
+  using Catel.Data;
+
+  using Newtonsoft.Json;
+
+  using Sidekick.Shared.Attributes.Database;
+  using Sidekick.Shared.Extensions;
+  using Sidekick.SpacedRepetition.Const;
+
+  /// <summary>
+  ///   Card model for SpacedRepetition system.
+  ///   Keeps track of individual cards progress (ease, interval, ...) and datas.
+  /// </summary>
+  /// <seealso cref="Catel.Data.ModelBase" />
   [Table("Cards")]
   public partial class Card : ModelBase
   {
@@ -40,11 +48,11 @@ namespace Sidekick.SpacedRepetition.Models
 
     #endregion
 
+
+
     #region Constructors
 
-    public Card()
-    {
-    }
+    public Card() { }
 
     public Card(CollectionConfig config, int noteId = -1, string data = null)
     {
@@ -68,6 +76,8 @@ namespace Sidekick.SpacedRepetition.Models
 
     #endregion
 
+
+
     #region Properties
 
     [PrimaryKey]
@@ -90,15 +100,10 @@ namespace Sidekick.SpacedRepetition.Models
 
     [Indexed]
     [DisplayName("SpacedRepetition_Card_Header_MiscState")]
-    public CardMiscStateFlag MiscState
-    { get; private set; }
+    public CardMiscStateFlag MiscState { get; private set; }
 
     [DisplayName("SpacedRepetition_Card_Header_EFactor")]
-    public float EFactor
-    {
-      get { return _eFactor; }
-      set { _eFactor = SanitizeEFactor(value); }
-    }
+    public float EFactor { get { return _eFactor; } set { _eFactor = SanitizeEFactor(value); } }
 
     [DisplayName("SpacedRepetition_Card_Header_Interval")]
     public int Interval
@@ -118,10 +123,7 @@ namespace Sidekick.SpacedRepetition.Models
     [Column("Data")]
     public byte[] DataBackingField
     {
-      get
-      {
-        return Encoding.Unicode.GetBytes(JsonConvert.SerializeObject(Data));
-      }
+      get { return Encoding.Unicode.GetBytes(JsonConvert.SerializeObject(Data)); }
       set
       {
         string uniStr = Encoding.Unicode.GetString(value, 0, value.Length);

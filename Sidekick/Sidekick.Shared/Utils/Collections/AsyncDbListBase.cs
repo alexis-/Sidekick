@@ -26,8 +26,6 @@ namespace Sidekick.Shared.Utils.Collections
   using System.Linq;
   using System.Threading.Tasks;
 
-  using Catel.Logging;
-
   using Sidekick.Shared.Interfaces.Database;
   using Sidekick.Shared.Utils.LazyLoad;
 
@@ -40,6 +38,11 @@ namespace Sidekick.Shared.Utils.Collections
     where T : class
   {
     #region Fields
+
+    /// <summary>
+    ///   Database instance used for all loading operations.
+    /// </summary>
+    protected readonly IDatabaseAsync Db;
 
     private T _current;
     private int _index;
@@ -55,18 +58,16 @@ namespace Sidekick.Shared.Utils.Collections
     /// </summary>
     /// <param name="db">Database instance</param>
     /// <param name="lazyLoad">Whether to use lazy loading</param>
-    protected AsyncDbListBase(IDatabase db, bool lazyLoad = false)
+    protected AsyncDbListBase(IDatabaseAsync db, bool lazyLoad = false)
     {
       Status = ReviewStatus.New;
       LockObject = new object();
       LoadCompletionSource = null;
 
-      Log = LogManager.GetCurrentClassLogger();
-
       Db = db;
 
       if (lazyLoad)
-        LazyLoader = DbLazyLoad<T>.GetOrCreateInstance(db);
+        LazyLoader = DbLazyLoad<T>.GetOrCreateInstanceAsync(db).Result;
 
       _index = -1;
       _current = null;
@@ -160,19 +161,9 @@ namespace Sidekick.Shared.Utils.Collections
     protected TaskCompletionSource<object> FurtherLoadCompletionSource { get; set; }
 
     /// <summary>
-    ///   Database instance used for all loading operations.
-    /// </summary>
-    protected IDatabase Db { get; }
-
-    /// <summary>
     ///   Lazy loading provider (optional).
     /// </summary>
     protected DbLazyLoad<T> LazyLoader { get; }
-
-    /// <summary>
-    ///   Logger instance.
-    /// </summary>
-    protected ILog Log { get; }
 
     #endregion
 
@@ -283,17 +274,12 @@ namespace Sidekick.Shared.Utils.Collections
     ///   Helper methods which simply adding items to current collection by dealing with
     ///   synchronization and asynchronous operations.
     /// </summary>
-    /// <param name="dbQueryFunc">The DB query provider function.</param>
+    /// <param name="dbQuery">The parametrized DB query.</param>
     /// <returns>Added item count</returns>
-    protected async Task<int> AddItemsAsync(Func<ITableQuery<T>> dbQueryFunc)
+    protected async Task<int> AddItemsAsync(ITableQueryAsync<T> dbQuery)
     {
-      // Fully load up to IncrementalFurtherLoadMax items
-      var items = await Task.Run(
-        () =>
-        {
-          using (Db.Lock())
-            return dbQueryFunc().ToList();
-        }).ConfigureAwait(false);
+      // Get items asynchronously
+      var items = await dbQuery.ToListAsync().ConfigureAwait(false);
 
       // Add to collection
       lock (LockObject)
@@ -304,8 +290,8 @@ namespace Sidekick.Shared.Utils.Collections
 
     /// <summary>
     ///   Must be called before any other operation.
-    ///   Initialize <see cref="Objects"/> store, set <see cref="Status"/> to
-    ///   <see cref="ReviewStatus.MoveNext"/> and load content if <see cref="load"/> is true.
+    ///   Initialize <see cref="Objects" /> store, set <see cref="Status" /> to
+    ///   <see cref="ReviewStatus.MoveNext" /> and load content if <see cref="load" /> is true.
     /// </summary>
     /// <param name="load">if set to <c>true</c> load content asynchronously.</param>
     protected void Initialize(bool load = false)
@@ -363,7 +349,7 @@ namespace Sidekick.Shared.Utils.Collections
     }
 
     /// <summary>
-    ///   Checks whether current <see cref="Status"/> is valid.
+    ///   Checks whether current <see cref="Status" /> is valid.
     /// </summary>
     /// <param name="allowNew">if set to <c>true</c> [allow new].</param>
     /// <returns>Whether valid</returns>
@@ -546,10 +532,6 @@ namespace Sidekick.Shared.Utils.Collections
         bool fullLoad = Index == Objects.Count - 1;
         ret = await DoLoadMoreAsync(fullLoad).ConfigureAwait(false);
       }
-      catch (Exception ex)
-      {
-        Log.Error(ex, "Exception caught while running LoadMoreAsync.");
-      }
       finally
       {
         lock (LockObject)
@@ -568,10 +550,6 @@ namespace Sidekick.Shared.Utils.Collections
       try
       {
         await DoFurtherLoadAsync().ConfigureAwait(false);
-      }
-      catch (Exception ex)
-      {
-        Log.Error(ex, "Exception caught while running FurtherLoadAsync.");
       }
       finally
       {
