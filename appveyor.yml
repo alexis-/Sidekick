@@ -1,6 +1,7 @@
 install:
   - git submodule update --init --recursive
   - nuget restore Libs/SQLite.Net-PCL/SQLite.Net.OSS.sln
+  - nuget restore Libs/Orc.FilterBuilder/src/Orc.FilterBuilder.sln
 
 before_build:
   - nuget restore Sidekick.OSS.sln
