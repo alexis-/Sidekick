@@ -19,12 +19,14 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using Sidekick.Windows.Models;
-
 namespace Sidekick.Windows.Services
 {
+  using System;
+  using System.Collections.Generic;
+
+  using Sidekick.Windows.Models;
+
+  /// <summary>Navigation menu. Obsolete.</summary>
   public class NavigationMenuService
   {
     #region Fields
@@ -33,8 +35,11 @@ namespace Sidekick.Windows.Services
 
     #endregion
 
+
+
     #region Constructors
 
+    /// <summary>Initializes a new instance of the <see cref="NavigationMenuService" /> class.</summary>
     public NavigationMenuService()
     {
       _menuItems = new SortedSet<MenuItem>();
@@ -42,19 +47,27 @@ namespace Sidekick.Windows.Services
 
     #endregion
 
+
+
     #region Properties
 
+    /// <summary>Gets the menu items.</summary>
     public IEnumerable<MenuItem> MenuItems => _menuItems;
 
     #endregion
 
+
+
     #region Methods
 
-    public void Add(string localizedText, string iconResource,
-      int priority, Type viewModelType)
+    /// <summary>Adds the specified localized text.</summary>
+    /// <param name="localizedText">The localized text.</param>
+    /// <param name="iconResource">The icon resource.</param>
+    /// <param name="priority">The priority.</param>
+    /// <param name="viewModelType">Type of the view model.</param>
+    public void Add(string localizedText, string iconResource, int priority, Type viewModelType)
     {
-      _menuItems.Add(
-        new MenuItem(localizedText, iconResource, priority, viewModelType));
+      _menuItems.Add(new MenuItem(localizedText, iconResource, priority, viewModelType));
     }
 
     #endregion

@@ -31,16 +31,14 @@ namespace Sidekick.SpacedRepetition.Review
   using Sidekick.SpacedRepetition.Const;
   using Sidekick.SpacedRepetition.Models;
 
-  /// <summary>
-  ///   Defines all reviews on a given day (session)
-  /// </summary>
+  /// <summary>Defines all reviews on a given day (session)</summary>
   public class ReviewSession
   {
     #region Constructors
 
-    /// <summary>
-    ///   Initializes a new instance of the <see cref="ReviewSession" /> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReviewSession" /> class.</summary>
+    /// <param name="newCount">The new count.</param>
+    /// <param name="dueCount">The due count.</param>
     protected ReviewSession(int newCount, int dueCount)
     {
       New = newCount;
@@ -53,7 +51,10 @@ namespace Sidekick.SpacedRepetition.Review
 
     #region Properties
 
+    /// <summary>New card count for session.</summary>
     public int New { get; }
+
+    /// <summary>Due card count for session.</summary>
     public int Due { get; }
 
     #endregion
@@ -62,6 +63,12 @@ namespace Sidekick.SpacedRepetition.Review
 
     #region Methods
 
+    /// <summary>
+    ///   Computes the session card review count values asynchronously.
+    /// </summary>
+    /// <param name="db">Database instance.</param>
+    /// <param name="config">The configuration.</param>
+    /// <returns></returns>
     public static async Task<ReviewSession> ComputeSessionAsync(
       IDatabaseAsync db, CollectionConfig config)
     {

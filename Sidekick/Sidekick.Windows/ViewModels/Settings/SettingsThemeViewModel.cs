@@ -31,16 +31,14 @@ namespace Sidekick.Windows.ViewModels.Settings
 
   using Sidekick.Windows.Services.Interfaces;
 
-  /// <summary>
-  ///   App-appearance related settings panel View Model
-  /// </summary>
+  /// <summary>App-appearance related settings panel View Model</summary>
   /// <seealso cref="Catel.MVVM.ViewModelBase" />
   public class SettingsThemeViewModel : ViewModelBase
   {
     #region Fields
 
     private readonly IApplicationConfigurationService _applicationConfigService;
-    private bool _isInitializing = false;
+    private bool _isInitializing;
 
     #endregion
 
@@ -48,9 +46,7 @@ namespace Sidekick.Windows.ViewModels.Settings
 
     #region Constructors
 
-    /// <summary>
-    ///   Initializes a new instance of the <see cref="SettingsThemeViewModel" /> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="SettingsThemeViewModel" /> class.</summary>
     /// <param name="applicationConfigService">The application configuration service.</param>
     public SettingsThemeViewModel(IApplicationConfigurationService applicationConfigService)
       : base(false)
@@ -64,10 +60,16 @@ namespace Sidekick.Windows.ViewModels.Settings
 
     #region Properties
 
+    /// <summary>Gets the themes.</summary>
     public IEnumerable<AppTheme> Themes { get; private set; }
+
+    /// <summary>Gets the accents.</summary>
     public IEnumerable<Accent> Accents { get; private set; }
 
+    /// <summary>Gets or sets the selected theme.</summary>
     public AppTheme SelectedTheme { get; set; }
+
+    /// <summary>Gets or sets the selected accent.</summary>
     public Accent SelectedAccent { get; set; }
 
     #endregion
@@ -76,6 +78,7 @@ namespace Sidekick.Windows.ViewModels.Settings
 
     #region Methods
 
+    /// <inheritdoc />
     protected override Task InitializeAsync()
     {
       _isInitializing = true;

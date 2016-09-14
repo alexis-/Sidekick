@@ -42,6 +42,9 @@ namespace Sidekick.Windows
   {
     #region Constructors
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="App"/> class.
+    /// </summary>
     public App() { }
 
     #endregion

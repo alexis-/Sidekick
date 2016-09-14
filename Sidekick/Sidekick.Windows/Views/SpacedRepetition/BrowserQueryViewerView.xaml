@@ -1,72 +1,72 @@
 ﻿<catel:UserControl x:Class="Sidekick.Windows.Views.SpacedRepetition.BrowserQueryViewerView"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:Sidekick.Windows.Views.SpacedRepetition"
-             xmlns:catel="http://catel.codeplex.com"
-             xmlns:controls="clr-namespace:Sidekick.WPF.Controls;assembly=Sidekick.WPF"
-             mc:Ignorable="d">
-  
-  <Grid Name="BrowserRootGrid">
-    <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="260" />
-      <ColumnDefinition Width="1" />
-      <ColumnDefinition Width="*" />
-    </Grid.ColumnDefinitions>
+                   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                   xmlns:local="clr-namespace:Sidekick.Windows.Views.SpacedRepetition"
+                   xmlns:catel="http://catel.codeplex.com"
+                   xmlns:controls="clr-namespace:Sidekick.WPF.Controls;assembly=Sidekick.WPF"
+                   mc:Ignorable="d">
 
-    <!--Queries-->
-    <Grid Name="QueriesRootGrid"
-          Background="{DynamicResource WhiteBrush}"
-          Grid.Column="0" >
-      <Grid.RowDefinitions>
-        <RowDefinition Height="Auto" />
-        <RowDefinition Height="Auto" />
-        <RowDefinition Height="*" />
-        <RowDefinition Height="Auto" />
-      </Grid.RowDefinitions>
+    <Grid Name="BrowserRootGrid">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="260" />
+            <ColumnDefinition Width="1" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
 
-      <!--Header-->
-      <Label Content="{catel:LanguageBinding SpacedRepetition_Browser_SavedQueries_Header}"
-             Style="{DynamicResource DescriptionStyle}"
-             Grid.Row="0" />
+        <!--Queries-->
+        <Grid Name="QueriesRootGrid"
+              Background="{DynamicResource WhiteBrush}"
+              Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
 
-      <!--Query sorting-->
-      <Label Content="Sort by Name"
-             FontSize="10"
-             Grid.Row="1" />
+            <!--Header-->
+            <Label Content="{catel:LanguageBinding SpacedRepetition_Browser_SavedQueries_Header}"
+                   Style="{DynamicResource DescriptionStyle}"
+                   Grid.Row="0" />
 
-      <!--Query list-->
-      <ListView Name="QueriesListView"
-                ItemsSource="{Binding Queries, Mode=OneWay}"
-                SelectedItem="{Binding SelectedQuery}"
-                SelectionMode="Single"
-                Grid.Row="2" />
+            <!--Query sorting-->
+            <Label Content="Sort by Name"
+                   FontSize="10"
+                   Grid.Row="1" />
 
-      <!--Query add button-->
-      <controls:FlatIconizableButton x:Name="QueriesAddButton"
-                                     ButtonPadding="6 0 0 0"
-                                     FontSize="15"
-                                     FontWeight="DemiBold"
-                                     Height="46"
-                                     HorizontalContentAlignment="Left"
-                                     Padding="14 0 14 0"
-                                     Content="{catel:LanguageBinding SpacedRepetition_Browser_Queries_Add_Button}"
-                                     Icon="{DynamicResource appbar_add}"
-                                     IconSize="12 12"
-                                     Command="{Binding AddQueryCommand}"
-                                     Grid.Row="3" />
+            <!--Query list-->
+            <ListView Name="QueriesListView"
+                      ItemsSource="{Binding Queries, Mode=OneWay}"
+                      SelectedItem="{Binding SelectedQuery}"
+                      SelectionMode="Single"
+                      Grid.Row="2" />
+
+            <!--Query add button-->
+            <controls:FlatIconizableButton x:Name="QueriesAddButton"
+                                           ButtonPadding="6 0 0 0"
+                                           FontSize="15"
+                                           FontWeight="DemiBold"
+                                           Height="46"
+                                           HorizontalContentAlignment="Left"
+                                           Padding="14 0 14 0"
+                                           Content="{catel:LanguageBinding SpacedRepetition_Browser_Queries_Add_Button}"
+                                           Icon="{DynamicResource appbar_add}"
+                                           IconSize="12 12"
+                                           Command="{Binding AddQueryCommand}"
+                                           Grid.Row="3" />
+
+        </Grid>
+
+        <Rectangle Style="{DynamicResource HorizontalSeparator}"
+                   Grid.Column="1" />
+
+        <!--Data grid-->
+        <ContentPresenter Grid.Column="2"
+                          Content="{Binding CollectionViewModel, Mode=OneWay}" />
+        <!--Background="{DynamicResource GrayBrush6}"-->
 
     </Grid>
 
-    <Rectangle Style="{DynamicResource HorizontalSeparator}"
-               Grid.Column="1" />
-
-    <!--Data grid-->
-    <local:CollectionDataGridView Grid.Column="2"
-                                  Background="{DynamicResource GrayBrush6}"
-                                  DataContext="{Binding SelectedQuery, Mode=OneWay}"/>
-
-  </Grid>
-  
 </catel:UserControl>

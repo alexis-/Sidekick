@@ -101,14 +101,14 @@ namespace Sidekick.Windows.Services.Initialization
       InitializeViewPaths();
       InitializeViewModelPaths();
       InitializeWindows();
+      InitializePerformance();
 
       // First initialize database
       await InitializeDatabaseAsync().ConfigureAwait(false);
 
       await
         TaskHelper.RunAndWaitAsync(
-                    InitializeCollectionFilterManagerAsync,
-                    InitializePerformanceAsync).ConfigureAwait(false);
+                    InitializeCollectionFilterManagerAsync).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -193,6 +193,13 @@ namespace Sidekick.Windows.Services.Initialization
       _uiVisualizer.Register<BrowserViewModel, BrowserWindow>();
     }
 
+    private void InitializePerformance()
+    {
+      // Catel.Data.ModelBase.DefaultSuspendValidationValue = true;
+      // UserControl.DefaultCreateWarningAndErrorValidatorForViewModelValue = false;
+      UserControl.DefaultSkipSearchingForInfoBarMessageControlValue = true;
+    }
+
 #if false
     private void InitializeNavigationMenu()
     {
@@ -225,14 +232,6 @@ namespace Sidekick.Windows.Services.Initialization
       var filterManager = _serviceLocator.ResolveType<CollectionQueryManagerService>();
 
       await filterManager.InitializeAsync().ConfigureAwait(false);
-    }
-
-    [Time]
-    private async Task InitializePerformanceAsync()
-    {
-      // Catel.Data.ModelBase.DefaultSuspendValidationValue = true;
-      // UserControl.DefaultCreateWarningAndErrorValidatorForViewModelValue = false;
-      UserControl.DefaultSkipSearchingForInfoBarMessageControlValue = true;
     }
 
     #endregion

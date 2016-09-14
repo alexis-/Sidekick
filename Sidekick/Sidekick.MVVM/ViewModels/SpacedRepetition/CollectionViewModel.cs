@@ -42,9 +42,6 @@ namespace Sidekick.MVVM.ViewModels.SpacedRepetition
   {
     #region Fields
 
-    //
-    // Attributes
-
     private readonly IDatabaseAsync _database;
     private readonly ILanguageService _languageService;
     private readonly IMessageService _messageService;
@@ -59,9 +56,14 @@ namespace Sidekick.MVVM.ViewModels.SpacedRepetition
 
     #region Constructors
 
-    //
-    // Constructors
-
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CollectionViewModel"/> class.
+    /// </summary>
+    /// <param name="database">The database.</param>
+    /// <param name="spacedRepetition">The spaced repetition.</param>
+    /// <param name="languageService">The language service.</param>
+    /// <param name="pleaseWaitService">The please wait service.</param>
+    /// <param name="messageService">The message service.</param>
     public CollectionViewModel(
       IDatabaseAsync database, ISpacedRepetition spacedRepetition,
       ILanguageService languageService, IPleaseWaitService pleaseWaitService,
@@ -80,12 +82,15 @@ namespace Sidekick.MVVM.ViewModels.SpacedRepetition
 
     #region Properties
 
-    //
-    // Properties
+    /// <summary>
+    /// Gets or sets the card.
+    /// </summary>
     [Model]
-    //[Expose("Data")]
     public Card Card { get; set; }
 
+    /// <summary>
+    /// Gets or sets the grade infos.
+    /// </summary>
     public GradeInfo[] GradeInfos { get; set; }
 
     #endregion
@@ -109,13 +114,51 @@ namespace Sidekick.MVVM.ViewModels.SpacedRepetition
                : base.OnContentChange();
     }
 
+    /// <inheritdoc />
+    protected override async Task InitializeAsync()
+    {
+      await base.InitializeAsync().ConfigureAwait(true);
+
+      // Get review collection
+      _reviewCollection = _spacedRepetition.GetReviewCollection(_database);
+
+      // Wait for initialization
+
+      if (!_reviewCollection.Initialized.IsCompleted && !_reviewCollection.Initialized.Wait(100))
+      {
+        _pleaseWaitService.Push(_languageService.GetString("SpacedRepetition_Review_Loading"));
+
+        if (await _reviewCollection.Initialized.ConfigureAwait(true))
+          DisplayCard();
+
+        _pleaseWaitService.Pop();
+      }
+      else if (_reviewCollection.Initialized.Result)
+        DisplayCard();
+    }
+
+    /// <inheritdoc />
+    protected override void OnViewModelCommandExecuted(
+      IViewModel viewModel, ICatelCommand command, object commandParameter)
+    {
+      // TODO: This is not correct. Button will be enabled and may be pressed several times.
+      if (commandParameter is Grade)
+#pragma warning disable 4014
+        AnswerCardAsync((Grade)commandParameter);
+#pragma warning restore 4014
+
+      base.OnViewModelCommandExecuted(viewModel, command, commandParameter);
+    }
+
     private async Task<bool> OnContentChangeAsync()
     {
       MessageResult messageResult =
         await
           _messageService.ShowAsync(
-            _languageService.GetString("SpacedRepetition_Review_NavigateAwayPrompt"), "",
-            MessageButton.YesNoCancel, MessageImage.Question);
+                           _languageService.GetString(
+                             "SpacedRepetition_Review_NavigateAwayPrompt"), string.Empty,
+                           MessageButton.YesNoCancel, MessageImage.Question)
+                         .ConfigureAwait(true);
 
       // Cancel review
       if (messageResult == MessageResult.No)
@@ -143,40 +186,6 @@ namespace Sidekick.MVVM.ViewModels.SpacedRepetition
 
       else
         await _messageService.ShowInformationAsync("All cards reviewed.").ConfigureAwait(false);
-    }
-
-    protected override async Task InitializeAsync()
-    {
-      await base.InitializeAsync().ConfigureAwait(true);
-
-      // Get review collection
-      _reviewCollection = _spacedRepetition.GetReviewCollection(_database);
-
-      // Wait for initialization
-
-      if (!_reviewCollection.Initialized.IsCompleted && !_reviewCollection.Initialized.Wait(100))
-      {
-        _pleaseWaitService.Push(_languageService.GetString("SpacedRepetition_Review_Loading"));
-
-        if (await _reviewCollection.Initialized.ConfigureAwait(true))
-          DisplayCard();
-
-        _pleaseWaitService.Pop();
-      }
-      else if (_reviewCollection.Initialized.Result)
-        DisplayCard();
-    }
-
-    protected override void OnViewModelCommandExecuted(
-      IViewModel viewModel, ICatelCommand command, object commandParameter)
-    {
-      // TODO: This is not correct. Button will be enabled and may be pressed several times.
-      if (commandParameter is Grade)
-#pragma warning disable 4014
-        AnswerCardAsync((Grade)commandParameter);
-#pragma warning restore 4014
-
-      base.OnViewModelCommandExecuted(viewModel, command, commandParameter);
     }
 
     #endregion

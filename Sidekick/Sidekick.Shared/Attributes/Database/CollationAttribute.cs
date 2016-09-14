@@ -20,18 +20,37 @@
 // THE SOFTWARE.
 //
 
-using System;
-
 namespace Sidekick.Shared.Attributes.Database
 {
-    [AttributeUsage(AttributeTargets.Property)]
-    public class CollationAttribute : Attribute
-    {
-        public CollationAttribute(string collation)
-        {
-            Value = collation;
-        }
+  using System;
 
-        public string Value { get; private set; }
+  /// <summary>
+  ///   Sets collation type.
+  /// </summary>
+  /// <seealso cref="System.Attribute" />
+  [AttributeUsage(AttributeTargets.Property)]
+  public class CollationAttribute : Attribute
+  {
+    #region Constructors
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CollationAttribute"/> class.
+    /// </summary>
+    /// <param name="collation">The collation.</param>
+    public CollationAttribute(string collation)
+    {
+      Value = collation;
     }
+
+    #endregion
+
+
+
+    #region Properties
+
+    /// <summary>Collation type.</summary>
+    public string Value { get; private set; }
+
+    #endregion
+  }
 }

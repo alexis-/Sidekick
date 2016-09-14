@@ -43,21 +43,12 @@ namespace Sidekick.Windows.ViewModels.SpacedRepetition
 
     private readonly IDatabaseAsync _db;
     private readonly IPleaseWaitService _pleaseWaitService;
-    private readonly CollectionQuery _query;
 
     #endregion
 
 
 
     #region Constructors
-
-    /// <summary>
-    ///   Initializes a new instance of the <see cref="CollectionDataGridViewModel" /> class.
-    /// </summary>
-    /// <param name="db">Database instance.</param>
-    /// <param name="pleaseWaitService">The please wait service.</param>
-    public CollectionDataGridViewModel(IDatabaseAsync db, IPleaseWaitService pleaseWaitService)
-      : this(null, db, pleaseWaitService) { }
 
     /// <summary>
     ///   Initializes a new instance of the <see cref="CollectionDataGridViewModel" /> class.
@@ -74,8 +65,8 @@ namespace Sidekick.Windows.ViewModels.SpacedRepetition
 
       _db = db;
       _pleaseWaitService = pleaseWaitService;
-      _query = query;
 
+      Query = query;
       PageableCollection = new DbPageableCollection<Card>(_db, FilterCollection);
     }
 
@@ -85,20 +76,29 @@ namespace Sidekick.Windows.ViewModels.SpacedRepetition
 
     #region Properties
 
+    /// <summary>Gets or sets the pageable collection.</summary>
     [Model]
     public PageableCollectionBase<Card> PageableCollection { get; set; }
 
+    /// <summary>Gets or sets the filtered collection.</summary>
     [ViewModelToModel("PageableCollection", "CurrentPageItems")]
     public FastObservableCollection<Card> FilteredCollection { get; set; }
 
+    /// <summary>Gets or sets the size of the page.</summary>
+    /// <value>The size of the page.</value>
     [ViewModelToModel("PageableCollection", "PageSize")]
     public int PageSize { get; set; }
 
+    /// <summary>Gets or sets the selected page.</summary>
     [ViewModelToModel("PageableCollection", "CurrentPage")]
     public int SelectedPage { get; set; }
 
+    /// <summary>Gets or sets the total page count.</summary>
     [ViewModelToModel("PageableCollection", "TotalPageCount")]
     public int TotalPageCount { get; set; }
+
+    /// <summary>Gets or sets the query.</summary>
+    public CollectionQuery Query { get; set; }
 
     #endregion
 
@@ -111,14 +111,20 @@ namespace Sidekick.Windows.ViewModels.SpacedRepetition
     {
       _pleaseWaitService.Push("Loading collection");
 
-      await PageableCollection.UpdateCurrentPageItemsAsync().ConfigureAwait(false);
+      await PageableCollection.UpdateCurrentPageItemsAsync().ConfigureAwait(true);
 
       _pleaseWaitService.Pop();
     }
 
     private ITableQueryAsync<Card> FilterCollection(ITableQueryAsync<Card> query)
     {
-      return _query != null && _query.IsExpressionValid ? _query.Apply(query) : query;
+      return Query != null && Query.IsExpressionValid ? Query.Apply(query) : query;
+    }
+
+    private void OnQueryChanged()
+    {
+      if (PageableCollection != null)
+        PageableCollection.GoToFirstPage(true);
     }
 
     #endregion

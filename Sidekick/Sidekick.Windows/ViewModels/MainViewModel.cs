@@ -116,10 +116,9 @@ namespace Sidekick.Windows.ViewModels
                 buttonName, () => TypeFactory.Default.CreateInstance<CollectionViewModel>()));
 
         case "NavigationBrowseButton":
-          return
-            SetCurrentModelAsync(
-              _navViewModels.GetOrAdd(
-                buttonName, () => TypeFactory.Default.CreateInstance<BrowserViewModel>()));
+          ServiceLocator.Default.ResolveType<IUIVisualizerService>()
+                          .Show<BrowserViewModel>();
+          return TaskConstants.BooleanTrue;
 
         case "NavigationKnowledgeNetworkButton":
           // return SetCurrentModelAsync(_navViewModels.GetOrAdd(
@@ -143,11 +142,6 @@ namespace Sidekick.Windows.ViewModels
       await
         RadioControllerOnSelectionChangedAsync(null, "NavigationCollectionButton")
           .ConfigureAwait(true);
-
-      await
-        ServiceLocator.Default.ResolveType<IUIVisualizerService>()
-                      .ShowAsync<BrowserViewModel>()
-                      .ConfigureAwait(true);
     }
 
     private Task<bool> SetCurrentModelAsync(MainContentViewModelBase viewModel)

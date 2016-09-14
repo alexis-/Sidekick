@@ -21,31 +21,34 @@
 
 namespace Sidekick.Windows.Models
 {
-  using System.Collections.ObjectModel;
-
   using Catel.Collections;
   using Catel.Data;
 
-  /// <summary>
-  ///   CollectionQuery collection container.
-  /// </summary>
+  /// <summary>CollectionQuery collection container.</summary>
   /// <seealso cref="Catel.Data.ModelBase" />
   public class CollectionQueries : ModelBase
   {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="CollectionQueries"/> class.
-    /// </summary>
-    /// <remarks>
-    /// Must have a public constructor in order to be serializable.
-    /// </remarks>
+    #region Constructors
+
+    /// <summary>Initializes a new instance of the <see cref="CollectionQueries" /> class.</summary>
+    /// <remarks>Must have a public constructor in order to be serializable.</remarks>
     public CollectionQueries()
     {
-      Queries = new ObservableCollection<CollectionQuery>();
+      Queries = new FastObservableCollection<CollectionQuery>();
     }
 
+    #endregion
+
+
+
+    #region Properties
+
     /// <summary>
-    ///   CollectionQuery observable collection. Used by CollectionQueryManagerService.
+    ///   FastObservableCollection observable collection. Used by
+    ///   CollectionQueryManagerService.
     /// </summary>
-    public ObservableCollection<CollectionQuery> Queries { get; private set; }
+    public FastObservableCollection<CollectionQuery> Queries { get; private set; }
+
+    #endregion
   }
 }

@@ -61,10 +61,12 @@ namespace Sidekick.MVVM.Models
     protected PageableCollectionBase(int pageSize)
     {
       HandlePropertyAndCollectionChanges = false;
+      DisablePropertyChangeNotifications = true;
 
       PageSize = pageSize;
       CurrentPage = 1;
 
+      DisablePropertyChangeNotifications = false;
       HandlePropertyAndCollectionChanges = true;
     }
 
@@ -152,11 +154,13 @@ namespace Sidekick.MVVM.Models
         CurrentPage--;
     }
 
-    /// <summary>
-    ///   Load first page.
-    /// </summary>
-    public void GoToFirstPage()
+    /// <summary>Load first page.</summary>
+    /// <param name="forceRefresh">Whether to refresh, even if already on first page.</param>
+    public void GoToFirstPage(bool forceRefresh)
     {
+      if (CurrentPage == 1 && forceRefresh)
+        OnCurrentPageChanged();
+      
       CurrentPage = 1;
     }
 
@@ -173,7 +177,8 @@ namespace Sidekick.MVVM.Models
     ///   <see cref="UpdateCurrentPageItemsAsync"/>
     /// </summary>
     /// <returns>Waitable task</returns>
-    protected Task OnCurrentPageChangedAsync()
+    // ReSharper disable once ConsiderUsingAsyncSuffix
+    protected Task OnCurrentPageChanged()
     {
       return UpdateCurrentPageItemsAsync();
     }
@@ -183,7 +188,8 @@ namespace Sidekick.MVVM.Models
     ///   <see cref="UpdateCurrentPageItemsAsync"/>
     /// </summary>
     /// <returns>Waitable task</returns>
-    protected Task OnPageSizeChangedAsync()
+    // ReSharper disable once ConsiderUsingAsyncSuffix
+    protected Task OnPageSizeChanged()
     {
       return UpdateCurrentPageItemsAsync();
     }

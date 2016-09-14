@@ -158,16 +158,17 @@ namespace Sidekick.MVVM.Models
 
 
       // Count items
-      await baseQuery.CountAsync().ConfigureAwait(true);
+      _itemCount = await baseQuery.CountAsync().ConfigureAwait(false);
 
 
       // Fetch and add items
       int skip = (CurrentPage - 1) * PageSize;
       ITableQueryAsync<T> fetchQuery = baseQuery.Skip(skip).Take(PageSize);
 
-      IEnumerable<T> newItems = await fetchQuery.ToListAsync().ConfigureAwait(true);
+      IEnumerable<T> newItems = await fetchQuery.ToListAsync().ConfigureAwait(false);
 
-      ((ICollection<T>)CurrentPageItems).ReplaceRange(newItems);
+      using (CurrentPageItems.SuspendChangeNotifications())
+        ((ICollection<T>)CurrentPageItems).ReplaceRange(newItems);
     }
 
 

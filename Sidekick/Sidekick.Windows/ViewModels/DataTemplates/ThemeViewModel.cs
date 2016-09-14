@@ -71,8 +71,13 @@ namespace Sidekick.Windows.ViewModels.DataTemplates
 
     #region Properties
 
+    /// <summary>Gets or sets the name of the color.</summary>
     public string ColorName { get; set; }
+
+    /// <summary>Gets or sets the color brush.</summary>
     public Brush ColorBrush { get; set; }
+
+    /// <summary>Gets or sets the border color brush.</summary>
     public Brush BorderColorBrush { get; set; }
 
     #endregion

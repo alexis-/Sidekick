@@ -60,7 +60,7 @@
     <Compile Include="Utils\Delay.cs" />
     <Compile Include="Utils\Faker.cs" />
     <Compile Include="Utils\LazyLoad\DbLazyLoaded.cs" />
-    <Compile Include="Utils\TastConst.cs" />
+    <Compile Include="Utils\TaskConst.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="FodyWeavers.xml" />

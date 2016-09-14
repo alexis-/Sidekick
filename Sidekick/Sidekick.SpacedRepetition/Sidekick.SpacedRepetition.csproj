@@ -47,6 +47,7 @@
     <Compile Include="Const\Const.SpacedRepetition.cs" />
     <Compile Include="Const\Grade.cs" />
     <Compile Include="Const\GradeInfo.cs" />
+    <Compile Include="Extensions\CardExtensions.cs" />
     <Compile Include="Extensions\GradeExtensions.cs" />
     <Compile Include="Generators\CardGenerator.cs" />
     <Compile Include="Generators\CollectionGenerator.cs" />

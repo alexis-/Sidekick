@@ -25,28 +25,34 @@ namespace Sidekick.Windows.ViewModels.SpacedRepetition
   using System.Collections.Generic;
   using System.Threading.Tasks;
 
+  using Anotar.Catel;
+
   using Catel;
   using Catel.Data;
   using Catel.IoC;
+  using Catel.Messaging;
   using Catel.MVVM;
+  using Catel.Services;
 
   using Orc.FilterBuilder.ViewModels;
 
-  using Sidekick.Shared.Interfaces.Database;
   using Sidekick.Shared.Utils;
   using Sidekick.Windows.Models;
+  using Sidekick.Windows.Services;
   using Sidekick.WPF.Controls;
 
-  /// <summary>
-  ///   Link QueryBuilderView[Model] and other views (preview, command buttons, ...)
-  /// </summary>
+  /// <summary>Link QueryBuilderView[Model] and other views (preview, command buttons, ...)</summary>
+  /// <seealso cref="Sidekick.WPF.Controls.IRadioControllerMonitor" />
   /// <seealso cref="Catel.MVVM.ViewModelBase" />
-  [InterestedIn(typeof(FilterBuilderViewModel))]
   public class BrowserQueryBuilderViewModel : ViewModelBase, IRadioControllerMonitor
   {
     #region Fields
 
-    private readonly IDatabaseAsync _db;
+    /// <summary>Mediator message to let parent know when to switch view</summary>
+    public const string MessageDone = "BrowserQueryBuilder_Done";
+
+    private readonly CollectionQueryManagerService _collectionQueryManager;
+    private readonly bool _editMode = true;
 
     private readonly FilterBuilderViewModel _filterBuilderViewModel;
 
@@ -56,28 +62,27 @@ namespace Sidekick.Windows.ViewModels.SpacedRepetition
 
     #region Constructors
 
-    /// <summary>
-    ///   Initializes a new instance of the <see cref="BrowserQueryBuilderViewModel" /> class.
-    /// </summary>
-    /// <param name="db">Database instance.</param>
-    public BrowserQueryBuilderViewModel(IDatabaseAsync db)
-      : this(TypeFactory.Default.CreateInstance<CollectionQuery>(), db)
+    /// <summary>Initializes a new instance of the <see cref="BrowserQueryBuilderViewModel" /> class.</summary>
+    /// <param name="collectionQueryManager">The collection query manager.</param>
+    public BrowserQueryBuilderViewModel(CollectionQueryManagerService collectionQueryManager)
+      : this(TypeFactory.Default.CreateInstance<CollectionQuery>(), collectionQueryManager)
     {
+      _editMode = false;
+
       CurrentQuery.Title = $"New Query {DateTime.Now}";
     }
 
-    /// <summary>
-    ///   Initializes a new instance of the <see cref="BrowserQueryBuilderViewModel" /> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="BrowserQueryBuilderViewModel" /> class.</summary>
     /// <param name="currentQuery">Query to edit.</param>
-    /// <param name="db">Database instance.</param>
-    public BrowserQueryBuilderViewModel(CollectionQuery currentQuery, IDatabaseAsync db)
-      : base(true)
+    /// <param name="collectionQueryManager">The collection query manager.</param>
+    public BrowserQueryBuilderViewModel(
+      CollectionQuery currentQuery, CollectionQueryManagerService collectionQueryManager)
+      : base(false)
     {
-      Argument.IsNotNull(() => db);
+      Argument.IsNotNull(() => collectionQueryManager);
       Argument.IsNotNull(() => currentQuery);
 
-      _db = db;
+      _collectionQueryManager = collectionQueryManager;
 
       CurrentQuery = currentQuery;
       RadioController = new RadioController(this);
@@ -86,9 +91,8 @@ namespace Sidekick.Windows.ViewModels.SpacedRepetition
         TypeFactory.Default.CreateInstanceWithParametersAndAutoCompletion(
                      typeof(FilterBuilderViewModel), CurrentQuery) as FilterBuilderViewModel;
 
-      SaveCommand = new TaskCommand(
-        OnSaveCommandExecuteAsync, OnSaveCommandCanExecute, "QueryBuilderDone");
-      CancelCommand = new TaskCommand(OnCancelCommandExecuteAsync, tag: "QueryBuilderDone");
+      SaveCommand = new TaskCommand(OnSaveCommandExecuteAsync, OnSaveCommandCanExecute);
+      CancelCommand = new Command(OnCancelCommandExecute);
     }
 
     #endregion
@@ -97,43 +101,29 @@ namespace Sidekick.Windows.ViewModels.SpacedRepetition
 
     #region Properties
 
-    /// <summary>
-    ///   Handle content toggle buttons (builder/preview).
-    /// </summary>
+    /// <summary>Handle content toggle buttons (builder/preview).</summary>
     public RadioController RadioController { get; set; }
 
-    /// <summary>
-    ///   Displayed view model (builder or preview).
-    /// </summary>
+    /// <summary>Displayed view model (builder or preview).</summary>
     public ViewModelBase CurrentModel { get; set; }
 
-    /// <summary>
-    ///   Current query filter.
-    /// </summary>
+    /// <summary>Current query filter.</summary>
     [Model]
     public CollectionQuery CurrentQuery { get; set; }
 
-    /// <summary>
-    ///   Current filter title.
-    /// </summary>
+    /// <summary>Current filter title.</summary>
     [ViewModelToModel("CurrentQuery", "Title")]
     public string QueryTitle { get; set; }
 
-    /// <summary>
-    ///   Whether filter expression is valid.
-    /// </summary>
+    /// <summary>Whether filter expression is valid.</summary>
     [ViewModelToModel("CurrentQuery", "IsExpressionValid")]
     public bool IsQueryValid { get; set; }
 
-    /// <summary>
-    ///   Save query.
-    /// </summary>
+    /// <summary>Save query.</summary>
     public TaskCommand SaveCommand { get; set; }
 
-    /// <summary>
-    ///   Cancel operations and return to datagrid view.
-    /// </summary>
-    public TaskCommand CancelCommand { get; set; }
+    /// <summary>Cancel operations and return to datagrid view.</summary>
+    public Command CancelCommand { get; set; }
 
     #endregion
 
@@ -142,14 +132,12 @@ namespace Sidekick.Windows.ViewModels.SpacedRepetition
     #region Methods
 
     /// <summary>
-    ///   Notify on selection changes and allows to asynchronously validate whether to endorse it
-    ///   or not.
+    ///   Notify on selection changes and allows to asynchronously validate whether to endorse
+    ///   it or not.
     /// </summary>
     /// <param name="selectedItem">The selected item.</param>
     /// <param name="parameter">Item context (e.g. binding).</param>
-    /// <returns>
-    ///   Waitable task for validation result.
-    /// </returns>
+    /// <returns>Waitable task for validation result.</returns>
     public Task<bool> RadioControllerOnSelectionChangedAsync(
       object selectedItem, object parameter)
     {
@@ -187,24 +175,15 @@ namespace Sidekick.Windows.ViewModels.SpacedRepetition
           FieldValidationResult.CreateError(() => QueryTitle, "Title cannot be empty"));
     }
 
-    /// <inheritdoc />
-    protected override void OnViewModelPropertyChanged(
-      IViewModel viewModel, string propertyName)
-    {
-      // TODO: Do something
-
-      base.OnViewModelPropertyChanged(viewModel, propertyName);
-    }
-
     private void SetCurrentModel(ViewModelBase viewModel)
     {
       if (CurrentModel != viewModel)
         CurrentModel = viewModel;
     }
 
-    private async Task OnCancelCommandExecuteAsync()
+    private void OnCancelCommandExecute()
     {
-      await CancelViewModelAsync().ConfigureAwait(false);
+      SimpleMessage.SendWith(MessageDone);
     }
 
     private bool OnSaveCommandCanExecute()
@@ -214,7 +193,25 @@ namespace Sidekick.Windows.ViewModels.SpacedRepetition
 
     private async Task OnSaveCommandExecuteAsync()
     {
-      await _db.InsertOrReplaceAsync(CurrentQuery).ConfigureAwait(false);
+      try
+      {
+        if (_editMode)
+          await _collectionQueryManager.UpdateAsync(CurrentQuery).ConfigureAwait(false);
+
+        else
+          await _collectionQueryManager.CreateAsync(CurrentQuery).ConfigureAwait(false);
+
+        SimpleMessage.SendWith(MessageDone);
+      }
+      catch (Exception ex)
+      {
+        LogTo.Error(ex, "OnSaveCommandExecute, _editMode: {0}", _editMode);
+
+        await
+          ServiceLocator.Default.ResolveType<IMessageService>()
+                        .ShowErrorAsync(ex)
+                        .ConfigureAwait(false);
+      }
     }
 
     #endregion

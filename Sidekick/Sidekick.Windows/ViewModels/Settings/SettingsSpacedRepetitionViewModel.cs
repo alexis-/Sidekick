@@ -69,6 +69,9 @@ namespace Sidekick.Windows.ViewModels.Settings
 
     #region Properties
 
+    /// <summary>
+    /// Gets or sets the generate test collection command.
+    /// </summary>
     public ICommand GenerateTestCollectionCommand { get; set; }
 
     #endregion

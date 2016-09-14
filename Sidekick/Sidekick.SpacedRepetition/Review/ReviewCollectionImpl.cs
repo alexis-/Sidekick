@@ -34,9 +34,7 @@ namespace Sidekick.SpacedRepetition.Review
   using Sidekick.SpacedRepetition.Interfaces;
   using Sidekick.SpacedRepetition.Models;
 
-  /// <summary>
-  ///   Loads and schedule cards to be displayed for review.
-  /// </summary>
+  /// <summary>Loads and schedule cards to be displayed for review.</summary>
   /// <seealso cref="Sidekick.SpacedRepetition.Interfaces.IReviewCollection" />
   public class ReviewCollectionImpl : IReviewCollection
   {
@@ -58,15 +56,12 @@ namespace Sidekick.SpacedRepetition.Review
     //
     // Constructor
 
-    /// <summary>
-    ///   Initializes a new instance of the <see cref="ReviewCollectionImpl" /> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReviewCollectionImpl" /> class.</summary>
     /// <param name="db">Database instance</param>
     /// <param name="config">Configuration for reviewed collection</param>
     /// <param name="fakeLog">
-    ///   For testing purpose, fakes <see cref="ReviewLog" /> times.
-    ///   ReviewLog Id field is based on current timestamp, and may lead to unique
-    ///   constraint conflict.
+    ///   For testing purpose, fakes <see cref="ReviewLog" /> times. ReviewLog Id
+    ///   field is based on current timestamp, and may lead to unique constraint conflict.
     /// </param>
     public ReviewCollectionImpl(
       IDatabaseAsync db, CollectionConfig config, bool fakeLog = false)
@@ -92,19 +87,16 @@ namespace Sidekick.SpacedRepetition.Review
     // IReviewCollection implementation
 
     /// <summary>
-    ///   Waitable Task to check whether ReviewCollection is ready.
-    ///   ReviewCollection should be initialized before calling other any
-    ///   other method.
+    ///   Waitable Task to check whether ReviewCollection is ready. ReviewCollection should be
+    ///   initialized before calling other any other method.
     /// </summary>
     /// <value>
-    ///   True if ReviewCollection is initialized and ready.
-    ///   False if no card is available for review.
+    ///   True if ReviewCollection is initialized and ready. False if no card is available for
+    ///   review.
     /// </value>
     public Task<bool> Initialized { get; }
 
-    /// <summary>
-    ///   Last fetched card.
-    /// </summary>
+    /// <summary>Last fetched card.</summary>
     public Card Current => CurrentList?.Current;
 
     //
@@ -130,16 +122,10 @@ namespace Sidekick.SpacedRepetition.Review
 
     #region Methods
 
-    /// <summary>
-    ///   Answer current card and fetch next one.
-    /// </summary>
+    /// <summary>Answer current card and fetch next one.</summary>
     /// <param name="grade">Answer grade</param>
-    /// <returns>
-    ///   Whether any cards are available
-    /// </returns>
-    /// <exception cref="System.InvalidOperationException">
-    ///   No card available (Current is null).
-    /// </exception>
+    /// <returns>Whether any cards are available</returns>
+    /// <exception cref="System.InvalidOperationException">No card available (Current is null).</exception>
     public Task<bool> AnswerAsync(Grade grade)
     {
       // Card sanity check
@@ -149,39 +135,25 @@ namespace Sidekick.SpacedRepetition.Review
         throw new InvalidOperationException("Card unavailable");
 
       // Compute evaluation time & create review log
-      int evalTime = Math.Min(DateTime.Now.ToUnixTimestamp() - EvalStartTime, MaxEvalTime);
-
-      ReviewLog log = new ReviewLog(
-        EvalStartTime, card.Id, card.Due, card.PracticeState, card.Interval, card.EFactor);
-
-      if (_fakeLog && LastEval > 0)
-        log.Id = Math.Max(LastEval + 1, EvalStartTime);
-
-      LastEval = log.Id;
+      ReviewLog log = CreateLog(card);
 
       // Answer
-      int noteId = card.NoteId;
-
       NextAction[CurrentList] = () => CurrentList.MoveNextAsync();
       CurrentList = null;
 
-#pragma warning disable 4014
-      card.AnswerAsync(grade, _db);
-#pragma warning restore 4014
+      CardAction cardAction = card.Answer(grade);
 
-      log.CompleteReview(
-        grade, card.Due, card.PracticeState, card.Interval, card.EFactor, evalTime);
+      // Complete log with updated values
+      CompleteLog(log, card, grade);
 
       // If this was a new card, add to learning list
       if (log.LastState == CardPracticeState.New)
         LearnReviewList.AddManual(card);
-
-      // Dismiss sibling cards & insert review log
-      _db.InsertAsync(log);
-      _db.QueryAsync<Card>(
-        @"UPDATE """ + _cardTableName + @""" SET ""Due"" = ? WHERE ""Due"" < ?"
-        + @" AND ""NoteId"" = ? AND ""Id"" <> ?", DateTimeExtensions.Tomorrow.ToUnixTimestamp(),
-        DateTimeExtensions.Tomorrow.ToUnixTimestamp(), noteId, card.Id);
+      
+#pragma warning disable 4014
+      // Save changes to Database
+      UpdateCardAsync(log, card, cardAction);
+#pragma warning restore 4014
 
       NewReviewList.DismissSiblings(card);
       LearnReviewList.DismissSiblings(card);
@@ -190,15 +162,9 @@ namespace Sidekick.SpacedRepetition.Review
       return DoNextAsync();
     }
 
-    /// <summary>
-    ///   Dismiss current card and fetch next one.
-    /// </summary>
-    /// <returns>
-    ///   Whether any cards are available
-    /// </returns>
-    /// <exception cref="System.InvalidOperationException">
-    ///   No card available (Current is null).
-    /// </exception>
+    /// <summary>Dismiss current card and fetch next one.</summary>
+    /// <returns>Whether any cards are available</returns>
+    /// <exception cref="System.InvalidOperationException">No card available (Current is null).</exception>
     public Task<bool> DismissAsync()
     {
       Card card = Current;
@@ -209,20 +175,26 @@ namespace Sidekick.SpacedRepetition.Review
       NextAction[CurrentList] = () => CurrentList.DismissAsync();
       CurrentList = null;
 
+      // Create review log before dismiss
+      ReviewLog log = CreateLog(card);
+
+      // Actually dismiss card
+      CardAction cardAction = card.Dismiss();
+
+      // Complete log with updated values
+      CompleteLog(log, card, Grade.Dismiss);
+
 #pragma warning disable 4014
-      card.DismissAsync(_db);
+      // Save changes to Database
+      UpdateCardAsync(log, card, cardAction);
 #pragma warning restore 4014
 
       return DoNextAsync();
     }
 
-    /// <summary>
-    ///   State-dependent counts of cards to be reviewed.
-    /// </summary>
+    /// <summary>State-dependent counts of cards to be reviewed.</summary>
     /// <param name="state">The state.</param>
-    /// <returns>
-    ///   State-dependent card count.
-    /// </returns>
+    /// <returns>State-dependent card count.</returns>
     public int CountByState(CardPracticeStateFilterFlag state)
     {
       int ret = 0;
@@ -241,6 +213,52 @@ namespace Sidekick.SpacedRepetition.Review
 
     //
     // Internal
+
+    private ReviewLog CreateLog(Card card)
+    {
+      int evalTime = Math.Min(DateTime.Now.ToUnixTimestamp() - EvalStartTime, MaxEvalTime);
+
+      ReviewLog log = new ReviewLog(
+        EvalStartTime, card.Id, card.Due, card.PracticeState, card.Interval, card.EFactor,
+        evalTime);
+
+      if (_fakeLog && LastEval > 0)
+        log.Id = Math.Max(LastEval + 1, EvalStartTime);
+
+      LastEval = log.Id;
+
+      return log;
+    }
+
+    private void CompleteLog(ReviewLog log, Card card, Grade grade)
+    {
+      log.CompleteReview(
+        grade, card.Due, card.PracticeState, card.Interval, card.EFactor);
+    }
+
+    private async Task UpdateCardAsync(ReviewLog log, Card card, CardAction cardAction)
+    {
+      Task[] tasks;
+      Task logTask = _db.InsertAsync(log);
+      Task cardUpdateTask = _db.UpdateAsync(card);
+
+      if (cardAction == CardAction.Dismiss || cardAction == CardAction.Delete)
+        tasks = new[] { cardUpdateTask, logTask };
+
+      else
+      {
+        Task siblingsTask =
+          _db.QueryAsync<Card>(
+            @"UPDATE """ + _cardTableName + @""" SET ""Due"" = ? WHERE ""Due"" < ?"
+            + @" AND ""NoteId"" = ? AND ""Id"" <> ?",
+            DateTimeExtensions.Tomorrow.ToUnixTimestamp(),
+            DateTimeExtensions.Tomorrow.ToUnixTimestamp(), card.NoteId, card.Id);
+
+        tasks = new[] { cardUpdateTask, logTask, siblingsTask };
+      }
+
+      await Task.WhenAll(tasks).ConfigureAwait(false);
+    }
 
     [Time]
     private async Task<bool> InitializeAsync(CollectionConfig config)

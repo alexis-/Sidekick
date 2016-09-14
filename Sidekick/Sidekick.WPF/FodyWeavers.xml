@@ -4,4 +4,5 @@
   <MethodTimer />
   <ModuleInit />
   <Anotar.Catel />
+  <Scalpel />
 </Weavers>

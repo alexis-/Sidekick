@@ -68,6 +68,7 @@ namespace Sidekick.SpacedRepetition.Const
   {
     Invalid = -1,
     Update,
-    Delete
+    Delete,
+    Dismiss
   }
 }

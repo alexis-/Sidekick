@@ -19,17 +19,21 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using Catel.Windows.Controls;
-
 namespace Sidekick.Windows.Views.SpacedRepetition
 {
-  /// <summary>
-  /// Interaction logic for CollectionDataGridView.xaml
-  /// </summary>
+  using Catel.Windows.Controls;
+
+  /// <summary>Interaction logic for CollectionDataGridView.xaml</summary>
   public partial class CollectionDataGridView : UserControl
   {
     #region Constructors
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CollectionDataGridView"/> class.
+    /// </summary>
+    /// <remarks>
+    /// This method is required for design time support.
+    /// </remarks>
     public CollectionDataGridView()
     {
       InitializeComponent();

@@ -21,24 +21,26 @@
 
 namespace Sidekick.Windows.Services
 {
-  using System.Collections.Generic;
+  using System.Collections.Specialized;
   using System.Linq;
   using System.Threading.Tasks;
 
   using Catel.Collections;
   using Catel.IoC;
 
+  using Orc.FilterBuilder;
+  using Orc.FilterBuilder.Services;
+
   using Sidekick.Shared.Interfaces.Database;
   using Sidekick.Windows.Models;
 
-  /// <summary>
-  ///   Handles CollectionQuery operations (saving, loading, adding, ...).
-  /// </summary>
+  /// <summary>Handles CollectionQuery operations (saving, loading, adding, ...).</summary>
   public class CollectionQueryManagerService
   {
     #region Fields
 
     private readonly IDatabaseAsync _db;
+    private readonly IReflectionService _reflectionService;
 
     #endregion
 
@@ -46,13 +48,14 @@ namespace Sidekick.Windows.Services
 
     #region Constructors
 
-    /// <summary>
-    ///   Initializes a new instance of the <see cref="CollectionQueryManagerService" /> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="CollectionQueryManagerService" /> class.</summary>
     /// <param name="db">Database instance.</param>
-    public CollectionQueryManagerService(IDatabaseAsync db)
+    /// <param name="reflectionService">The reflection service.</param>
+    public CollectionQueryManagerService(
+      IDatabaseAsync db, IReflectionService reflectionService)
     {
       _db = db;
+      _reflectionService = reflectionService;
     }
 
     #endregion
@@ -61,9 +64,8 @@ namespace Sidekick.Windows.Services
 
     #region Properties
 
-    /// <summary>
-    ///   All created CollectionQuery.
-    /// </summary>
+    /// <summary>All created CollectionQuery.</summary>
+    /// TODO: Thread-safety (insert, update, ...)
     public CollectionQueries CollectionQueries { get; private set; }
 
     #endregion
@@ -72,9 +74,25 @@ namespace Sidekick.Windows.Services
 
     #region Methods
 
-    /// <summary>
-    ///   Initialize manager asynchronously. Load all filters.
-    /// </summary>
+    /// <summary>Updates database values for the specified query.</summary>
+    /// <param name="query">The query.</param>
+    /// <returns></returns>
+    public async Task UpdateAsync(CollectionQuery query)
+    {
+      await _db.UpdateAsync(query).ConfigureAwait(false);
+    }
+
+    /// <summary>Creates the specified current query.</summary>
+    /// <param name="query">The current query.</param>
+    /// <returns></returns>
+    public async Task CreateAsync(CollectionQuery query)
+    {
+      await _db.InsertAsync(query).ConfigureAwait(false);
+
+      CollectionQueries.Queries.Add(query);
+    }
+
+    /// <summary>Initialize manager asynchronously. Load all filters.</summary>
     /// <returns>Waitable task</returns>
     public async Task InitializeAsync()
     {
@@ -82,7 +100,7 @@ namespace Sidekick.Windows.Services
         return;
 
       CollectionQueries = new CollectionQueries();
-
+      CollectionQueries.Queries.CollectionChanged += QueriesOnCollectionChanged;
 
       // Create default queries
       AddDefaultQueries();
@@ -90,7 +108,7 @@ namespace Sidekick.Windows.Services
       // Load user-defined queries from DB
       var userQueries = await _db.Table<CollectionQuery>().ToListAsync().ConfigureAwait(false);
 
-      CollectionQueries.Queries.AddRange(userQueries);
+      CollectionQueries.Queries.AddItems(userQueries, SuspensionMode.Adding);
     }
 
     private void AddDefaultQueries()
@@ -103,6 +121,14 @@ namespace Sidekick.Windows.Services
                      typeof(CollectionQuery), "All", true) as CollectionQuery;
 
       CollectionQueries.Queries.Add(query);
+    }
+
+    private void QueriesOnCollectionChanged(
+      object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
+    {
+      if (notifyCollectionChangedEventArgs.Action == NotifyCollectionChangedAction.Add)
+        notifyCollectionChangedEventArgs.NewItems.OfType<CollectionQuery>()
+                                        .ForEach(i => i.EnsureIntegrity(_reflectionService));
     }
 
     #endregion

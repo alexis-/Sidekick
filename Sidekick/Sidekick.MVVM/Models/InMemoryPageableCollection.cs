@@ -30,27 +30,21 @@ namespace Sidekick.MVVM.Models
 
   using Sidekick.Shared.Utils;
 
-  /// <summary>
-  ///   Pageable implementation which holds all items in memory.
-  /// </summary>
+  /// <summary>Pageable implementation which holds all items in memory.</summary>
   /// <typeparam name="T">Objects type</typeparam>
   /// <seealso cref="Sidekick.MVVM.Models.PageableCollectionBase{T}" />
   public class InMemoryPageableCollection<T> : PageableCollectionBase<T>
   {
     #region Constructors
 
-    /// <summary>
-    ///   Initializes a new instance of the <see cref="InMemoryPageableCollection{T}" /> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="InMemoryPageableCollection{T}" /> class.</summary>
     /// <param name="allObjects">All objects.</param>
     public InMemoryPageableCollection(IEnumerable<T> allObjects = null)
     {
       AllObjects = new FastObservableCollection<T>(allObjects);
     }
 
-    /// <summary>
-    ///   Initializes a new instance of the <see cref="InMemoryPageableCollection{T}" /> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="InMemoryPageableCollection{T}" /> class.</summary>
     /// <param name="allObjects">All objects.</param>
     /// <param name="pageSize">Size of the page.</param>
     public InMemoryPageableCollection(IEnumerable<T> allObjects, int pageSize) : base(pageSize)
@@ -64,18 +58,14 @@ namespace Sidekick.MVVM.Models
 
     #region Properties
 
-    /// <summary>
-    ///   Total page count (total item count / page size).
-    /// </summary>
+    /// <summary>Total page count (total item count / page size).</summary>
     public override int TotalPageCount
       =>
       AllObjects != null && PageSize > 0
         ? (int)Math.Ceiling(AllObjects.Count / (float)PageSize)
         : 0;
 
-    /// <summary>
-    ///   Holds objects to page
-    /// </summary>
+    /// <summary>Holds objects to page</summary>
     protected FastObservableCollection<T> AllObjects { get; set; }
 
     #endregion
@@ -84,9 +74,7 @@ namespace Sidekick.MVVM.Models
 
     #region Methods
 
-    /// <summary>
-    ///   Removes an item from collection/store.
-    /// </summary>
+    /// <summary>Removes an item from collection/store.</summary>
     /// <param name="item">Item to remove</param>
     /// <returns></returns>
     public override Task<bool> RemoveAsync(T item)
@@ -94,9 +82,7 @@ namespace Sidekick.MVVM.Models
       return DoRemoveAsync(() => RemoveFromList(item));
     }
 
-    /// <summary>
-    ///   Removes items from collection/store.
-    /// </summary>
+    /// <summary>Removes items from collection/store.</summary>
     /// <param name="items">Items to remove</param>
     /// <returns></returns>
     public override Task<bool> RemoveAsync(IEnumerable<T> items)
@@ -104,9 +90,7 @@ namespace Sidekick.MVVM.Models
       return DoRemoveAsync(() => RemoveFromList(items));
     }
 
-    /// <summary>
-    ///   Add an item to collection/store.
-    /// </summary>
+    /// <summary>Add an item to collection/store.</summary>
     /// <param name="item">Item to add</param>
     /// <returns></returns>
     public override Task<bool> AddAsync(T item)
@@ -114,9 +98,7 @@ namespace Sidekick.MVVM.Models
       return DoAddAsync(() => AddToList(item));
     }
 
-    /// <summary>
-    ///   Add items to collection/store.
-    /// </summary>
+    /// <summary>Add items to collection/store.</summary>
     /// <param name="items">Items to add</param>
     /// <returns></returns>
     public override Task<bool> AddAsync(IEnumerable<T> items)
@@ -124,15 +106,14 @@ namespace Sidekick.MVVM.Models
       return DoAddAsync(() => AddToList(items));
     }
 
-    /// <summary>
-    ///   Update page item according to current page.
-    /// </summary>
+    /// <summary>Update page item according to current page.</summary>
     /// <returns></returns>
     public override Task UpdateCurrentPageItemsAsync()
     {
       int skip = (CurrentPage - 1) * PageSize;
 
-      ((ICollection<T>)CurrentPageItems).ReplaceRange(AllObjects.Skip(skip).Take(PageSize));
+      using (CurrentPageItems.SuspendChangeNotifications())
+        ((ICollection<T>)CurrentPageItems).ReplaceRange(AllObjects.Skip(skip).Take(PageSize));
 
       return TaskConstants.Completed;
     }
@@ -141,18 +122,27 @@ namespace Sidekick.MVVM.Models
     // 
     // Allows to override Add/Remove behavior to add features (such as DB)
 
+    /// <summary>Removes item from list synchronously.</summary>
+    /// <param name="item">The item.</param>
+    /// <returns></returns>
     protected Task<bool> RemoveFromList(T item)
     {
       AllObjects.Remove(item);
       return TaskConstants.BooleanTrue;
     }
 
+    /// <summary>Removes items from list synchronously.</summary>
+    /// <param name="items">The items.</param>
+    /// <returns></returns>
     protected Task<bool> RemoveFromList(IEnumerable<T> items)
     {
       AllObjects.RemoveItems(items);
       return TaskConstants.BooleanTrue;
     }
 
+    /// <summary>Adds item to list synchronously.</summary>
+    /// <param name="item">The item.</param>
+    /// <returns></returns>
     protected Task<bool> AddToList(T item)
     {
       int insertPosition = (CurrentPage - 1) * PageSize;
@@ -162,6 +152,9 @@ namespace Sidekick.MVVM.Models
       return TaskConstants.BooleanTrue;
     }
 
+    /// <summary>Adds items to list synchronously.</summary>
+    /// <param name="items">The items.</param>
+    /// <returns></returns>
     protected Task<bool> AddToList(IEnumerable<T> items)
     {
       int insertPosition = (CurrentPage - 1) * PageSize;

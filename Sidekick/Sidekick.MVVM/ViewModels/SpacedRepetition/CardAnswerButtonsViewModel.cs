@@ -34,6 +34,10 @@ namespace Sidekick.MVVM.ViewModels.SpacedRepetition
   {
     #region Constructors
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CardAnswerButtonsViewModel"/> class.
+    /// </summary>
+    /// <param name="gradeInfos">The grade infos.</param>
     public CardAnswerButtonsViewModel([NotNull] GradeInfo[] gradeInfos)
       : base(false)
     {
@@ -48,8 +52,14 @@ namespace Sidekick.MVVM.ViewModels.SpacedRepetition
 
     #region Properties
 
+    /// <summary>
+    /// Gets or sets the grade infos.
+    /// </summary>
     public GradeInfo[] GradeInfos { get; set; }
 
+    /// <summary>
+    /// Gets or sets the answer command.
+    /// </summary>
     public ICatelCommand AnswerCommand { get; set; }
 
     #endregion
@@ -58,7 +68,7 @@ namespace Sidekick.MVVM.ViewModels.SpacedRepetition
 
     #region Methods
 
-    public void OnAnswerCommandExecute() { }
+    private void OnAnswerCommandExecute() { }
 
     #endregion
   }

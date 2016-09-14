@@ -27,7 +27,7 @@ namespace Sidekick.Windows.Services.Initialization
   using Sidekick.Windows.Services.Interfaces;
 
   /// <summary>
-  ///   Initial setup of application settings
+  ///   Initial setup of application settings.
   /// </summary>
   /// <seealso cref="Sidekick.Windows.Services.Interfaces.IConfigurationInitializationService" />
   internal class ConfigurationInitializationService : IConfigurationInitializationService
@@ -42,6 +42,10 @@ namespace Sidekick.Windows.Services.Initialization
 
     #region Constructors
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ConfigurationInitializationService"/> class.
+    /// </summary>
+    /// <param name="configurationService">The configuration service.</param>
     public ConfigurationInitializationService(
       [NotNull] IConfigurationService configurationService)
     {
@@ -50,10 +54,11 @@ namespace Sidekick.Windows.Services.Initialization
 
     #endregion
 
-
+    
 
     #region Methods
 
+    /// <summary>Creates default settings value if required.</summary>
     public void Initialize()
     {
       // Theme

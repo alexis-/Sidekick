@@ -35,15 +35,14 @@ namespace Sidekick.SpacedRepetition.Models
     /// <summary>
     ///   Dismisses card and postpone review to next day.
     /// </summary>
-    /// <param name="db">The database.</param>
-    public async Task DismissAsync(IDatabaseAsync db)
+    public CardAction Dismiss()
     {
       MiscState = MiscState | CardMiscStateFlag.Dismissed;
 
       // TODO: If card is overdue, interval bonus is lost
       Due = Math.Max(Due, DateTimeExtensions.Tomorrow.ToUnixTimestamp());
 
-      await db.UpdateAsync(this).ConfigureAwait(false);
+      return CardAction.Dismiss;
     }
 
     /// <summary>
@@ -107,33 +106,6 @@ namespace Sidekick.SpacedRepetition.Models
         PracticeState = CardPracticeState.Deleted;
 
       return cardAction;
-    }
-
-    /// <summary>
-    ///   Answers current card with specified grade and calculate outcomes.
-    ///   Modifications are saved to database.
-    /// </summary>
-    /// <param name="grade">The grade.</param>
-    /// <param name="db">Database instance</param>
-    public async Task AnswerAsync(Grade grade, IDatabaseAsync db)
-    {
-      CardAction cardAction = Answer(grade);
-
-      if (db != null)
-        switch (cardAction)
-        {
-          case CardAction.Delete:
-            await db.DeleteAsync<Card>(Id).ConfigureAwait(false);
-            break;
-
-          case CardAction.Update:
-            await db.UpdateAsync(this).ConfigureAwait(false);
-            break;
-
-          default:
-            throw new InvalidOperationException(
-              "Card.Answer ended up in an invalid Card Action state.");
-        }
     }
 
     /// <summary>

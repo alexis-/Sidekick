@@ -26,8 +26,8 @@ namespace Sidekick.Windows.Services.Database
   using System.Reflection;
 
   using Catel.Data;
-  using Catel.IoC;
   using Catel.IO;
+  using Catel.IoC;
 
   using Orc.FilterBuilder.Models;
 
@@ -38,9 +38,7 @@ namespace Sidekick.Windows.Services.Database
   using SQLite.Net.Bridge;
   using SQLite.Net.Platform.Win32;
 
-  /// <summary>
-  ///   Database class.
-  /// </summary>
+  /// <summary>Database class.</summary>
   /// <seealso cref="SQLite.Net.Bridge.SQLiteConnectionWithLockBridge" />
   public class DatabaseService : SQLiteConnectionWithLockBridge
   {
@@ -54,9 +52,7 @@ namespace Sidekick.Windows.Services.Database
 
     #region Constructors
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="DatabaseService"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="DatabaseService" /> class.</summary>
     public DatabaseService()
       : base(
         new SQLitePlatformWin32(), CreateOrOpenDatabase(), new SidekickColumnProvider(),
@@ -91,7 +87,7 @@ namespace Sidekick.Windows.Services.Database
       if (type == typeof(Card))
       {
         CollectionConfig config = null; // TODO: Load config
-        //ServiceLocator.Default.ResolveType<CollectionConfig>();
+        // ServiceLocator.Default.ResolveType<CollectionConfig>();
 
         return new Card(config ?? CollectionConfig.Default);
       }

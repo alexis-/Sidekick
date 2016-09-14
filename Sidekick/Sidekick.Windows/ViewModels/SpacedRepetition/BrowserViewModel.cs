@@ -22,6 +22,7 @@
 namespace Sidekick.Windows.ViewModels.SpacedRepetition
 {
   using Catel.IoC;
+  using Catel.Messaging;
   using Catel.MVVM;
 
   using Orc.FilterBuilder.Models;
@@ -49,15 +50,17 @@ namespace Sidekick.Windows.ViewModels.SpacedRepetition
     #region Constructors
 
     /// <summary>
-    ///   Initializes a new instance of the <see cref="BrowserViewModel" /> class.
-    ///   TODO: BrowserQueryBuilder w/ buttons, preview, ...
+    /// Initializes a new instance of the <see cref="BrowserViewModel" /> class.
     /// </summary>
-    public BrowserViewModel()
+    /// <param name="mediator">The mediator.</param>
+    public BrowserViewModel(IMessageMediator mediator)
     {
       _browserQueryViewerViewModel =
         TypeFactory.Default.CreateInstance<BrowserQueryViewerViewModel>();
 
       CurrentModel = _browserQueryViewerViewModel;
+
+      mediator.Register<SimpleMessage>(this, OnMessageReceived);
     }
 
     #endregion
@@ -93,8 +96,14 @@ namespace Sidekick.Windows.ViewModels.SpacedRepetition
         case "EditQuery":
           ShowQueryBuilder(commandParameter as FilterScheme);
           break;
+      }
+    }
 
-        case "QueryBuilderDone":
+    private void OnMessageReceived(SimpleMessage msg)
+    {
+      switch (msg.Data)
+      {
+        case BrowserQueryBuilderViewModel.MessageDone:
           CurrentModel = _browserQueryViewerViewModel;
           break;
       }

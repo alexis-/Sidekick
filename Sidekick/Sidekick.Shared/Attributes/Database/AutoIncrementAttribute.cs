@@ -20,12 +20,14 @@
 // THE SOFTWARE.
 //
 
-using System;
-
 namespace Sidekick.Shared.Attributes.Database
 {
-    [AttributeUsage(AttributeTargets.Property)]
-    public class AutoIncrementAttribute : Attribute
-    {
-    }
+  using System;
+
+  /// <summary>
+  ///   Auto Increment primary key.
+  /// </summary>
+  /// <seealso cref="System.Attribute" />
+  [AttributeUsage(AttributeTargets.Property)]
+  public class AutoIncrementAttribute : Attribute { }
 }

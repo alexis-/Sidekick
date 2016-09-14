@@ -21,12 +21,28 @@
 
 namespace Sidekick.SpacedRepetition.Const
 {
+  /// <summary>Describe the grading rated by user during a card review.</summary>
   public struct Grade
   {
+    //
+    // Grades
+
+    /// <summary>Grade values</summary>
+    public const int Dismiss = -1,
+                     FailSevere = 0,
+                     FailMedium = 1,
+                     Fail = 2,
+                     Hard = 3,
+                     Good = 4,
+                     Easy = 5;
+
     //
     // Attribute & Constructor
     private readonly int _value;
 
+
+    /// <summary>Initializes a new instance of the <see cref="Grade" /> struct.</summary>
+    /// <param name="grade">The grade value.</param>
     private Grade(int grade)
     {
       _value = grade;
@@ -34,41 +50,59 @@ namespace Sidekick.SpacedRepetition.Const
 
 
     //
-    // Grades
-
-    public const int FailSevere = 0,
-                     FailMedium = 1,
-                     Fail = 2,
-                     Hard = 3,
-                     Good = 4,
-                     Easy = 5;
-
-
-    //
     // Core methods
 
+    /// <summary>
+    ///   Determines whether the specified <see cref="System.Object" />, is equal to this
+    ///   instance.
+    /// </summary>
+    /// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
+    /// <returns>
+    ///   <c>true</c> if the specified <see cref="System.Object" /> is equal to this instance;
+    ///   otherwise, <c>false</c>.
+    /// </returns>
     public override bool Equals(object obj)
     {
       Grade otherObj = (Grade)obj;
 
-      return otherObj._value == this._value;
+      return otherObj._value == _value;
     }
 
+    /// <summary>Equalses the specified other.</summary>
+    /// <param name="other">The other.</param>
+    /// <returns></returns>
     public bool Equals(Grade other)
     {
       return _value == other._value;
     }
 
+    /// <summary>Returns a hash code for this instance.</summary>
+    /// <returns>
+    ///   A hash code for this instance, suitable for use in hashing algorithms and data
+    ///   structures like a hash table.
+    /// </returns>
     public override int GetHashCode()
     {
       return _value.GetHashCode();
     }
 
+    /// <summary>
+    ///   Performs an implicit conversion from <see cref="Grade" /> to
+    ///   <see cref="System.Int32" />.
+    /// </summary>
+    /// <param name="grade">The grade.</param>
+    /// <returns>The result of the conversion.</returns>
     public static implicit operator int(Grade grade)
     {
       return grade._value;
     }
 
+    /// <summary>
+    ///   Performs an implicit conversion from <see cref="System.Int32" /> to
+    ///   <see cref="Grade" />.
+    /// </summary>
+    /// <param name="grade">The grade.</param>
+    /// <returns>The result of the conversion.</returns>
     public static implicit operator Grade(int grade)
     {
       return new Grade(grade);

@@ -19,19 +19,24 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using Catel.Data;
-using Sidekick.Shared.Attributes.Database;
-using Sidekick.Shared.Extensions;
-
 namespace Sidekick.SpacedRepetition.Models
 {
+  using System;
+  using System.Collections.Generic;
+
+  using Catel.Data;
+
+  using Sidekick.Shared.Attributes.Database;
+  using Sidekick.Shared.Extensions;
+
+  /// <summary>Note model for Spaced Repetition system.</summary>
+  /// <seealso cref="Catel.Data.ModelBase" />
   [Table("Notes")]
   public class Note : ModelBase
   {
     #region Constructors
 
+    /// <summary>Initializes a new instance of the <see cref="Note" /> class.</summary>
     public Note()
     {
       Id = DateTime.Now.UnixTimestamp();
@@ -41,20 +46,34 @@ namespace Sidekick.SpacedRepetition.Models
 
     #endregion
 
+
+
     #region Properties
 
+    /// <summary>
+    ///   Database identifier, date time of creation time - Unix timestamp. Database
+    ///   field.
+    /// </summary>
     [PrimaryKey]
     public int Id { get; set; }
 
+    /// <summary>Last modified date time - Unix timestamp Database field.</summary>
     public int LastModified { get; set; }
 
+    /// <summary>Associated cards.</summary>
     [Ignore]
     public List<Card> Cards { get; set; }
 
     #endregion
 
+
+
     #region Methods
 
+    /// <summary>Creates a card associated with this note.</summary>
+    /// <param name="config">The configuration.</param>
+    /// <param name="data">The data.</param>
+    /// <returns></returns>
     public Card CreateCard(CollectionConfig config, string data)
     {
       Card card = new Card(config, Id, data);

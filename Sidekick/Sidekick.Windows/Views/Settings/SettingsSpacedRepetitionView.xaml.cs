@@ -20,17 +20,17 @@
 // DEALINGS IN THE SOFTWARE.
 
 
-using Catel.Windows.Controls;
-
 namespace Sidekick.Windows.Views.Settings
 {
-  /// <summary>
-  /// Interaction logic for SettingsSpacedRepetitionView.xaml
-  /// </summary>
+  using Catel.Windows.Controls;
+
+  /// <summary>Interaction logic for SettingsSpacedRepetitionView.xaml</summary>
   public partial class SettingsSpacedRepetitionView : UserControl
   {
     #region Constructors
 
+    /// <summary>Initializes a new instance of the <see cref="SettingsSpacedRepetitionView" /> class.</summary>
+    /// <remarks>This method is required for design time support.</remarks>
     public SettingsSpacedRepetitionView()
     {
       InitializeComponent();

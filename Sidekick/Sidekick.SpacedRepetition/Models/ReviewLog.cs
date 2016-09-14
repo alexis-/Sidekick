@@ -19,24 +19,37 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using Sidekick.Shared.Attributes.Database;
-using Sidekick.SpacedRepetition.Const;
-
 namespace Sidekick.SpacedRepetition.Models
 {
+  using Sidekick.Shared.Attributes.Database;
+  using Sidekick.SpacedRepetition.Const;
+
+  /// <summary>
+  ///   Describes a single card review
+  /// </summary>
   [Table("ReviewsLogs")]
   public class ReviewLog
   {
     #region Constructors
 
-    public ReviewLog()
-    {
-    }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ReviewLog"/> class.
+    /// </summary>
+    public ReviewLog() { }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ReviewLog"/> class.
+    /// </summary>
+    /// <param name="id">Creation timestamp.</param>
+    /// <param name="cardId">The card identifier.</param>
+    /// <param name="lastDue">The last due.</param>
+    /// <param name="lastState">The last state.</param>
+    /// <param name="lastInterval">The last interval.</param>
+    /// <param name="lastEFactor">The last e factor.</param>
+    /// <param name="evalTime">The eval time.</param>
     public ReviewLog(
-      int id, int cardId,
-      int lastDue, CardPracticeState lastState,
-      int lastInterval, float lastEFactor)
+      int id, int cardId, int lastDue, CardPracticeState lastState, int lastInterval,
+      float lastEFactor, int evalTime)
     {
       Id = id;
       CardId = cardId;
@@ -44,17 +57,28 @@ namespace Sidekick.SpacedRepetition.Models
       LastState = lastState;
       LastInterval = lastInterval;
       LastEFactor = lastEFactor;
+      EvalTime = evalTime;
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ReviewLog" /> class.
+    /// </summary>
+    /// <param name="id">Creation timestamp.</param>
+    /// <param name="cardId">The card identifier.</param>
+    /// <param name="grade">The grade.</param>
+    /// <param name="lastDue">The last due.</param>
+    /// <param name="newDue">The new due.</param>
+    /// <param name="lastState">The last state.</param>
+    /// <param name="newState">The new state.</param>
+    /// <param name="lastInterval">The last interval.</param>
+    /// <param name="newInterval">The new interval.</param>
+    /// <param name="lastEFactor">The last e factor.</param>
+    /// <param name="newEFactor">The new e factor.</param>
+    /// <param name="evalTime">The eval time.</param>
     public ReviewLog(
-      int id, int cardId,
-      Grade grade,
-      int lastDue, int newDue,
-      CardPracticeState lastState,
-      CardPracticeState newState,
-      int lastInterval, int newInterval,
-      float lastEFactor, float newEFactor,
-      int evalTime)
+      int id, int cardId, Grade grade, int lastDue, int newDue, CardPracticeState lastState,
+      CardPracticeState newState, int lastInterval, int newInterval, float lastEFactor,
+      float newEFactor, int evalTime)
     {
       Id = id;
       CardId = cardId;
@@ -71,6 +95,8 @@ namespace Sidekick.SpacedRepetition.Models
     }
 
     #endregion
+
+
 
     #region Properties
 
@@ -92,19 +118,18 @@ namespace Sidekick.SpacedRepetition.Models
 
     #endregion
 
+
+
     #region Methods
 
     public void CompleteReview(
-      Grade grade,
-      int newDue, CardPracticeState newState, int newInterval,
-      float newEFactor, int evalTime)
+      Grade grade, int newDue, CardPracticeState newState, int newInterval, float newEFactor)
     {
       Grade = grade;
       NewDue = newDue;
       NewState = newState;
       NewInterval = newInterval;
       NewEFactor = newEFactor;
-      EvalTime = evalTime;
     }
 
     #endregion

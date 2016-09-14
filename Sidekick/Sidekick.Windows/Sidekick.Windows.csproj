@@ -136,7 +136,9 @@
       <SubType>Code</SubType>
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Constants.cs" />
+    <Compile Include="Constants.cs">
+      <ExcludeFromStyleCop>true</ExcludeFromStyleCop>
+    </Compile>
     <Compile Include="Converters\TabSizeConverter.cs" />
     <Compile Include="Models\CollectionQuery.cs" />
     <Compile Include="Models\CollectionQueries.cs" />

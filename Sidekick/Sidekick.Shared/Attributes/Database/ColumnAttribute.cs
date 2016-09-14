@@ -20,18 +20,35 @@
 // THE SOFTWARE.
 //
 
-using System;
-
 namespace Sidekick.Shared.Attributes.Database
 {
-    [AttributeUsage(AttributeTargets.Property)]
-    public class ColumnAttribute : Attribute
-    {
-        public ColumnAttribute(string name)
-        {
-            Name = name;
-        }
+  using System;
 
-        public string Name { get; set; }
+  /// <summary>
+  ///   Sets column name.
+  /// </summary>
+  /// <seealso cref="System.Attribute" />
+  [AttributeUsage(AttributeTargets.Property)]
+  public class ColumnAttribute : Attribute
+  {
+    #region Constructors
+
+    /// <summary>Initializes a new instance of the <see cref="ColumnAttribute"/> class.</summary>
+    /// <param name="name">The name.</param>
+    public ColumnAttribute(string name)
+    {
+      Name = name;
     }
+
+    #endregion
+
+
+
+    #region Properties
+
+    /// <summary>Column name.</summary>
+    public string Name { get; set; }
+
+    #endregion
+  }
 }

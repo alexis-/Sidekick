@@ -21,13 +21,13 @@
 
 namespace Sidekick.Windows.ViewModels.SpacedRepetition
 {
-  using System.Collections.Generic;
   using System.Collections.ObjectModel;
   using System.Linq;
   using System.Threading.Tasks;
   using System.Windows.Input;
 
   using Catel;
+  using Catel.IoC;
   using Catel.MVVM;
   using Catel.Services;
 
@@ -37,17 +37,16 @@ namespace Sidekick.Windows.ViewModels.SpacedRepetition
   using Sidekick.Windows.Models;
   using Sidekick.Windows.Services;
 
-  /// <summary>
-  ///   Link CollectionDataGridView[Model], queries and other controls
-  /// </summary>
+  /// <summary>Link CollectionDataGridView[Model], queries and other controls</summary>
   /// <seealso cref="Catel.MVVM.ViewModelBase" />
   public class BrowserQueryViewerViewModel : ViewModelBase
   {
     #region Fields
 
+    private readonly CollectionQueryManagerService _collectionQueryManagerService;
+
     private readonly IDatabaseAsync _db;
     private readonly IPleaseWaitService _pleaseWaitService;
-    private readonly CollectionQueryManagerService _collectionQueryManagerService;
 
     #endregion
 
@@ -55,22 +54,26 @@ namespace Sidekick.Windows.ViewModels.SpacedRepetition
 
     #region Constructors
 
-    /// <summary>
-    ///   Initializes a new instance of the <see cref="BrowserQueryViewerViewModel" /> class.
-    /// </summary>
-    /// <param name="db">The database.</param>
+    /// <summary>Initializes a new instance of the <see cref="BrowserQueryViewerViewModel" /> class.</summary>
     /// <param name="pleaseWaitService">The please wait service.</param>
-    /// <param name="collectionQueryManagerService">Collection query manager.</param>
+    /// <param name="collectionQueryManagerService">The collection query manager service.</param>
     public BrowserQueryViewerViewModel(
       IPleaseWaitService pleaseWaitService,
-      CollectionQueryManagerService collectionQueryManagerService)
-      : base(false)
+      CollectionQueryManagerService collectionQueryManagerService) : base(false)
     {
       Argument.IsNotNull(() => pleaseWaitService);
       Argument.IsNotNull(() => collectionQueryManagerService);
-      
+
       _pleaseWaitService = pleaseWaitService;
       _collectionQueryManagerService = collectionQueryManagerService;
+      
+      CollectionQueries = _collectionQueryManagerService.CollectionQueries;
+      SelectedQuery = Queries.FirstOrDefault();
+
+      CollectionViewModel =
+        TypeFactory.Default.CreateInstanceWithParametersAndAutoCompletion(
+                     typeof(CollectionDataGridViewModel), SelectedQuery) as
+          CollectionDataGridViewModel;
 
       AddQueryCommand = new Command(OnAddQueryCommandExecute, tag: "AddQuery");
     }
@@ -81,26 +84,21 @@ namespace Sidekick.Windows.ViewModels.SpacedRepetition
 
     #region Properties
 
-    /// <summary>
-    ///   All created queries.
-    /// </summary>
+    /// <summary>All created queries.</summary>
     [Model]
     public CollectionQueries CollectionQueries { get; set; }
 
-    /// <summary>
-    ///   Available filter queries.
-    /// </summary>
+    /// <summary>Available filter queries.</summary>
     [ViewModelToModel("CollectionQueries", "Queries")]
     public ObservableCollection<CollectionQuery> Queries { get; set; }
 
-    /// <summary>
-    ///   Current filter query used to filter content displayed in the DataGrid.
-    /// </summary>
-    public FilterScheme SelectedQuery { get; set; }
+    /// <summary>Current filter query used to filter content displayed in the DataGrid.</summary>
+    public CollectionQuery SelectedQuery { get; set; }
 
-    /// <summary>
-    ///   Displays query builder view on Add Query button press.
-    /// </summary>
+    /// <summary>Gets or sets the collection view model.</summary>
+    public CollectionDataGridViewModel CollectionViewModel { get; set; }
+
+    /// <summary>Displays query builder view on Add Query button press.</summary>
     public ICommand AddQueryCommand { get; set; }
 
     #endregion
@@ -109,20 +107,13 @@ namespace Sidekick.Windows.ViewModels.SpacedRepetition
 
     #region Methods
 
-    /// <inheritdoc />
-    protected override async Task InitializeAsync()
-    {
-      _pleaseWaitService.Push("Loading");
-
-      await _collectionQueryManagerService.InitializeAsync().ConfigureAwait(false);
-
-      CollectionQueries = _collectionQueryManagerService.CollectionQueries;
-      SelectedQuery = Queries.FirstOrDefault();
-
-      _pleaseWaitService.Pop();
-    }
-
     private void OnAddQueryCommandExecute() { }
+
+    private void OnSelectedQueryChanged()
+    {
+      if (CollectionViewModel != null)
+        CollectionViewModel.Query = SelectedQuery;
+    }
 
     #endregion
   }

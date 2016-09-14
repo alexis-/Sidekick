@@ -24,10 +24,22 @@ namespace Sidekick.Shared.Extensions
   using System;
   using System.Collections.Generic;
 
+  /// <summary>
+  /// Extension methods for <see cref="Dictionary{TKey,TValue}"/>
+  /// </summary>
   public static class DictionaryExtensions
   {
     #region Methods
 
+    /// <summary>
+    /// Gets the value if it exists in the dictionary, adds it otherwise
+    /// </summary>
+    /// <typeparam name="TKey">The type of the key.</typeparam>
+    /// <typeparam name="TValue">The type of the value.</typeparam>
+    /// <param name="dictionary">The dictionary.</param>
+    /// <param name="key">The key.</param>
+    /// <param name="value">The value.</param>
+    /// <returns></returns>
     public static TValue GetOrAdd<TKey, TValue>(
       this Dictionary<TKey, TValue> dictionary, TKey key, TValue value)
     {
@@ -43,6 +55,15 @@ namespace Sidekick.Shared.Extensions
       return retValue;
     }
 
+    /// <summary>
+    /// Gets the value if it exists in the dictionary, adds it otherwise
+    /// </summary>
+    /// <typeparam name="TKey">The type of the key.</typeparam>
+    /// <typeparam name="TValue">The type of the value.</typeparam>
+    /// <param name="dictionary">The dictionary.</param>
+    /// <param name="key">The key.</param>
+    /// <param name="valueFunc">The value provider function.</param>
+    /// <returns></returns>
     public static TValue GetOrAdd<TKey, TValue>(
       this Dictionary<TKey, TValue> dictionary, TKey key, Func<TValue> valueFunc)
     {
