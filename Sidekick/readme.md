@@ -12,6 +12,7 @@ All sidekick-specific modules are located in this directory.
   * [Sidekick.Knowledge](#) => *Knowledge Repository System (KRS) implementation*
   * [Sidekick.KnowledgeBinding](#) => *SRS <-> KRS weaving*
   * [Sidekick.Self](#) => *Tool-suite relating to quantifying, bettering oneself*)
+  * [Sidekick.Document](#) => *Document/Note taking, web browser clipping plugin*
 * Shared (UI)
   * [Sidekick.MVVM](Sidekick/Sidekick.MVVM) => *MVVM-pattern-related code - View models, etc.*
   * [Sidekick.WPF](Sidekick/Sidekick.WPF) => *WPF-related code - controls, method extensions, etc.*
