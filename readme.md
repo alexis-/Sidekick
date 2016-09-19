@@ -1,0 +1,2 @@
+## Sidekick - Self-growth companion
+
