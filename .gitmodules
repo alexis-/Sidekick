@@ -1,10 +1,10 @@
-[submodule "libs/SQLite.Net-PCL"]
-	path = libs/SQLite.Net-PCL
+[submodule "Libs/SQLite.Net-PCL"]
+	path = Libs/SQLite.Net-PCL
 	url = https://github.com/alexis-/SQLite.Net-PCL.git
-[submodule "libs/Orc.FilterBuilder"]
-	path = libs/Orc.FilterBuilder
+[submodule "Libs/Orc.FilterBuilder"]
+	path = Libs/Orc.FilterBuilder
 	url = https://github.com/alexis-/Orc.FilterBuilder.git
-[submodule "libs/Stubble"]
-	path = libs/Stubble
+[submodule "Libs/Stubble"]
+	path = Libs/Stubble
 	url = https://github.com/alexis-/Stubble.git
 	branch = dev
