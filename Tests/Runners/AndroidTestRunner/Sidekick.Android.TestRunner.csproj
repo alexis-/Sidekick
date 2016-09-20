@@ -185,23 +185,23 @@
     <Compile Include="MainActivity.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Libs\SQLite.Net-PCL\src\SQLite.Net.Platform.XamarinAndroid\SQLite.Net.Platform.XamarinAndroid.csproj">
+    <ProjectReference Include="..\..\..\libs\SQLite.Net-PCL\src\SQLite.Net.Platform.XamarinAndroid\SQLite.Net.Platform.XamarinAndroid.csproj">
       <Project>{219700f0-5444-4250-87d6-0551b39ca402}</Project>
       <Name>SQLite.Net.Platform.XamarinAndroid</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Libs\SQLite.Net-PCL\src\SQLite.Net\SQLite.Net.csproj">
+    <ProjectReference Include="..\..\..\libs\SQLite.Net-PCL\src\SQLite.Net\SQLite.Net.csproj">
       <Project>{4971d437-0694-4297-a8cc-146ce08c3bd9}</Project>
       <Name>SQLite.Net</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Sidekick\Sidekick.Shared\Sidekick.Shared.csproj">
+    <ProjectReference Include="..\..\..\src\Sidekick.Shared\Sidekick.Shared.csproj">
       <Project>{2b6bb05d-c1e6-42fd-8837-7a20860bbc11}</Project>
       <Name>Sidekick.Shared</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Sidekick\Sidekick.SpacedRepetition\Sidekick.SpacedRepetition.csproj">
+    <ProjectReference Include="..\..\..\src\Sidekick.SpacedRepetition\Sidekick.SpacedRepetition.csproj">
       <Project>{863d9959-01cd-490b-bbc2-62966bca89fc}</Project>
       <Name>Sidekick.SpacedRepetition</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Sidekick\SQLite.Net.Bridge\SQLite.Net.Bridge.csproj">
+    <ProjectReference Include="..\..\..\src\SQLite.Net.Bridge\SQLite.Net.Bridge.csproj">
       <Project>{97a6601d-f0c7-47ed-ad6b-7a15e623422d}</Project>
       <Name>SQLite.Net.Bridge</Name>
     </ProjectReference>

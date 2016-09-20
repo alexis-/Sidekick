@@ -103,23 +103,23 @@
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Libs\SQLite.Net-PCL\src\SQLite.Net.Platform.Win32\SQLite.Net.Platform.Win32.csproj">
+    <ProjectReference Include="..\..\..\libs\SQLite.Net-PCL\src\SQLite.Net.Platform.Win32\SQLite.Net.Platform.Win32.csproj">
       <Project>{03799ad1-9fcf-48cb-8e6e-b233df583b10}</Project>
       <Name>SQLite.Net.Platform.Win32</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Libs\SQLite.Net-PCL\src\SQLite.Net\SQLite.Net.csproj">
+    <ProjectReference Include="..\..\..\libs\SQLite.Net-PCL\src\SQLite.Net\SQLite.Net.csproj">
       <Project>{4971d437-0694-4297-a8cc-146ce08c3bd9}</Project>
       <Name>SQLite.Net</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Sidekick\Sidekick.SpacedRepetition\Sidekick.SpacedRepetition.csproj">
+    <ProjectReference Include="..\..\..\src\Sidekick.SpacedRepetition\Sidekick.SpacedRepetition.csproj">
       <Project>{863d9959-01cd-490b-bbc2-62966bca89fc}</Project>
       <Name>Sidekick.SpacedRepetition</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Sidekick\Sidekick.Shared\Sidekick.Shared.csproj">
+    <ProjectReference Include="..\..\..\src\Sidekick.Shared\Sidekick.Shared.csproj">
       <Project>{2b6bb05d-c1e6-42fd-8837-7a20860bbc11}</Project>
       <Name>Sidekick.Shared</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Sidekick\SQLite.Net.Bridge\SQLite.Net.Bridge.csproj">
+    <ProjectReference Include="..\..\..\src\SQLite.Net.Bridge\SQLite.Net.Bridge.csproj">
       <Project>{97A6601D-F0C7-47ED-AD6B-7A15E623422D}</Project>
       <Name>SQLite.Net.Bridge</Name>
     </ProjectReference>
