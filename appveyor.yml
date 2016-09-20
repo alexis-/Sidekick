@@ -5,6 +5,7 @@ install:
 
 before_build:
   - nuget restore Sidekick.OSS.sln
+  - appveyor-retry dotnet restore -v Minimal
 
 cache:
   - packages -> **\packages.config
