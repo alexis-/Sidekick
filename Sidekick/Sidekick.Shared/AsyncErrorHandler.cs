@@ -42,7 +42,7 @@ namespace Sidekick.Shared
     {
       LogTo.Error(exception, "Async exception caught through AsyncErrorHandler");
 
-#if DEBUG
+#if DEBUG && false
       SynchronizationContext.Current.Post(RethrowOnMainThread, exception);
 #endif
     }

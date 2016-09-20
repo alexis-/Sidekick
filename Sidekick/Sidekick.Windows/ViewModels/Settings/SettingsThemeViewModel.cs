@@ -83,8 +83,8 @@ namespace Sidekick.Windows.ViewModels.Settings
     {
       _isInitializing = true;
 
-      Themes = ThemeManager.AppThemes;
-      Accents = ThemeManager.Accents;
+      Themes = SidekickThemeManager.AppThemes;
+      Accents = SidekickThemeManager.Accents;
 
       SelectedTheme = _applicationConfigService.Theme;
       SelectedAccent = _applicationConfigService.Accent;

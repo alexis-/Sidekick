@@ -91,6 +91,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Behaviors\ComboBoxWidthFromMaxItemWidthBehavior.cs" />
+    <Compile Include="Controls\DataGridEx.cs" />
     <Compile Include="Controls\FlatIconizableButton.xaml.cs">
       <DependentUpon>FlatIconizableButton.xaml</DependentUpon>
     </Compile>

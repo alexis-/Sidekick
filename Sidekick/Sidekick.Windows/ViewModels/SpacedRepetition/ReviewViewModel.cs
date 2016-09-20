@@ -19,26 +19,26 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-namespace Sidekick.MVVM.ViewModels.SpacedRepetition
+namespace Sidekick.Windows.ViewModels.SpacedRepetition
 {
   using System;
+  using System.Linq;
   using System.Threading.Tasks;
 
+  using Catel;
   using Catel.MVVM;
   using Catel.Services;
 
+  using Sidekick.MVVM.ViewModels;
   using Sidekick.Shared.Interfaces.Database;
-  using Sidekick.SpacedRepetition.Const;
+  using Sidekick.SpacedRepetition.Extensions;
   using Sidekick.SpacedRepetition.Interfaces;
   using Sidekick.SpacedRepetition.Models;
+  using Sidekick.Windows.Services.Interfaces;
 
-  /// <summary>
-  ///   Main Spaced Repetition view's model.
-  ///   Should not be unloaded on view close.
-  /// </summary>
+  /// <summary>Main Spaced Repetition view's model. Should not be unloaded on view close.</summary>
   /// <seealso cref="Catel.MVVM.ViewModelBase" />
-  [InterestedIn(typeof(CardAnswerButtonsViewModel))]
-  public class CollectionViewModel : MainContentViewModelBase
+  public class ReviewViewModel : MainContentViewModelBase
   {
     #region Fields
 
@@ -56,24 +56,34 @@ namespace Sidekick.MVVM.ViewModels.SpacedRepetition
 
     #region Constructors
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="CollectionViewModel"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReviewViewModel" /> class.</summary>
     /// <param name="database">The database.</param>
     /// <param name="spacedRepetition">The spaced repetition.</param>
     /// <param name="languageService">The language service.</param>
     /// <param name="pleaseWaitService">The please wait service.</param>
     /// <param name="messageService">The message service.</param>
-    public CollectionViewModel(
+    /// <param name="commandManager">The command manager.</param>
+    public ReviewViewModel(
       IDatabaseAsync database, ISpacedRepetition spacedRepetition,
       ILanguageService languageService, IPleaseWaitService pleaseWaitService,
-      IMessageService messageService)
+      IMessageService messageService, ICommandManagerEx commandManager)
     {
       _database = database;
       _spacedRepetition = spacedRepetition;
       _languageService = languageService;
       _pleaseWaitService = pleaseWaitService;
       _messageService = messageService;
+
+      AnswerTaskCommand = new TaskCommand<Grade>(
+        OnAnswerExecuteAsync, g => !AnswerTaskCommand.IsExecuting);
+      AnswerKeyPressCommand = new Command<int>(
+        OnAnswerKeyPressExecute,
+        i => i <= ReviewAnswerInfos.Length && !AnswerTaskCommand.IsExecuting);
+
+      foreach (
+        var answerGesture in Commands.SpacedRepetition.CollectionReview.AnswerGestures.Take(5))
+        commandManager.RegisterCommand(
+          answerGesture.Item1, AnswerKeyPressCommand, answerGesture.Item3);
     }
 
     #endregion
@@ -82,16 +92,18 @@ namespace Sidekick.MVVM.ViewModels.SpacedRepetition
 
     #region Properties
 
-    /// <summary>
-    /// Gets or sets the card.
-    /// </summary>
+    /// <summary>Gets or sets the card.</summary>
     [Model]
     public Card Card { get; set; }
 
-    /// <summary>
-    /// Gets or sets the grade infos.
-    /// </summary>
-    public GradeInfo[] GradeInfos { get; set; }
+    /// <summary>Gets or sets the grade infos.</summary>
+    public ReviewAnswerInfo[] ReviewAnswerInfos { get; set; }
+
+    /// <summary>Gets or sets the answer task command.</summary>
+    public TaskCommand<Grade> AnswerTaskCommand { get; set; }
+
+    /// <summary>Gets or sets the answer task command.</summary>
+    public Command<int> AnswerKeyPressCommand { get; set; }
 
     #endregion
 
@@ -100,12 +112,10 @@ namespace Sidekick.MVVM.ViewModels.SpacedRepetition
     #region Methods
 
     /// <summary>
-    ///   Called when Main view's content ViewModel is changing.
-    ///   Allows to interrupt navigation if ongoing work might be lost.
+    ///   Called when Main view's content ViewModel is changing. Allows to interrupt navigation
+    ///   if ongoing work might be lost.
     /// </summary>
-    /// <returns>
-    ///   Whether to continue navigation
-    /// </returns>
+    /// <returns>Whether to continue navigation</returns>
     public override Task<bool> OnContentChange()
     {
       // If a review session is ongoing, prompt user to validate interruption
@@ -137,17 +147,33 @@ namespace Sidekick.MVVM.ViewModels.SpacedRepetition
         DisplayCard();
     }
 
-    /// <inheritdoc />
-    protected override void OnViewModelCommandExecuted(
-      IViewModel viewModel, ICatelCommand command, object commandParameter)
+    private async Task OnAnswerExecuteAsync(Grade grade)
     {
-      // TODO: This is not correct. Button will be enabled and may be pressed several times.
-      if (commandParameter is Grade)
-#pragma warning disable 4014
-        AnswerCardAsync((Grade)commandParameter);
-#pragma warning restore 4014
+      if (await _reviewCollection.AnswerAsync(grade).ConfigureAwait(true))
+        DisplayCard();
 
-      base.OnViewModelCommandExecuted(viewModel, command, commandParameter);
+      else
+        await _messageService.ShowInformationAsync("All cards reviewed.").ConfigureAwait(false);
+    }
+
+    private void OnAnswerKeyPressExecute(int i)
+    {
+      Argument.IsMaximum(() => i, ReviewAnswerInfos.Length);
+      Argument.IsMinimal(() => i, 1);
+
+      AnswerTaskCommand.Execute(ReviewAnswerInfos[i - 1]);
+    }
+
+    private void DisplayCard()
+    {
+      // Get current card
+      Card card = _reviewCollection.Current;
+
+      if (card == null)
+        throw new InvalidOperationException("Current card is NULL.");
+
+      // Get grading options, and display buttons
+      ReviewAnswerInfos = card.ComputeGrades();
     }
 
     private async Task<bool> OnContentChangeAsync()
@@ -165,27 +191,6 @@ namespace Sidekick.MVVM.ViewModels.SpacedRepetition
         _reviewCollection = null;
 
       return messageResult != MessageResult.Cancel;
-    }
-
-    private void DisplayCard()
-    {
-      // Get current card
-      Card card = _reviewCollection.Current;
-
-      if (card == null)
-        throw new InvalidOperationException("Current card is NULL.");
-
-      // Get grading options, and display buttons
-      GradeInfos = card.ComputeGrades();
-    }
-
-    private async Task AnswerCardAsync(Grade grade)
-    {
-      if (await _reviewCollection.AnswerAsync(grade).ConfigureAwait(true))
-        DisplayCard();
-
-      else
-        await _messageService.ShowInformationAsync("All cards reviewed.").ConfigureAwait(false);
     }
 
     #endregion

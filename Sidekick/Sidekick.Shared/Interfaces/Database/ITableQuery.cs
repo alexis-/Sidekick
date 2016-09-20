@@ -34,6 +34,10 @@ namespace Sidekick.Shared.Interfaces.Database
   {
     #region Methods
 
+    ITableQuery<T> AddOrderBy<TValue>(Expression<Func<T, TValue>> orderExpr, bool asc);
+
+    ITableQuery<T> AddOrderBy(string propertyName, bool asc);
+
     object Clone();
 
     int Count();
@@ -55,7 +59,11 @@ namespace Sidekick.Shared.Interfaces.Database
 
     ITableQuery<T> OrderBy<TValue>(Expression<Func<T, TValue>> orderExpr);
 
+    ITableQuery<T> OrderBy(string propertyName);
+
     ITableQuery<T> OrderByDescending<TValue>(Expression<Func<T, TValue>> orderExpr);
+
+    ITableQuery<T> OrderByDescending(string propertyName);
 
     ITableQuery<T> OrderByRand();
 
@@ -69,7 +77,11 @@ namespace Sidekick.Shared.Interfaces.Database
 
     ITableQuery<T> ThenBy<TValue>(Expression<Func<T, TValue>> orderExpr);
 
+    ITableQuery<T> ThenBy(string propertyName);
+
     ITableQuery<T> ThenByDescending<TValue>(Expression<Func<T, TValue>> orderExpr);
+
+    ITableQuery<T> ThenByDescending(string propertyName);
 
     ITableQuery<T> Where(Expression<Func<T, bool>> predExpr);
 

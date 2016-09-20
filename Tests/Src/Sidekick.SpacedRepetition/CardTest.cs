@@ -28,7 +28,7 @@ namespace Sidekick.SpacedRepetition.Tests
   using FluentAssertions;
 
   using Sidekick.Shared.Extensions;
-  using Sidekick.SpacedRepetition.Const;
+  using Sidekick.SpacedRepetition.Extensions;
   using Sidekick.SpacedRepetition.Generators;
   using Sidekick.SpacedRepetition.Models;
 
@@ -58,18 +58,18 @@ namespace Sidekick.SpacedRepetition.Tests
 
       Dictionary<short, int> gradesCount = new Dictionary<short, int>
       {
-        [CardPracticeState.Due] = 4,
-        [CardPracticeState.Learning] = 3,
-        [CardPracticeState.New] = 3
+        [PracticeState.Due] = 4,
+        [PracticeState.Learning] = 3,
+        [PracticeState.New] = 3
       };
 
       for (int i = 0; i < CardCount; i++)
       {
         Card card = cardGenerator.Generate();
 
-        GradeInfo[] grades = card.ComputeGrades();
+        ReviewAnswerInfo[] reviewAnswerInfos = card.ComputeGrades();
 
-        grades.Should().NotBeNull().And.HaveCount(gradesCount[card.PracticeState]);
+        reviewAnswerInfos.Should().NotBeNull().And.HaveCount(gradesCount[card.PracticeState]);
       }
     }
 
@@ -77,7 +77,7 @@ namespace Sidekick.SpacedRepetition.Tests
     public void FailCard()
     {
       Card card = CardGenerator.MakeCard(
-        Config, CardPracticeState.New, DateTime.Now.AddSeconds(60).ToUnixTimestamp(), 2.5f, 1);
+        Config, PracticeState.New, DateTime.Now.AddSeconds(60).ToUnixTimestamp(), 2.5f, 1);
 
       // Ensure setting
       int learningSteps = Config.LearningSteps.Length;
@@ -113,7 +113,7 @@ namespace Sidekick.SpacedRepetition.Tests
     public void LapseCard()
     {
       Card card = CardGenerator.MakeCard(
-        Config, CardPracticeState.Due, DateTime.Now.AddSeconds(60).ToUnixTimestamp(), 2.5f, 1);
+        Config, PracticeState.Due, DateTime.Now.AddSeconds(60).ToUnixTimestamp(), 2.5f, 1);
 
       card.IsDue().Should().Be(true);
 
@@ -166,13 +166,13 @@ namespace Sidekick.SpacedRepetition.Tests
     {
       // In time, 250% ease, 1d ivl
       Card card = CardGenerator.MakeCard(
-        Config, CardPracticeState.Due, DateTime.Now.AddSeconds(60).ToUnixTimestamp(), 2.5f, 1);
+        Config, PracticeState.Due, DateTime.Now.AddSeconds(60).ToUnixTimestamp(), 2.5f, 1);
 
       ReviewIntervalExpectedIntervals(card, 2, 3, 2, 3, 2, 4);
 
       // In time, 250% ease, 2d ivl
       card = CardGenerator.MakeCard(
-        Config, CardPracticeState.Due, DateTime.Now.AddSeconds(60).ToUnixTimestamp(), 2.5f, 2);
+        Config, PracticeState.Due, DateTime.Now.AddSeconds(60).ToUnixTimestamp(), 2.5f, 2);
 
       ReviewIntervalExpectedIntervals(card, 3, 4, 4, 6, 5, 9);
     }

@@ -19,37 +19,23 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System;
-using Sidekick.Shared.Extensions;
-using Sidekick.SpacedRepetition.Const;
 
-namespace Sidekick.SpacedRepetition.Models
+namespace Sidekick.Windows.Views.SpacedRepetition
 {
-  partial class Card
+  using Catel.Windows.Controls;
+
+  /// <summary>Interaction logic for CardView.xaml</summary>
+  public partial class CardView : UserControl
   {
-    #region Methods
+    #region Constructors
 
-    public int ReviewLeftToday()
+    /// <summary>Initializes a new instance of the <see cref="CardView"/> class.</summary>
+    /// <remarks>
+    /// This method is required for design time support.
+    /// </remarks>
+    public CardView()
     {
-      if (Due >= DateTimeExtensions.Tomorrow.ToUnixTimestamp())
-        return 0;
-
-      switch (PracticeState)
-      {
-        case CardPracticeState.New:
-          return 1;
-
-        case CardPracticeState.Due:
-          return 1;
-
-        case CardPracticeState.Deleted: // Leech option
-          return 0;
-      }
-
-      if (IsLearning())
-        return GetLearningStepsLeft();
-
-      throw new InvalidOperationException("Invalid card state");
+      InitializeComponent();
     }
 
     #endregion

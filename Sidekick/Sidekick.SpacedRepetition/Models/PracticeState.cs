@@ -1,4 +1,4 @@
-﻿// 
+// 
 // The MIT License (MIT)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -19,26 +19,60 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-namespace Sidekick.Windows.Views.SpacedRepetition
+namespace Sidekick.SpacedRepetition.Models
 {
-  using Catel.Windows.Controls;
-
-  /// <summary>Interaction logic for CollectionView.xaml</summary>
-  public partial class CollectionView : UserControl
+  /// <summary>
+  ///   Specify card's state - whether due, new, or learning step
+  /// </summary>
+  public struct PracticeState
   {
-    #region Constructors
+    //
+    // Attribute & Constructor
+    private readonly short _value;
 
-    /// <summary>Initializes a new instance of the <see cref="CollectionView"/> class.</summary>
-    /// <remarks>
-    /// This method is required for design time support.
-    /// </remarks>
-    public CollectionView()
+    private PracticeState(short state)
     {
-      InitializeComponent();
-
-      CloseViewModelOnUnloaded = false;
+      _value = state;
     }
 
-    #endregion
+
+    //
+    // States
+
+    public const short Deleted = -1,
+                       Due = 0,
+                       New = 1,
+                       Learning = 2;
+
+
+    //
+    // Core methods
+
+    public override bool Equals(object obj)
+    {
+      PracticeState otherObj = (PracticeState)obj;
+
+      return otherObj._value == this._value;
+    }
+
+    public bool Equals(PracticeState other)
+    {
+      return _value == other._value;
+    }
+
+    public override int GetHashCode()
+    {
+      return _value.GetHashCode();
+    }
+
+    public static implicit operator short(PracticeState state)
+    {
+      return state._value;
+    }
+
+    public static implicit operator PracticeState(short state)
+    {
+      return new PracticeState(state);
+    }
   }
 }

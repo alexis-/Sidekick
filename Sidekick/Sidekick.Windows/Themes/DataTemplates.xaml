@@ -4,7 +4,6 @@
   xmlns:metro="clr-namespace:MahApps.Metro;assembly=MahApps.Metro"
   xmlns:viewModels="clr-namespace:Sidekick.Windows.ViewModels"
   xmlns:views="clr-namespace:Sidekick.Windows.Views"
-  xmlns:mvvmSpacedRepetitionViewModels="clr-namespace:Sidekick.MVVM.ViewModels.SpacedRepetition;assembly=Sidekick.MVVM"
   xmlns:winSpacedRepetitionViewModels="clr-namespace:Sidekick.Windows.ViewModels.SpacedRepetition"
   xmlns:spacedRepetition="clr-namespace:Sidekick.Windows.Views.SpacedRepetition"
   xmlns:settingsViewModels="clr-namespace:Sidekick.Windows.ViewModels.Settings"
@@ -28,8 +27,8 @@
 
 
   <!--Spaced Repetition-->
-  <DataTemplate DataType="{x:Type mvvmSpacedRepetitionViewModels:CollectionViewModel}">
-    <spacedRepetition:CollectionView />
+  <DataTemplate DataType="{x:Type winSpacedRepetitionViewModels:ReviewViewModel}">
+    <spacedRepetition:ReviewView />
   </DataTemplate>
   <DataTemplate DataType="{x:Type winSpacedRepetitionViewModels:CollectionDataGridViewModel}">
     <spacedRepetition:CollectionDataGridView />

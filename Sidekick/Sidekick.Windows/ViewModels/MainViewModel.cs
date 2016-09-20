@@ -30,7 +30,6 @@ namespace Sidekick.Windows.ViewModels
   using Catel.Services;
 
   using Sidekick.MVVM.ViewModels;
-  using Sidekick.MVVM.ViewModels.SpacedRepetition;
   using Sidekick.Shared.Extensions;
   using Sidekick.Shared.Utils;
   using Sidekick.Windows.ViewModels.SpacedRepetition;
@@ -113,7 +112,7 @@ namespace Sidekick.Windows.ViewModels
           return
             SetCurrentModelAsync(
               _navViewModels.GetOrAdd(
-                buttonName, () => TypeFactory.Default.CreateInstance<CollectionViewModel>()));
+                buttonName, () => TypeFactory.Default.CreateInstance<ReviewViewModel>()));
 
         case "NavigationBrowseButton":
           ServiceLocator.Default.ResolveType<IUIVisualizerService>()

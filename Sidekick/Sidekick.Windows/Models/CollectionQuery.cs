@@ -136,11 +136,11 @@ namespace Sidekick.Windows.Models
 
     private string SerializeData()
     {
-      Argument.IsNotNull(() => RootItem);
+      Argument.IsNotNull(() => Root);
 
       using (var stream = new MemoryStream())
       {
-        _serializer.Serialize(RootItem, stream, null);
+        _serializer.Serialize(Root, stream, null);
         stream.Position = 0L;
 
         using (var streamReader = new StreamReader(stream))

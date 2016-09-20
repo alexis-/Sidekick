@@ -19,53 +19,48 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System;
-using Sidekick.SpacedRepetition.Const;
-using Sidekick.SpacedRepetition.Models;
-
-namespace Sidekick.SpacedRepetition.Extensions
+namespace Sidekick.MVVM.Extensions.SpacedRepetition
 {
-  internal static class GradeExtensions
+  using System;
+
+  using Sidekick.SpacedRepetition.Models;
+
+  using Xamarin.Forms;
+
+  /// <summary>Extension methods for <see cref="Grade" />
+  /// </summary>
+  public static class GradeExtensions
   {
     #region Methods
 
-    internal static float ReviewEaseModifiers(
-      this Grade grade, CollectionConfig config)
+    /// <summary>Returns the <see cref="Color" /> associated with given grade.</summary>
+    /// <param name="grade">The grade.</param>
+    /// <returns></returns>
+    /// <exception cref="System.InvalidOperationException">Invalid grade</exception>
+    public static Color GetColor(this Grade grade)
     {
       switch (grade)
       {
         case Grade.FailSevere:
+          return Color.Black;
+
         case Grade.FailMedium:
+          return Color.Black;
+
         case Grade.Fail:
-          return config.LapseEaseMalus;
+          return Color.FromHex("#FFDC143C"); // Crimson
+
         case Grade.Hard:
-          return config.ReviewHardEaseModifier;
+          return Color.FromHex("#FF9ACD32"); // YellowGreen
+
         case Grade.Good:
-          return config.ReviewGoodEaseModifier;
+          return Color.FromHex("#FF1E90FF"); // DodgerBlue
+
         case Grade.Easy:
-          return config.ReviewEasyEaseModifier;
+          return Color.FromHex("FFA500"); // Orange
       }
 
-      throw new ArgumentException("Invalid grade option", nameof(grade));
-    }
-
-    internal static Func<int, int, float, int> GradeReviewIntervalFormulas(
-      this Grade grade, CollectionConfig config)
-    {
-      switch (grade)
-      {
-        case Grade.Hard:
-          return (lastInterval, delay, eFactor) => Math.Max(lastInterval + 1,
-            (int)Math.Floor((lastInterval + delay * 0.25f) * 1.2f));
-        case Grade.Good:
-          return (lastInterval, delay, eFactor) => Math.Max(lastInterval + 1,
-            (int)Math.Floor((lastInterval + delay * 0.5f) * eFactor));
-        case Grade.Easy:
-          return (lastInterval, delay, eFactor) => Math.Max(lastInterval + 1,
-            (int)((lastInterval + delay) * eFactor * config.ReviewEasyBonus));
-      }
-
-      throw new ArgumentException("Invalid grade option", nameof(grade));
+      throw new InvalidOperationException("Invalid grade");
     }
 
     #endregion

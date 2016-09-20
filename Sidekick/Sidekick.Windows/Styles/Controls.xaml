@@ -3,6 +3,7 @@
 
   <ResourceDictionary.MergedDictionaries>
     <ResourceDictionary Source="pack://application:,,,/Sidekick.Windows;component/Styles/Controls.Buttons.xaml" />
+    <ResourceDictionary Source="pack://application:,,,/Sidekick.Windows;component/Styles/Controls.DataGridEx.xaml" />
     <ResourceDictionary Source="pack://application:,,,/Sidekick.Windows;component/Styles/Controls.Label.xaml" />
     <ResourceDictionary Source="pack://application:,,,/Sidekick.Windows;component/Styles/Controls.TabControl.xaml" />
   </ResourceDictionary.MergedDictionaries>

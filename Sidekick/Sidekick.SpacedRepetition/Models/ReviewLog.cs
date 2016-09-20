@@ -22,24 +22,17 @@
 namespace Sidekick.SpacedRepetition.Models
 {
   using Sidekick.Shared.Attributes.Database;
-  using Sidekick.SpacedRepetition.Const;
 
-  /// <summary>
-  ///   Describes a single card review
-  /// </summary>
+  /// <summary>Describes a single card review</summary>
   [Table("ReviewsLogs")]
   public class ReviewLog
   {
     #region Constructors
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReviewLog"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReviewLog" /> class.</summary>
     public ReviewLog() { }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReviewLog"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReviewLog" /> class.</summary>
     /// <param name="id">Creation timestamp.</param>
     /// <param name="cardId">The card identifier.</param>
     /// <param name="lastDue">The last due.</param>
@@ -48,7 +41,7 @@ namespace Sidekick.SpacedRepetition.Models
     /// <param name="lastEFactor">The last e factor.</param>
     /// <param name="evalTime">The eval time.</param>
     public ReviewLog(
-      int id, int cardId, int lastDue, CardPracticeState lastState, int lastInterval,
+      int id, int cardId, int lastDue, PracticeState lastState, int lastInterval,
       float lastEFactor, int evalTime)
     {
       Id = id;
@@ -60,9 +53,7 @@ namespace Sidekick.SpacedRepetition.Models
       EvalTime = evalTime;
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ReviewLog" /> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReviewLog" /> class.</summary>
     /// <param name="id">Creation timestamp.</param>
     /// <param name="cardId">The card identifier.</param>
     /// <param name="grade">The grade.</param>
@@ -76,8 +67,8 @@ namespace Sidekick.SpacedRepetition.Models
     /// <param name="newEFactor">The new e factor.</param>
     /// <param name="evalTime">The eval time.</param>
     public ReviewLog(
-      int id, int cardId, Grade grade, int lastDue, int newDue, CardPracticeState lastState,
-      CardPracticeState newState, int lastInterval, int newInterval, float lastEFactor,
+      int id, int cardId, Grade grade, int lastDue, int newDue, PracticeState lastState,
+      PracticeState newState, int lastInterval, int newInterval, float lastEFactor,
       float newEFactor, int evalTime)
     {
       Id = id;
@@ -100,20 +91,42 @@ namespace Sidekick.SpacedRepetition.Models
 
     #region Properties
 
+    /// <summary>Database field. Database identifier, date time of creation time - Unix timestamp.</summary>
+    [PrimaryKey]
     public int Id { get; set; }
+
+    /// <summary>Database field. Associated card id.</summary>
+    [Indexed]
     public int CardId { get; set; }
 
+    /// <summary>Database field. Grade used in this review.</summary>
     public int Grade { get; set; }
 
+    /// <summary>Database field. Due before reviewing.</summary>
     public int LastDue { get; set; }
+
+    /// <summary>Database field. Due after reviewing.</summary>
     public int NewDue { get; set; }
+
+    /// <summary>Database field. State before reviewing.</summary>
     public short LastState { get; set; }
+
+    /// <summary>Database field. State after reviewing.</summary>
     public short NewState { get; set; }
+
+    /// <summary>Database field. Interval before reviewing.</summary>
     public int LastInterval { get; set; }
+
+    /// <summary>Database field. Interval after reviewing.</summary>
     public int NewInterval { get; set; }
+
+    /// <summary>Database field. EFactor before reviewing.</summary>
     public float LastEFactor { get; set; }
+
+    /// <summary>Database field. EFactor after reviewing.</summary>
     public float NewEFactor { get; set; }
 
+    /// <summary>Database field. Duration of the review evaluation. Limited to 60 seconds</summary>
     public int EvalTime { get; set; }
 
     #endregion
@@ -122,8 +135,14 @@ namespace Sidekick.SpacedRepetition.Models
 
     #region Methods
 
+    /// <summary>Completes the review informations.</summary>
+    /// <param name="grade">The grade.</param>
+    /// <param name="newDue">The new due.</param>
+    /// <param name="newState">The new state.</param>
+    /// <param name="newInterval">The new interval.</param>
+    /// <param name="newEFactor">The new e factor.</param>
     public void CompleteReview(
-      Grade grade, int newDue, CardPracticeState newState, int newInterval, float newEFactor)
+      Grade grade, int newDue, PracticeState newState, int newInterval, float newEFactor)
     {
       Grade = grade;
       NewDue = newDue;

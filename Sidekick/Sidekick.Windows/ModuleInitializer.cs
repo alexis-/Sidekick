@@ -20,11 +20,13 @@
 // DEALINGS IN THE SOFTWARE.
 
 using Catel.IoC;
+using Catel.MVVM;
 
 using Orchestra.Services;
 
 using Sidekick.Windows.Services;
 using Sidekick.Windows.Services.Initialization;
+using Sidekick.Windows.Services.Interfaces;
 
 /// <summary>
 ///   Used by the ModuleInit. All code inside the Initialize method is ran as soon as
@@ -42,6 +44,9 @@ public static class ModuleInitializer
     serviceLocator.RegisterType<IMahAppsService, MahAppsService>();
     serviceLocator
       .RegisterType<IApplicationInitializationService, ApplicationInitializationService>();
+    serviceLocator.RegisterType<ICommandManagerEx, CommandManagerService>();
+    serviceLocator.RegisterType<ICommandManager>(
+      slr => slr.GetServiceLocator().ResolveType<ICommandManagerEx>());
 
     // ***** IMPORTANT NOTE *****
     //

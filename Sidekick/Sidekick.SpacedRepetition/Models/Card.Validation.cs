@@ -19,10 +19,14 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System;
-
 namespace Sidekick.SpacedRepetition.Models
 {
+  using System;
+
+  /// <summary>
+  ///   Card model for SpacedRepetition system. Keeps track of individual cards progress
+  ///   (ease, interval, ...) and datas.
+  /// </summary>
   public partial class Card
   {
     #region Methods
@@ -32,21 +36,20 @@ namespace Sidekick.SpacedRepetition.Models
     // - LearningSteps not empty
 
     /// <summary>
-    /// Called each time Interval value is set.
-    /// Ensure Interval is greater than 0, less than maximum Interval and
-    /// apply Interval modifer (default 100%).
+    ///   Called each time Interval value is set. Ensure Interval is greater than 0, less than
+    ///   maximum Interval and apply Interval modifer (default 100%).
     /// </summary>
     /// <param name="interval">new interval value</param>
     /// <returns>Sanitized Interval</returns>
     public int SanitizeInterval(int interval)
     {
-      return Math.Max(1, Math.Min(Config.ReviewMaxInterval,
-        (int)(interval * Config.ReviewIntervalModifier)));
+      return Math.Max(
+        1, Math.Min(Config.ReviewMaxInterval, (int)(interval * Config.ReviewIntervalModifier)));
     }
 
     /// <summary>
-    /// Called each time EFactor value is set.
-    /// Ensure EFactor does not fall below minimum Ease (default 130%).
+    ///   Called each time EFactor value is set. Ensure EFactor does not fall below minimum
+    ///   Ease (default 130%).
     /// </summary>
     /// <param name="eFactor">new EFactor value</param>
     /// <returns>Sanitized EFactor</returns>

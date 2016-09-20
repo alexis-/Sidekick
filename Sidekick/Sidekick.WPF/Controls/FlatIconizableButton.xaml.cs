@@ -19,25 +19,26 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System.Windows;
-using System.Windows.Controls;
-
 namespace Sidekick.WPF.Controls
 {
-  [TemplatePart(Name = "PART_Button", Type = typeof(Button))]
-  public class FlatIconizableButton : FlatIconizableButtonBase<Button>
-  {
-    #region Constructors
+    using System.Windows;
+    using System.Windows.Controls;
 
-    //
-    // Constructors
-
-    static FlatIconizableButton()
+    [TemplatePart(Name = "PART_Button", Type = typeof(Button))]
+    public class FlatIconizableButton : FlatIconizableButtonBase<Button>
     {
-      DefaultStyleKeyProperty.OverrideMetadata(typeof(FlatIconizableButton),
-        new FrameworkPropertyMetadata(typeof(FlatIconizableButton)));
-    }
+        #region Constructors
 
-    #endregion
-  }
+        //
+        // Constructors
+
+        static FlatIconizableButton()
+        {
+            DefaultStyleKeyProperty.OverrideMetadata(
+                typeof(FlatIconizableButton),
+                new FrameworkPropertyMetadata(typeof(FlatIconizableButton)));
+        }
+
+        #endregion
+    }
 }

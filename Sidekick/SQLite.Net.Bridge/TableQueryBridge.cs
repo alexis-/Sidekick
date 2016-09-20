@@ -70,6 +70,16 @@ namespace SQLite.Net.Bridge
 
     #region Methods
 
+    ITableQuery<T> ITableQuery<T>.AddOrderBy<TValue>(Expression<Func<T, TValue>> orderExpr, bool asc)
+    {
+      return (TableQueryBridge<T>)AddOrderBy(orderExpr, asc);
+    }
+
+    ITableQuery<T> ITableQuery<T>.AddOrderBy(string propertyName, bool asc)
+    {
+      return (TableQueryBridge<T>)AddOrderBy(propertyName, asc);
+    }
+
     /// <summary>
     ///   Clones this instance.
     /// </summary>
@@ -139,10 +149,20 @@ namespace SQLite.Net.Bridge
       return (TableQueryBridge<T>)OrderBy(orderExpr);
     }
 
+    ITableQuery<T> ITableQuery<T>.OrderBy(string propertyName)
+    {
+      return (TableQueryBridge<T>)OrderBy(propertyName);
+    }
+
     ITableQuery<T> ITableQuery<T>.OrderByDescending<TValue>(
       Expression<Func<T, TValue>> orderExpr)
     {
       return (TableQueryBridge<T>)OrderByDescending(orderExpr);
+    }
+
+    ITableQuery<T> ITableQuery<T>.OrderByDescending(string propertyName)
+    {
+      return (TableQueryBridge<T>)OrderByDescending(propertyName);
     }
 
     ITableQuery<T> ITableQuery<T>.OrderByRand()
@@ -176,10 +196,20 @@ namespace SQLite.Net.Bridge
       return (TableQueryBridge<T>)ThenBy(orderExpr);
     }
 
+    ITableQuery<T> ITableQuery<T>.ThenBy(string propertyName)
+    {
+      return (TableQueryBridge<T>)ThenBy(propertyName);
+    }
+
     ITableQuery<T> ITableQuery<T>.ThenByDescending<TValue>(
       Expression<Func<T, TValue>> orderExpr)
     {
       return (TableQueryBridge<T>)ThenByDescending(orderExpr);
+    }
+
+    ITableQuery<T> ITableQuery<T>.ThenByDescending(string propertyName)
+    {
+      return (TableQueryBridge<T>)ThenByDescending(propertyName);
     }
 
     ITableQuery<T> ITableQuery<T>.Where(Expression<Func<T, bool>> predExpr)

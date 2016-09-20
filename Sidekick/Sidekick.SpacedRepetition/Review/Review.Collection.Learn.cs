@@ -33,26 +33,24 @@ namespace Sidekick.SpacedRepetition.Review
   using Sidekick.Shared.Utils;
   using Sidekick.Shared.Utils.Collections;
   using Sidekick.Shared.Utils.LazyLoad;
-  using Sidekick.SpacedRepetition.Const;
+  using Sidekick.SpacedRepetition.Extensions;
   using Sidekick.SpacedRepetition.Models;
 
   /// <summary>
-  ///   ReviewList implementation for Learning cards.
-  ///   Uses <see cref="ReviewComparers.DueComparer" /> to sort cards by due date.
+  ///   ReviewList implementation for Learning cards. Uses
+  ///   <see cref="ReviewComparers.DueComparer" /> to sort cards by due date.
   ///   <see cref="ReviewCount" /> returns the sum of all cards
-  ///   <see cref="Card.ReviewLeftToday" /> without any daily-limit (unlike
-  ///   <see cref="DueReviewList" /> or <see cref="NewReviewList" />).
+  ///   <see cref="CardReviewExtensions.ReviewLeftToday" /> without any daily-limit (unlike
+  ///   <see cref="ReviewCollectionDue" /> or <see cref="ReviewCollectionNew" />).
   /// </summary>
-  /// <seealso cref="Sidekick.SpacedRepetition.Review.ReviewAsyncDbListBase" />
-  internal class LearnReviewList : ReviewAsyncDbListBase
+  /// <seealso cref="ReviewCollectionAsyncBase" />
+  internal class ReviewCollectionLearn : ReviewCollectionAsyncBase
   {
     #region Constructors
 
-    /// <summary>
-    ///   Initializes a new instance of the <see cref="LearnReviewList" /> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ReviewCollectionLearn" /> class.</summary>
     /// <param name="db">Database instance</param>
-    public LearnReviewList(IDatabaseAsync db) : base(db)
+    public ReviewCollectionLearn(IDatabaseAsync db) : base(db)
     {
       Comparer = ReviewComparers.DueComparer;
 
@@ -73,13 +71,9 @@ namespace Sidekick.SpacedRepetition.Review
 
     #region Methods
 
-    /// <summary>
-    ///   Computes the number of available cards for iteration
-    /// </summary>
+    /// <summary>Computes the number of available cards for iteration</summary>
     /// <returns></returns>
-    /// <exception cref="System.InvalidOperationException">
-    ///   List is not properly initialized
-    /// </exception>
+    /// <exception cref="System.InvalidOperationException">List is not properly initialized</exception>
     public override int AvailableCount()
     {
       lock (LockObject)
@@ -92,13 +86,9 @@ namespace Sidekick.SpacedRepetition.Review
       }
     }
 
-    /// <summary>
-    ///   Computes total review count left
-    /// </summary>
+    /// <summary>Computes total review count left</summary>
     /// <returns></returns>
-    /// <exception cref="System.InvalidOperationException">
-    ///   List is not properly initialized
-    /// </exception>
+    /// <exception cref="System.InvalidOperationException">List is not properly initialized</exception>
     public override int ReviewCount()
     {
       lock (LockObject)
@@ -116,12 +106,10 @@ namespace Sidekick.SpacedRepetition.Review
     // AsyncDbListBase core methods implementation
 
     /// <summary>
-    ///   Learning cards may be reviewed more than once per day, overrides
-    ///   default behaviour to account for multiple reviews.
+    ///   Learning cards may be reviewed more than once per day, overrides default behaviour to
+    ///   account for multiple reviews.
     /// </summary>
-    /// <returns>
-    ///   Whether any item is available
-    /// </returns>
+    /// <returns>Whether any item is available</returns>
     public override Task<bool> MoveNextAsync()
     {
       if (Current == null || Current.ReviewLeftToday() == 0)
@@ -137,12 +125,10 @@ namespace Sidekick.SpacedRepetition.Review
       return TaskConstants.BooleanTrue;
     }
 
-    /// <summary>
-    ///   Load items.
-    /// </summary>
+    /// <summary>Load items.</summary>
     /// <param name="fullLoad">
-    ///   If true, full objects should be loaded.
-    ///   Only relevant when using lazy loading.
+    ///   If true, full objects should be loaded. Only relevant when using lazy
+    ///   loading.
     /// </param>
     /// <returns>Whether any item was loaded.</returns>
     protected override async Task<bool> DoLoadMoreAsync(bool fullLoad)
@@ -152,9 +138,7 @@ namespace Sidekick.SpacedRepetition.Review
       return firstLoad && await DoFirstLoadAsync().ConfigureAwait(false);
     }
 
-    /// <summary>
-    ///   Fill the item list with its first items.
-    /// </summary>
+    /// <summary>Fill the item list with its first items.</summary>
     /// <returns>Whether any item was loaded.</returns>
     [Time]
     protected async Task<bool> DoFirstLoadAsync()
@@ -167,7 +151,7 @@ namespace Sidekick.SpacedRepetition.Review
         await
           AddItemsAsync(
             Db.Table<Card>()
-              .Where(c => c.PracticeState >= CardPracticeState.Learning && c.Due < tomorrow)
+              .Where(c => c.PracticeState >= PracticeState.Learning && c.Due < tomorrow)
               .Take(fullLoadCount)
               .OrderBy(c => c.Due)).ConfigureAwait(false);
 
@@ -182,7 +166,7 @@ namespace Sidekick.SpacedRepetition.Review
                 .ShallowLoad(LazyLoader)
                 .Where(
                   c =>
-                    c.PracticeState >= CardPracticeState.Learning && c.Due < tomorrow
+                    c.PracticeState >= PracticeState.Learning && c.Due < tomorrow
                     && !Objects.Select(o => o.Id).Contains(c.Id))
                 .OrderBy(c => c.Due)).ConfigureAwait(false);
 
@@ -192,10 +176,9 @@ namespace Sidekick.SpacedRepetition.Review
     }
 
     /// <summary>
-    ///   Sort cards upon adding new cards. Object lock should already be in place when
-    ///   calling this.
-    ///   TODO: Use a more efficient backing type for sorting
-    ///   TODO: Should this be in implementing class
+    ///   Sort cards upon adding new cards. Object lock should already be in place when calling
+    ///   this. TODO: Use a more efficient backing type for sorting TODO: Should this be in
+    ///   implementing class
     /// </summary>
     protected override void Sort()
     {
@@ -218,20 +201,15 @@ namespace Sidekick.SpacedRepetition.Review
       return GetFurtherLoadedIndex() - IncrementalFurtherLoadMin;
     }
 
-    /// <summary>
-    ///   Gets the maximum reachable index until awaiting item load to complete. If
-    ///   <see cref="AsyncDbListBase{T}.ReviewStatus.MoveNextEndOfStore" /> is set, this is
-    ///   ignored.
-    /// </summary>
+    /// <summary>Gets the maximum reachable index until awaiting item load to complete. If
+    ///   <see cref="AsyncDbListBase{T}.ReviewStatus.MoveNextEndOfStore" /> is set, this is ignored.</summary>
     /// <returns>Maximum reachable index.</returns>
     protected override int GetMaxIndexLoadThreshold()
     {
       return -1;
     }
 
-    /// <summary>
-    ///   Gets the index of last fully loaded item. Only required when using lazy loading.
-    /// </summary>
+    /// <summary>Gets the index of last fully loaded item. Only required when using lazy loading.</summary>
     /// <returns>Index of last fully loaded item.</returns>
     protected override int GetFurtherLoadedIndex()
     {
@@ -239,7 +217,8 @@ namespace Sidekick.SpacedRepetition.Review
     }
 
     /// <summary>
-    ///   Index threshold used in determining when asynchronous item loading should be initiated.
+    ///   Index threshold used in determining when asynchronous item loading should be
+    ///   initiated.
     /// </summary>
     /// <returns>Next load index threshold.</returns>
     protected override int GetNextLoadThreshold()

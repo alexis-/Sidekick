@@ -59,7 +59,7 @@
 
         </Grid>
 
-        <Rectangle Style="{DynamicResource HorizontalSeparator}"
+        <Rectangle Style="{DynamicResource VerticalSeparator}"
                    Grid.Column="1" />
 
         <!--Data grid-->

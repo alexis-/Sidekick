@@ -19,56 +19,25 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-namespace Sidekick.MVVM.ViewModels.SpacedRepetition
+namespace Sidekick.Windows.Views.SpacedRepetition
 {
-  using Catel.Fody;
-  using Catel.MVVM;
+  using Catel.Windows.Controls;
 
-  using Sidekick.SpacedRepetition.Const;
-
-  /// <summary>
-  ///   Review buttons handling View Model
-  /// </summary>
-  /// <seealso cref="Catel.MVVM.ViewModelBase" />
-  public class CardAnswerButtonsViewModel : ViewModelBase
+  /// <summary>Interaction logic for ReviewView.xaml</summary>
+  public partial class ReviewView : UserControl
   {
     #region Constructors
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="CardAnswerButtonsViewModel"/> class.
-    /// </summary>
-    /// <param name="gradeInfos">The grade infos.</param>
-    public CardAnswerButtonsViewModel([NotNull] GradeInfo[] gradeInfos)
-      : base(false)
+    /// <summary>Initializes a new instance of the <see cref="ReviewView"/> class.</summary>
+    /// <remarks>
+    /// This method is required for design time support.
+    /// </remarks>
+    public ReviewView()
     {
-      GradeInfos = gradeInfos;
+      InitializeComponent();
 
-      AnswerCommand = new Command(OnAnswerCommandExecute);
+      CloseViewModelOnUnloaded = false;
     }
-
-    #endregion
-
-
-
-    #region Properties
-
-    /// <summary>
-    /// Gets or sets the grade infos.
-    /// </summary>
-    public GradeInfo[] GradeInfos { get; set; }
-
-    /// <summary>
-    /// Gets or sets the answer command.
-    /// </summary>
-    public ICatelCommand AnswerCommand { get; set; }
-
-    #endregion
-
-
-
-    #region Methods
-
-    private void OnAnswerCommandExecute() { }
 
     #endregion
   }

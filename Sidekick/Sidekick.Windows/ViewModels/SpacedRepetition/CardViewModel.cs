@@ -1,4 +1,4 @@
-// 
+﻿// 
 // The MIT License (MIT)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -19,57 +19,35 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-namespace Sidekick.SpacedRepetition.Const
+namespace Sidekick.Windows.ViewModels.SpacedRepetition
 {
-  public struct CardPracticeState
+  using Catel.MVVM;
+
+  using Sidekick.SpacedRepetition.Models;
+
+  /// <summary>Handles Card data display.</summary>
+  /// <seealso cref="Catel.MVVM.ViewModelBase" />
+  public class CardViewModel : ViewModelBase
   {
-    //
-    // Attribute & Constructor
-    private readonly short _value;
+    #region Constructors
 
-    private CardPracticeState(short state)
+    /// <summary>Initializes a new instance of the <see cref="CardViewModel" /> class.</summary>
+    /// <param name="card">The card.</param>
+    public CardViewModel(Card card)
     {
-      _value = state;
+      Card = card;
     }
 
-
-    //
-    // States
-
-    public const short Deleted = -1,
-                       Due = 0,
-                       New = 1,
-                       Learning = 2;
+    #endregion
 
 
-    //
-    // Core methods
 
-    public override bool Equals(object obj)
-    {
-      CardPracticeState otherObj = (CardPracticeState)obj;
+    #region Properties
 
-      return otherObj._value == this._value;
-    }
+    /// <summary>Gets or sets the card.</summary>
+    [Model]
+    public Card Card { get; set; }
 
-    public bool Equals(CardPracticeState other)
-    {
-      return _value == other._value;
-    }
-
-    public override int GetHashCode()
-    {
-      return _value.GetHashCode();
-    }
-
-    public static implicit operator short(CardPracticeState state)
-    {
-      return state._value;
-    }
-
-    public static implicit operator CardPracticeState(short state)
-    {
-      return new CardPracticeState(state);
-    }
+    #endregion
   }
 }

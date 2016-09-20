@@ -65,7 +65,7 @@
                  Width="240"
                  Grid.Column="2" />
         
-        <Rectangle Style="{DynamicResource VerticalSeparator}"
+        <Rectangle Style="{DynamicResource HorizontalSeparator}"
                    Grid.Column="3" />
 
         <Button Content="Cancel"

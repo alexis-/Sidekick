@@ -3,8 +3,9 @@
   <Catel />
   <MethodTimer />
   <ModuleInit />
-  <LoadAssembliesOnStartup ExcludeOptimizedAssemblies='true' />
+  <LoadAssembliesOnStartup ExcludeOptimizedAssemblies="true" />
   <Anotar.Catel />
   <Stamp />
   <AsyncErrorHandler />
+  <Scalpel />
 </Weavers>

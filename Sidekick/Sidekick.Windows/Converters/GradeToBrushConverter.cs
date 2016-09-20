@@ -19,26 +19,29 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-namespace Sidekick.Windows.Utils
+namespace Sidekick.Windows.Converters
 {
+  using System;
+  using System.Globalization;
+  using System.Windows.Data;
   using System.Windows.Media;
 
-  /// <summary>Xamarin.Forms-related extensions methods</summary>
-  public static class XamarinFormsExtensions
+  using Catel.MVVM.Converters;
+
+  using Sidekick.MVVM.Extensions.SpacedRepetition;
+  using Sidekick.SpacedRepetition.Models;
+  using Sidekick.Windows.Extensions;
+
+  /// <summary>Converts <see cref="Grade"/> to <see cref="SolidColorBrush" />.</summary>
+  /// <seealso cref="System.Windows.Data.IMultiValueConverter" />
+  public class GradeToBrushConverter : ValueConverterBase<Grade>
   {
     #region Methods
 
-    /// <summary>
-    ///   Converts a Xamarin <see cref="Xamarin.Forms.Color" /> to a Windows
-    ///   <see cref="Color" />.
-    /// </summary>
-    /// <param name="color">The Xamarin color.</param>
-    /// <returns></returns>
-    public static Color ToWPFColor(this Xamarin.Forms.Color color)
+    /// <inheritdoc />
+    protected override object Convert(Grade grade, Type targetType, object parameter)
     {
-      return Color.FromArgb(
-        (byte)(color.A * 255), (byte)(color.R * 255), (byte)(color.G * 255),
-        (byte)(color.B * 255));
+      return new SolidColorBrush(grade.GetColor().ToWPFColor());
     }
 
     #endregion

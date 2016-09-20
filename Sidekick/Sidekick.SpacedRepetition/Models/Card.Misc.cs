@@ -21,6 +21,10 @@
 
 namespace Sidekick.SpacedRepetition.Models
 {
+  /// <summary>
+  ///   Card model for SpacedRepetition system. Keeps track of individual cards progress
+  ///   (ease, interval, ...) and datas.
+  /// </summary>
   public partial class Card
   {
     #region Methods

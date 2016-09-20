@@ -30,7 +30,7 @@ namespace Sidekick.SpacedRepetition.Review
   using Sidekick.Shared.Extensions;
   using Sidekick.Shared.Interfaces.Database;
   using Sidekick.Shared.Utils;
-  using Sidekick.SpacedRepetition.Const;
+  using Sidekick.SpacedRepetition.Extensions;
   using Sidekick.SpacedRepetition.Interfaces;
   using Sidekick.SpacedRepetition.Models;
 
@@ -72,7 +72,7 @@ namespace Sidekick.SpacedRepetition.Review
 
       LastEval = -1;
       CurrentList = null;
-      NextAction = new Dictionary<ReviewAsyncDbListBase, Func<Task<bool>>>();
+      NextAction = new Dictionary<ReviewCollectionAsyncBase, Func<Task<bool>>>();
 
       Initialized = InitializeAsync(config);
     }
@@ -102,13 +102,13 @@ namespace Sidekick.SpacedRepetition.Review
     //
     // Card types lists
 
-    private NewReviewList NewReviewList { get; set; }
-    private LearnReviewList LearnReviewList { get; set; }
-    private DueReviewList DueReviewList { get; set; }
+    private ReviewCollectionNew ReviewCollectionNew { get; set; }
+    private ReviewCollectionLearn ReviewCollectionLearn { get; set; }
+    private ReviewCollectionDue ReviewCollectionDue { get; set; }
 
-    private ReviewAsyncDbListBase CurrentList { get; set; }
+    private ReviewCollectionAsyncBase CurrentList { get; set; }
 
-    private Dictionary<ReviewAsyncDbListBase, Func<Task<bool>>> NextAction { get; }
+    private Dictionary<ReviewCollectionAsyncBase, Func<Task<bool>>> NextAction { get; }
 
     //
     // Misc
@@ -147,17 +147,17 @@ namespace Sidekick.SpacedRepetition.Review
       CompleteLog(log, card, grade);
 
       // If this was a new card, add to learning list
-      if (log.LastState == CardPracticeState.New)
-        LearnReviewList.AddManual(card);
+      if (log.LastState == PracticeState.New)
+        ReviewCollectionLearn.AddManual(card);
       
 #pragma warning disable 4014
       // Save changes to Database
       UpdateCardAsync(log, card, cardAction);
 #pragma warning restore 4014
 
-      NewReviewList.DismissSiblings(card);
-      LearnReviewList.DismissSiblings(card);
-      DueReviewList.DismissSiblings(card);
+      ReviewCollectionNew.DismissSiblings(card);
+      ReviewCollectionLearn.DismissSiblings(card);
+      ReviewCollectionDue.DismissSiblings(card);
 
       return DoNextAsync();
     }
@@ -200,13 +200,13 @@ namespace Sidekick.SpacedRepetition.Review
       int ret = 0;
 
       if ((state & CardPracticeStateFilterFlag.Due) == CardPracticeStateFilterFlag.Due)
-        ret += DueReviewList.ReviewCount();
+        ret += ReviewCollectionDue.ReviewCount();
 
       if ((state & CardPracticeStateFilterFlag.Learning) == CardPracticeStateFilterFlag.Learning)
-        ret += LearnReviewList.ReviewCount();
+        ret += ReviewCollectionLearn.ReviewCount();
 
       if ((state & CardPracticeStateFilterFlag.New) == CardPracticeStateFilterFlag.New)
-        ret += NewReviewList.ReviewCount();
+        ret += ReviewCollectionNew.ReviewCount();
 
       return ret;
     }
@@ -269,18 +269,18 @@ namespace Sidekick.SpacedRepetition.Review
       ReviewSession reviewSession =
         await ReviewSession.ComputeSessionAsync(_db, config).ConfigureAwait(false);
 
-      NewReviewList = new NewReviewList(_db, config, reviewSession.New);
-      LearnReviewList = new LearnReviewList(_db);
-      DueReviewList = new DueReviewList(_db, reviewSession.Due);
+      ReviewCollectionNew = new ReviewCollectionNew(_db, config, reviewSession.New);
+      ReviewCollectionLearn = new ReviewCollectionLearn(_db);
+      ReviewCollectionDue = new ReviewCollectionDue(_db, reviewSession.Due);
 
-      NextAction[NewReviewList] = () => NewReviewList.MoveNextAsync();
-      NextAction[LearnReviewList] = () => LearnReviewList.MoveNextAsync();
-      NextAction[DueReviewList] = () => DueReviewList.MoveNextAsync();
+      NextAction[ReviewCollectionNew] = () => ReviewCollectionNew.MoveNextAsync();
+      NextAction[ReviewCollectionLearn] = () => ReviewCollectionLearn.MoveNextAsync();
+      NextAction[ReviewCollectionDue] = () => ReviewCollectionDue.MoveNextAsync();
 
       await
         Task.WhenAll(
-              NewReviewList.IsInitializedAsync(), LearnReviewList.IsInitializedAsync(),
-              DueReviewList.IsInitializedAsync()).ConfigureAwait(false);
+              ReviewCollectionNew.IsInitializedAsync(), ReviewCollectionLearn.IsInitializedAsync(),
+              ReviewCollectionDue.IsInitializedAsync()).ConfigureAwait(false);
 
       return await DoNextAsync().ConfigureAwait(false);
     }
@@ -315,24 +315,24 @@ namespace Sidekick.SpacedRepetition.Review
     }
 
     [Time]
-    private ReviewAsyncDbListBase GetNextCardSource()
+    private ReviewCollectionAsyncBase GetNextCardSource()
     {
-      int newReviewCount = NewReviewList.ReviewCount();
-      int learnReviewCount = LearnReviewList.ReviewCount();
-      int dueReviewCount = DueReviewList.ReviewCount();
+      int newReviewCount = ReviewCollectionNew.ReviewCount();
+      int learnReviewCount = ReviewCollectionLearn.ReviewCount();
+      int dueReviewCount = ReviewCollectionDue.ReviewCount();
 
       int totalReviewCount = newReviewCount + learnReviewCount + dueReviewCount;
 
       int rnd = _random.Next(0, totalReviewCount);
 
       if (rnd < newReviewCount)
-        return NewReviewList;
+        return ReviewCollectionNew;
 
       if (rnd < newReviewCount + learnReviewCount)
-        return LearnReviewList;
+        return ReviewCollectionLearn;
 
       if (rnd < newReviewCount + learnReviewCount + dueReviewCount)
-        return DueReviewList;
+        return ReviewCollectionDue;
 
       return null;
     }

@@ -23,7 +23,6 @@ namespace Sidekick.SpacedRepetition.Interfaces
 {
   using System.Threading.Tasks;
 
-  using Sidekick.SpacedRepetition.Const;
   using Sidekick.SpacedRepetition.Models;
 
   /// <summary>

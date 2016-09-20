@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-namespace Sidekick.SpacedRepetition.Const
+namespace Sidekick.SpacedRepetition.Models
 {
   /// <summary>Describe the grading rated by user during a card review.</summary>
   public struct Grade
@@ -48,9 +48,27 @@ namespace Sidekick.SpacedRepetition.Const
       _value = grade;
     }
 
+    /// <summary>
+    ///   Performs an implicit conversion from <see cref="Grade" /> to
+    ///   <see cref="System.Int32" />.
+    /// </summary>
+    /// <param name="grade">The grade.</param>
+    /// <returns>The result of the conversion.</returns>
+    public static implicit operator int(Grade grade)
+    {
+      return grade._value;
+    }
 
-    //
-    // Core methods
+    /// <summary>
+    ///   Performs an implicit conversion from <see cref="System.Int32" /> to
+    ///   <see cref="Grade" />.
+    /// </summary>
+    /// <param name="grade">The grade.</param>
+    /// <returns>The result of the conversion.</returns>
+    public static implicit operator Grade(int grade)
+    {
+      return new Grade(grade);
+    }
 
     /// <summary>
     ///   Determines whether the specified <see cref="System.Object" />, is equal to this
@@ -84,28 +102,6 @@ namespace Sidekick.SpacedRepetition.Const
     public override int GetHashCode()
     {
       return _value.GetHashCode();
-    }
-
-    /// <summary>
-    ///   Performs an implicit conversion from <see cref="Grade" /> to
-    ///   <see cref="System.Int32" />.
-    /// </summary>
-    /// <param name="grade">The grade.</param>
-    /// <returns>The result of the conversion.</returns>
-    public static implicit operator int(Grade grade)
-    {
-      return grade._value;
-    }
-
-    /// <summary>
-    ///   Performs an implicit conversion from <see cref="System.Int32" /> to
-    ///   <see cref="Grade" />.
-    /// </summary>
-    /// <param name="grade">The grade.</param>
-    /// <returns>The result of the conversion.</returns>
-    public static implicit operator Grade(int grade)
-    {
-      return new Grade(grade);
     }
   }
 }

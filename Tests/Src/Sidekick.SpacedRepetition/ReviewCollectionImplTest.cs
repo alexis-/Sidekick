@@ -29,7 +29,7 @@ namespace Sidekick.SpacedRepetition.Tests
 
   using FluentAssertions;
 
-  using Sidekick.SpacedRepetition.Const;
+  using Sidekick.SpacedRepetition.Extensions;
   using Sidekick.SpacedRepetition.Generators;
   using Sidekick.SpacedRepetition.Models;
   using Sidekick.SpacedRepetition.Review;
@@ -241,10 +241,10 @@ namespace Sidekick.SpacedRepetition.Tests
       notes.Max(n => n.Cards.Count).Should().Be(1);
       notes.Min(n => n.Cards.Count).Should().Be(1);
       notes.Any(n => n.Cards.Any(c => c.Lapses > 0)).Should().Be(false);
-      notes.Sum(n => n.Cards.Count(c => c.PracticeState == CardPracticeState.New))
+      notes.Sum(n => n.Cards.Count(c => c.PracticeState == PracticeState.New))
            .Should()
            .Be(newCardCount);
-      notes.Sum(n => n.Cards.Count(c => c.PracticeState == CardPracticeState.Due))
+      notes.Sum(n => n.Cards.Count(c => c.PracticeState == PracticeState.Due))
            .Should()
            .Be(dueCardCount);
 

@@ -5,13 +5,15 @@
                    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                    xmlns:local="clr-namespace:Sidekick.Windows.Views.SpacedRepetition"
                    xmlns:catel="http://catel.codeplex.com"
+                   xmlns:controls="clr-namespace:Sidekick.WPF.Controls;assembly=Sidekick.WPF"
                    mc:Ignorable="d"
                    d:DesignHeight="300" d:DesignWidth="300">
   <Grid>
-        <DataGrid Name="DataGrid"
-                  ItemsSource="{Binding FilteredCollection}">
+    <controls:DataGridEx Name="DataGrid"
+                         SortController="{Binding .}"
+                         ItemsSource="{Binding FilteredCollection}">
       <DataGrid.Columns>
       </DataGrid.Columns>
-    </DataGrid>
+    </controls:DataGridEx>
   </Grid>
 </catel:UserControl>

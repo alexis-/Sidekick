@@ -22,6 +22,7 @@
 namespace Sidekick.SpacedRepetition.Models
 {
   using System;
+  using System.Diagnostics;
   using System.Text;
 
   using Catel.ComponentModel;
@@ -31,11 +32,10 @@ namespace Sidekick.SpacedRepetition.Models
 
   using Sidekick.Shared.Attributes.Database;
   using Sidekick.Shared.Extensions;
-  using Sidekick.SpacedRepetition.Const;
 
   /// <summary>
-  ///   Card model for SpacedRepetition system.
-  ///   Keeps track of individual cards progress (ease, interval, ...) and datas.
+  ///   Card model for SpacedRepetition system. Keeps track of individual cards progress
+  ///   (ease, interval, ...) and datas.
   /// </summary>
   /// <seealso cref="Catel.Data.ModelBase" />
   [Table("Cards")]
@@ -52,8 +52,13 @@ namespace Sidekick.SpacedRepetition.Models
 
     #region Constructors
 
+    /// <summary>Initializes a new instance of the <see cref="Card"/> class.</summary>
     public Card() { }
 
+    /// <summary>Initializes a new instance of the <see cref="Card"/> class.</summary>
+    /// <param name="config">The configuration.</param>
+    /// <param name="noteId">The note identifier.</param>
+    /// <param name="data">The data.</param>
     public Card(CollectionConfig config, int noteId = -1, string data = null)
     {
       Id = DateTime.Now.UnixTimestamp();
@@ -62,7 +67,7 @@ namespace Sidekick.SpacedRepetition.Models
       LastModified = Id;
 
       Due = 0;
-      PracticeState = CardPracticeState.New;
+      PracticeState = Models.PracticeState.New;
       MiscState = CardMiscStateFlag.None;
 
       _eFactor = 0;
@@ -80,31 +85,47 @@ namespace Sidekick.SpacedRepetition.Models
 
     #region Properties
 
+    /// <summary>Database field. Database identifier, date time of creation time - Unix timestamp.</summary>
     [PrimaryKey]
     [DisplayName("SpacedRepetition_Card_Header_Id")]
     public int Id { get; set; }
 
+    /// <summary>Database Field. Associated note id to which this card belong.</summary>
     [Indexed]
     public int NoteId { get; set; }
 
+    /// <summary>
+    ///   Database Field. Last time this card was modified, either by reviewing, or by editing
+    ///   content - Unix timestamp.
+    /// </summary>
     [DisplayName("SpacedRepetition_Card_Header_LastModified")]
     public int LastModified { get; set; }
 
+    /// <summary>Database Field. Next review time - Unix timestamp.</summary>
     [Indexed]
     [DisplayName("SpacedRepetition_Card_Header_Due")]
     public int Due { get; set; }
 
+    /// <summary>Database Field. Main card state (new, learning, due, ...). Also see
+    ///   <see cref="Models.PracticeState" />
+    /// </summary>
     [Indexed]
     [DisplayName("SpacedRepetition_Card_Header_PracticeState")]
     public short PracticeState { get; set; }
 
+    /// <summary>
+    ///   Database Field. Other card states (suspended, dismissed, ...). See
+    ///   <see cref="CardMiscStateFlag" />
+    /// </summary>
     [Indexed]
     [DisplayName("SpacedRepetition_Card_Header_MiscState")]
-    public CardMiscStateFlag MiscState { get; private set; }
+    public CardMiscStateFlag MiscState { get; set; }
 
+    /// <summary>Database Field. Ease factor which relates how easily this card was remembered.</summary>
     [DisplayName("SpacedRepetition_Card_Header_EFactor")]
     public float EFactor { get { return _eFactor; } set { _eFactor = SanitizeEFactor(value); } }
 
+    /// <summary>Database Field. Current interval between reviews in days.</summary>
     [DisplayName("SpacedRepetition_Card_Header_Interval")]
     public int Interval
     {
@@ -112,14 +133,23 @@ namespace Sidekick.SpacedRepetition.Models
       set { _interval = SanitizeInterval(value); }
     }
 
+    /// <summary>Database Field. Number of time this card was reviewed.</summary>
     [DisplayName("SpacedRepetition_Card_Header_Reviews")]
     public int Reviews { get; set; }
+
+    /// <summary>Database Field. How many time this card has lapsed.</summary>
     [DisplayName("SpacedRepetition_Card_Header_Lapses")]
     public int Lapses { get; set; }
 
+    /// <summary>Data access property.</summary>
     [Ignore]
     public string Data { get; set; }
 
+    /// <summary>
+    ///   Database Field. Actual data of the card (what to display). Wrapper property which
+    ///   serializes and deserializes the content.
+    /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     [Column("Data")]
     public byte[] DataBackingField
     {

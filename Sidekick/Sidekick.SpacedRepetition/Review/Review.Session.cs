@@ -28,7 +28,6 @@ namespace Sidekick.SpacedRepetition.Review
 
   using Sidekick.Shared.Extensions;
   using Sidekick.Shared.Interfaces.Database;
-  using Sidekick.SpacedRepetition.Const;
   using Sidekick.SpacedRepetition.Models;
 
   /// <summary>Defines all reviews on a given day (session)</summary>
@@ -81,12 +80,12 @@ namespace Sidekick.SpacedRepetition.Review
             .Where(
               l =>
                 l.Id >= todayStart && l.Id < todayEnd
-                && (l.LastState == CardPracticeState.New || l.LastState == CardPracticeState.Due))
+                && (l.LastState == PracticeState.New || l.LastState == PracticeState.Due))
             .SelectColumns(nameof(ReviewLog.LastState))
             .ToListAsync()
             .ConfigureAwait(false);
 
-      int newReviewedToday = logs.Count(l => l.LastState == CardPracticeState.New);
+      int newReviewedToday = logs.Count(l => l.LastState == PracticeState.New);
       int dueReviewedToday = logs.Count() - newReviewedToday;
 
       int newCount = config.NewCardPerDay - newReviewedToday;

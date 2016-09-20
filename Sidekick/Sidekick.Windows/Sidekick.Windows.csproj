@@ -80,6 +80,18 @@
       <HintPath>..\..\packages\Catel.Serialization.Json.4.5.3\lib\net45\Catel.Serialization.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="GongSolutions.Wpf.DragDrop, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\gong-wpf-dragdrop.1.0.0\lib\net45\GongSolutions.Wpf.DragDrop.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="HtmlRenderer, Version=1.5.0.5, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\HtmlRenderer.Core.1.5.0.5\lib\net45\HtmlRenderer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="HtmlRenderer.WPF, Version=1.5.0.6, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\HtmlRenderer.WPF.1.5.0.6\lib\net45\HtmlRenderer.WPF.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="MahApps.Metro, Version=1.2.4.0, Culture=neutral, PublicKeyToken=f4fb5a3c4d1e5b4f, processorArchitecture=MSIL">
       <HintPath>..\..\packages\MahApps.Metro.1.2.4.0\lib\net45\MahApps.Metro.dll</HintPath>
       <Private>True</Private>
@@ -106,6 +118,10 @@
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="Scalpel, Version=1.0.4.0, Culture=neutral, PublicKeyToken=1d3f964f81f300dd, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Scalpel.Fody.1.0.4.0\Lib\portable-net4+sl4+wp7+win8+MonoAndroid16+MonoTouch40\Scalpel.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
@@ -139,6 +155,8 @@
     <Compile Include="Constants.cs">
       <ExcludeFromStyleCop>true</ExcludeFromStyleCop>
     </Compile>
+    <Compile Include="Converters\GradeToBrushConverter.cs" />
+    <Compile Include="Converters\ItemsPresenterEqualSizeConverter.cs" />
     <Compile Include="Converters\TabSizeConverter.cs" />
     <Compile Include="Models\CollectionQuery.cs" />
     <Compile Include="Models\CollectionQueries.cs" />
@@ -146,15 +164,18 @@
     <Compile Include="ModuleInitializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\CollectionQueryManagerService.cs" />
+    <Compile Include="Services\CommandManagerService.cs" />
     <Compile Include="Services\Database\DatabaseAsyncService.cs" />
     <Compile Include="Services\Initialization\ApplicationInitializationService.cs" />
     <Compile Include="Services\ApplicationConfigurationService.cs" />
     <Compile Include="Services\Initialization\ConfigurationInitializationService.cs" />
     <Compile Include="Services\Database\DatabaseService.cs" />
     <Compile Include="Services\Interfaces\IApplicationConfigurationService.cs" />
+    <Compile Include="Services\Interfaces\ICommandManagerEx.cs" />
     <Compile Include="Services\Interfaces\IConfigurationInitializationService.cs" />
     <Compile Include="Services\MahAppsService.cs" />
     <Compile Include="Services\NavigationMenuService.cs" />
+    <Compile Include="SidekickThemeManager.cs" />
     <Compile Include="ViewModels\DataTemplates\ThemeViewModel.cs" />
     <Compile Include="ViewModels\MnemoShellViewModel.cs" />
     <Compile Include="ViewModels\Settings\SettingsThemeViewModel.cs" />
@@ -163,7 +184,9 @@
     <Compile Include="ViewModels\SpacedRepetition\BrowserQueryBuilderViewModel.cs" />
     <Compile Include="ViewModels\SpacedRepetition\BrowserQueryViewerViewModel.cs" />
     <Compile Include="ViewModels\SpacedRepetition\BrowserViewModel.cs" />
+    <Compile Include="ViewModels\SpacedRepetition\CardViewModel.cs" />
     <Compile Include="ViewModels\SpacedRepetition\CollectionDataGridViewModel.cs" />
+    <Compile Include="ViewModels\SpacedRepetition\ReviewViewModel.cs" />
     <Compile Include="Views\MnemoShellWindow.xaml.cs">
       <DependentUpon>MnemoShellWindow.xaml</DependentUpon>
     </Compile>
@@ -192,14 +215,14 @@
     <Compile Include="Views\SpacedRepetition\BrowserWindow.xaml.cs">
       <DependentUpon>BrowserWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\SpacedRepetition\CardAnswerButtonsView.xaml.cs">
-      <DependentUpon>CardAnswerButtonsView.xaml</DependentUpon>
+    <Compile Include="Views\SpacedRepetition\CardView.xaml.cs">
+      <DependentUpon>CardView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\SpacedRepetition\CollectionDataGridView.xaml.cs">
       <DependentUpon>CollectionDataGridView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\SpacedRepetition\CollectionView.xaml.cs">
-      <DependentUpon>CollectionView.xaml</DependentUpon>
+    <Compile Include="Views\SpacedRepetition\ReviewView.xaml.cs">
+      <DependentUpon>ReviewView.xaml</DependentUpon>
     </Compile>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -221,7 +244,11 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="Utils\Xamarin.FormsEx.cs" />
+    <Compile Include="Extensions\Xamarin.Forms.Extensions.cs" />
+    <Page Include="Styles\Controls.DataGridEx.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -261,7 +288,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="FodyWeavers.xml" />
+    <Resource Include="FodyWeavers.xml">
+      <SubType>Designer</SubType>
+    </Resource>
   </ItemGroup>
   <ItemGroup>
     <Page Include="Styles\Controls.Buttons.xaml">
@@ -287,14 +316,18 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Styles\SpacedRepetition\AnswerButton.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Styles\StretchHeaderTabItem.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Resource Include="Styles\Themes\DarkSide.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Resource>
+    <Resource Include="Styles\Themes\LightSide.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Resource>
     <Page Include="Themes\DataTemplates.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -343,7 +376,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\SpacedRepetition\CardAnswerButtonsView.xaml">
+    <Page Include="Views\SpacedRepetition\CardView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -351,7 +384,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\SpacedRepetition\CollectionView.xaml">
+    <Page Include="Views\SpacedRepetition\ReviewView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

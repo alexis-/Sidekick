@@ -23,7 +23,6 @@ namespace Sidekick.SpacedRepetition.Models
 {
   using Sidekick.Shared.Attributes.Database;
   using Sidekick.Shared.Utils;
-  using Sidekick.SpacedRepetition.Const;
 
   [Table("CollectionConfigs")]
   public class CollectionConfig

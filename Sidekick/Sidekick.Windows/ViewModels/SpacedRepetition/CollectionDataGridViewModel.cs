@@ -21,6 +21,7 @@
 
 namespace Sidekick.Windows.ViewModels.SpacedRepetition
 {
+  using System.ComponentModel;
   using System.Threading.Tasks;
 
   using Catel;
@@ -32,17 +33,18 @@ namespace Sidekick.Windows.ViewModels.SpacedRepetition
   using Sidekick.Shared.Interfaces.Database;
   using Sidekick.SpacedRepetition.Models;
   using Sidekick.Windows.Models;
+  using Sidekick.WPF.Controls;
 
-  /// <summary>
-  ///   Displays card collection in a DataGrid.
-  /// </summary>
+  /// <summary>Displays card collection in a DataGrid.</summary>
   /// <seealso cref="Catel.MVVM.ViewModelBase" />
-  public class CollectionDataGridViewModel : ViewModelBase
+  public class CollectionDataGridViewModel : ViewModelBase, ISortController
   {
     #region Fields
 
     private readonly IDatabaseAsync _db;
     private readonly IPleaseWaitService _pleaseWaitService;
+    private SortDescriptionCollection _sortDescriptions;
+    private Task _sortTask;
 
     #endregion
 
@@ -50,9 +52,7 @@ namespace Sidekick.Windows.ViewModels.SpacedRepetition
 
     #region Constructors
 
-    /// <summary>
-    ///   Initializes a new instance of the <see cref="CollectionDataGridViewModel" /> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="CollectionDataGridViewModel" /> class.</summary>
     /// <param name="query">Optional collection query</param>
     /// <param name="db">Database instance.</param>
     /// <param name="pleaseWaitService">The please wait service.</param>
@@ -100,25 +100,54 @@ namespace Sidekick.Windows.ViewModels.SpacedRepetition
     /// <summary>Gets or sets the query.</summary>
     public CollectionQuery Query { get; set; }
 
-    #endregion
+    /// <summary>Gets or sets the DataGrid sort controller.</summary>
+    /// <summary>Called when control sorting is updated.</summary>
+    /// <param name="sortDescriptions">The sort descriptions.</param>
+    public bool OnSorting(SortDescriptionCollection sortDescriptions)
+    {
+      _sortDescriptions = sortDescriptions;
 
+#pragma warning disable 4014
+      _sortTask = PageableCollection.UpdateCurrentPageItemsAsync()
+        .ContinueWith(ret => _sortTask = null);
+#pragma warning restore 4014
 
+      return false;
+    }
 
-    #region Methods
+    /// <summary>Determines whether sort is enabled.</summary>
+    public bool CanSort()
+    {
+      return _sortTask == null;
+    }
 
     /// <inheritdoc />
     protected override async Task InitializeAsync()
     {
-      _pleaseWaitService.Push("Loading collection");
+      try
+      {
+        _pleaseWaitService.Push("Loading collection");
 
-      await PageableCollection.UpdateCurrentPageItemsAsync().ConfigureAwait(true);
-
-      _pleaseWaitService.Pop();
+        await PageableCollection.UpdateCurrentPageItemsAsync().ConfigureAwait(true);
+      }
+      finally
+      {
+        _pleaseWaitService.Pop();
+      }
     }
 
     private ITableQueryAsync<Card> FilterCollection(ITableQueryAsync<Card> query)
     {
-      return Query != null && Query.IsExpressionValid ? Query.Apply(query) : query;
+      if (Query != null && Query.IsExpressionValid)
+        query = Query.Apply(query);
+
+      if (_sortDescriptions != null)
+        foreach (var sortDescription in _sortDescriptions)
+          query = query.AddOrderBy(
+            sortDescription.PropertyName,
+            sortDescription.Direction == ListSortDirection.Ascending);
+
+      return query;
     }
 
     private void OnQueryChanged()

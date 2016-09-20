@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Sidekick.Shared.Extensions;
 using Sidekick.Shared.Utils;
-using Sidekick.SpacedRepetition.Const;
 using Sidekick.SpacedRepetition.Models;
 
 namespace Sidekick.SpacedRepetition.Generators
@@ -64,21 +63,21 @@ namespace Sidekick.SpacedRepetition.Generators
       card.LastModified = Math.Max(card.Id, TimeGenerator.RandomTime());
 
       bool lapsing;
-      CardPracticeState state;
+      PracticeState state;
 
       ComputeNextCardType(out state, out lapsing);
 
       switch (state)
       {
-        case CardPracticeState.Due:
+        case PracticeState.Due:
           DueCount--;
           return SetupDueCard(card, lapsing);
 
-        case CardPracticeState.Learning:
+        case PracticeState.Learning:
           LearnCount--;
           return SetupLearningCard(card, lapsing);
 
-        case CardPracticeState.New:
+        case PracticeState.New:
           NewCount--;
           return SetupNewCard(card);
       }
@@ -87,7 +86,7 @@ namespace Sidekick.SpacedRepetition.Generators
     }
 
     private void ComputeNextCardType(
-      out CardPracticeState state,
+      out PracticeState state,
       out bool lapsing)
     {
       int total = DueCount + LearnCount + NewCount;
@@ -98,17 +97,17 @@ namespace Sidekick.SpacedRepetition.Generators
       int rnd = Random.Next(0, total);
 
       if (rnd < DueCount)
-        state = CardPracticeState.Due;
+        state = PracticeState.Due;
       
       else if (rnd < DueCount + LearnCount)
-        state = CardPracticeState.Learning;
+        state = PracticeState.Learning;
 
       else
-        state = CardPracticeState.New;
+        state = PracticeState.New;
 
       if (LapseCount > 0
-          && (state == CardPracticeState.Due
-              || state == CardPracticeState.Learning))
+          && (state == PracticeState.Due
+              || state == PracticeState.Learning))
       {
         int lapseTotal = DueCount + LearnCount;
 
@@ -123,7 +122,7 @@ namespace Sidekick.SpacedRepetition.Generators
 
     private Card SetupDueCard(Card card, bool lapsing)
     {
-      card.PracticeState = CardPracticeState.Due;
+      card.PracticeState = PracticeState.Due;
       card.Due = Math.Max(card.Id, TimeGenerator.RandomTime());
 
       if (lapsing)
@@ -136,7 +135,7 @@ namespace Sidekick.SpacedRepetition.Generators
 
     private Card SetupLearningCard(Card card, bool lapsing)
     {
-      card.PracticeState = CardPracticeState.Learning;
+      card.PracticeState = PracticeState.Learning;
       card.Due = TimeGenerator.RandomTime(card.LearningOrLapsingSteps.Last());
 
       if (lapsing)
@@ -150,7 +149,7 @@ namespace Sidekick.SpacedRepetition.Generators
 
     private Card SetupNewCard(Card card)
     {
-      card.PracticeState = CardPracticeState.New;
+      card.PracticeState = PracticeState.New;
       card.Due = 0; //Math.Max(card.Id, TimeGenerator.RandomTime());
 
       return card;
@@ -184,7 +183,7 @@ namespace Sidekick.SpacedRepetition.Generators
 
     public static Card MakeCard(
       CollectionConfig config,
-      CardPracticeState state,
+      PracticeState state,
       int due = -1,
       float eFactor = 2.5f,
       int interval = 1,

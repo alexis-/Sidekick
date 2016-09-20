@@ -21,16 +21,20 @@
 
 namespace Sidekick.Windows.Services.Initialization
 {
+  using System.Linq;
   using System.Threading.Tasks;
+  using System.Windows;
+
+  using Anotar.Catel;
 
   using Catel;
   using Catel.IoC;
-  using Catel.Logging;
   using Catel.MVVM;
-  using Catel.Runtime.Serialization.Json;
   using Catel.Services;
   using Catel.Threading;
   using Catel.Windows.Controls;
+
+  using MahApps.Metro;
 
   using MethodTimer;
 
@@ -42,14 +46,12 @@ namespace Sidekick.Windows.Services.Initialization
   using Sidekick.Windows.ViewModels.SpacedRepetition;
   using Sidekick.Windows.Views.SpacedRepetition;
 
-  /// <summary>
-  ///   Core initialization methods.
-  /// </summary>
+  /// <summary>Core initialization methods.</summary>
   /// <seealso cref="Orchestra.Services.ApplicationInitializationServiceBase" />
   public class ApplicationInitializationService : ApplicationInitializationServiceBase
   {
     #region Fields
-    
+
     private readonly IServiceLocator _serviceLocator;
     private readonly ICommandManager _commandManager;
     private readonly IUIVisualizerService _uiVisualizer;
@@ -60,9 +62,8 @@ namespace Sidekick.Windows.Services.Initialization
 
     #region Constructors
 
-    /// <summary>
-    ///   Initializes a new instance of the <see cref="ApplicationInitializationService" /> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="ApplicationInitializationService" />
+    ///   class.</summary>
     /// <param name="serviceLocator">The service locator.</param>
     /// <param name="commandManager">The command manager.</param>
     /// <param name="uiVisualizer">The UI visualizer.</param>
@@ -84,18 +85,21 @@ namespace Sidekick.Windows.Services.Initialization
 
     #region Methods
 
-    //
-    // States override
+    /// <summary>Initializes the before showing splash screen asynchronous.</summary>
+    /// <returns></returns>
+    public override Task InitializeBeforeShowingSplashScreenAsync()
+    {
+      RegisterTypes();
+      InitializeTheme();
 
-    /// <summary>
-    ///   Initializes the before creating shell asynchronous.
-    /// </summary>
+      return base.InitializeBeforeShowingSplashScreenAsync();
+    }
+
+    /// <summary>Initializes the before creating shell asynchronous.</summary>
     /// <returns></returns>
     public override async Task InitializeBeforeCreatingShellAsync()
     {
       // Non-async first
-      RegisterTypes();
-      PreloadTypes();
       InitializeConfiguration();
       InitializeCommands();
       InitializeViewPaths();
@@ -107,13 +111,10 @@ namespace Sidekick.Windows.Services.Initialization
       await InitializeDatabaseAsync().ConfigureAwait(false);
 
       await
-        TaskHelper.RunAndWaitAsync(
-                    InitializeCollectionFilterManagerAsync).ConfigureAwait(false);
+        TaskHelper.RunAndWaitAsync(InitializeCollectionFilterManagerAsync).ConfigureAwait(false);
     }
 
-    /// <summary>
-    ///   Initializes the after creating shell asynchronous.
-    /// </summary>
+    /// <summary>Initializes the after creating shell asynchronous.</summary>
     /// <returns></returns>
     public override async Task InitializeAfterCreatingShellAsync()
     {
@@ -135,11 +136,6 @@ namespace Sidekick.Windows.Services.Initialization
       _serviceLocator.RegisterType<CollectionQueryManagerService>();
     }
 
-    private void PreloadTypes()
-    {
-      var tmp = ServiceLocator.Default.ResolveType<IJsonSerializer>();
-    }
-
     private void InitializeConfiguration()
     {
       var configInitService = _serviceLocator.ResolveType<IConfigurationInitializationService>();
@@ -149,7 +145,13 @@ namespace Sidekick.Windows.Services.Initialization
 
     private void InitializeCommands()
     {
-      // var commandManager = _serviceLocator.ResolveType<ICommandManager>();
+      var commandManager = _serviceLocator.ResolveType<ICommandManager>();
+
+      // Spaced Repetition collection review shortcuts (1 - 5 answer keys)
+      foreach (var answerGesture in Commands.SpacedRepetition.CollectionReview.AnswerGestures)
+        commandManager.CreateCommand(
+          answerGesture.Item1, answerGesture.Item2,
+          throwExceptionWhenCommandIsAlreadyCreated: false);
 
       // commandManager.CreateCommand("File.Refresh", new InputGesture(Key.R, ModifierKeys.Control),
       //   throwExceptionWhenCommandIsAlreadyCreated: false);
@@ -200,6 +202,30 @@ namespace Sidekick.Windows.Services.Initialization
       UserControl.DefaultSkipSearchingForInfoBarMessageControlValue = true;
     }
 
+    private void InitializeTheme()
+    {
+      var appConfigService = _serviceLocator.ResolveType<IApplicationConfigurationService>();
+
+      SidekickThemeManager.Initialize();
+
+      AppTheme appTheme = appConfigService.Theme;
+      Accent accent = appConfigService.Accent;
+
+      if (appTheme == null)
+      {
+        appTheme = SidekickThemeManager.AppThemes.FirstOrDefault();
+        LogTo.Error("AppTheme is NULL, reverting to default.");
+      }
+
+      if (accent == null)
+      {
+        accent = SidekickThemeManager.Accents.FirstOrDefault();
+        LogTo.Error("Accent is NULL, reverting to default.");
+      }
+
+      ThemeManager.ChangeAppStyle(Application.Current, accent, appTheme);
+    }
+
 #if false
     private void InitializeNavigationMenu()
     {
@@ -209,7 +235,7 @@ namespace Sidekick.Windows.Services.Initialization
 
       menuService.Add(
         languageService.GetString("Main_Navigation_Collection_Button"),
-        "appbar_card", 0, typeof(CollectionViewModel));
+        "appbar_card", 0, typeof(ReviewViewModel));
       menuService.Add(
         languageService.GetString("Main_Navigation_KnowledgeNetwork_Button"),
         "appbar_share", 10, null);

@@ -83,6 +83,26 @@ namespace SQLite.Net.Bridge
 
     #region Methods
 
+    public ITableQueryAsync<T> AddOrderBy<TValue>(Expression<Func<T, TValue>> orderExpr, bool asc)
+    {
+      if (orderExpr == null)
+        throw new ArgumentNullException("orderExpr");
+
+      return new TableQueryAsync<T>(
+        _innerQuery.AddOrderBy(orderExpr, asc), _db, _taskScheduler ?? TaskScheduler.Default,
+        _taskCreationOptions);
+    }
+
+    public ITableQueryAsync<T> AddOrderBy(string propertyName, bool asc)
+    {
+      if (propertyName == null)
+        throw new ArgumentNullException("propertyName");
+
+      return new TableQueryAsync<T>(
+        _innerQuery.AddOrderBy(propertyName, asc), _db, _taskScheduler ?? TaskScheduler.Default,
+        _taskCreationOptions);
+    }
+
     public object Clone()
     {
       return new TableQueryAsync<T>(
@@ -191,6 +211,16 @@ namespace SQLite.Net.Bridge
         _taskCreationOptions);
     }
 
+    public ITableQueryAsync<T> OrderBy(string propertyName)
+    {
+      if (propertyName == null)
+        throw new ArgumentNullException("propertyName");
+
+      return new TableQueryAsync<T>(
+        _innerQuery.OrderBy(propertyName), _db, _taskScheduler ?? TaskScheduler.Default,
+        _taskCreationOptions);
+    }
+
 
     public ITableQueryAsync<T> OrderByDescending<TValue>(Expression<Func<T, TValue>> orderExpr)
     {
@@ -199,6 +229,16 @@ namespace SQLite.Net.Bridge
 
       return new TableQueryAsync<T>(
         _innerQuery.OrderByDescending(orderExpr), _db, _taskScheduler ?? TaskScheduler.Default,
+        _taskCreationOptions);
+    }
+
+    public ITableQueryAsync<T> OrderByDescending(string propertyName)
+    {
+      if (propertyName == null)
+        throw new ArgumentNullException("propertyName");
+
+      return new TableQueryAsync<T>(
+        _innerQuery.OrderByDescending(propertyName), _db, _taskScheduler ?? TaskScheduler.Default,
         _taskCreationOptions);
     }
 
@@ -253,6 +293,16 @@ namespace SQLite.Net.Bridge
         _taskCreationOptions);
     }
 
+    public ITableQueryAsync<T> ThenBy(string propertyName)
+    {
+      if (propertyName == null)
+        throw new ArgumentNullException("propertyName");
+
+      return new TableQueryAsync<T>(
+        _innerQuery.ThenBy(propertyName), _db, _taskScheduler ?? TaskScheduler.Default,
+        _taskCreationOptions);
+    }
+
 
     public ITableQueryAsync<T> ThenByDescending<TValue>(Expression<Func<T, TValue>> orderExpr)
     {
@@ -261,6 +311,16 @@ namespace SQLite.Net.Bridge
 
       return new TableQueryAsync<T>(
         _innerQuery.ThenByDescending(orderExpr), _db, _taskScheduler ?? TaskScheduler.Default,
+        _taskCreationOptions);
+    }
+
+    public ITableQueryAsync<T> ThenByDescending(string propertyName)
+    {
+      if (propertyName == null)
+        throw new ArgumentNullException("propertyName");
+
+      return new TableQueryAsync<T>(
+        _innerQuery.ThenByDescending(propertyName), _db, _taskScheduler ?? TaskScheduler.Default,
         _taskCreationOptions);
     }
 

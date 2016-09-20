@@ -39,7 +39,7 @@ namespace Sidekick.SpacedRepetition.Review
   ///   - Async loading
   /// </summary>
   /// <seealso cref="Sidekick.Shared.Utils.Collections.AsyncDbListBase{Card}" />
-  internal abstract class ReviewAsyncDbListBase : AsyncDbListBase<Card>
+  internal abstract class ReviewCollectionAsyncBase : AsyncDbListBase<Card>
   {
     #region Fields
 
@@ -66,10 +66,10 @@ namespace Sidekick.SpacedRepetition.Review
     // Constructor
 
     /// <summary>
-    ///   Initializes a new instance of the <see cref="ReviewAsyncDbListBase" /> class.
+    ///   Initializes a new instance of the <see cref="ReviewCollectionAsyncBase" /> class.
     /// </summary>
     /// <param name="db">The database.</param>
-    protected ReviewAsyncDbListBase(IDatabaseAsync db) : base(db, true)
+    protected ReviewCollectionAsyncBase(IDatabaseAsync db) : base(db, true)
     {
       FurtherLoadedIndex = -1;
       DismissedIds = new HashSet<int>();

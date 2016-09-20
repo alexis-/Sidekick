@@ -51,333 +51,302 @@
 //
 // Copious parts of this code from https://github.com/MahApps/MahApps.Metro/
 
-using System;
-using System.ComponentModel;
-using System.Windows;
-using System.Windows.Controls.Primitives;
-using System.Windows.Data;
-using System.Windows.Input;
-
 namespace Sidekick.WPF.Controls
 {
-  [TemplateVisualState(Name = NormalState, GroupName = CommonStates)]
-  [TemplateVisualState(Name = DisabledState, GroupName = CommonStates)]
-  [TemplatePart(Name = "PART_Button", Type = typeof(ToggleButton))]
-  public class FlatIconizableToggleButton :
-    FlatIconizableButtonBase<ToggleButton>
-  {
-    #region Fields
+    using System;
+    using System.ComponentModel;
+    using System.Windows;
+    using System.Windows.Controls.Primitives;
+    using System.Windows.Data;
+    using System.Windows.Input;
 
-    //
-    // Fields
-    private const string CommonStates = "CommonStates";
-    private const string NormalState = "Normal";
-    private const string DisabledState = "Disabled";
-
-    public static readonly DependencyProperty IsCheckedProperty =
-      DependencyProperty.Register(
-        "IsChecked", typeof(bool?), typeof(FlatIconizableToggleButton),
-        new FrameworkPropertyMetadata(
-          false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
-          OnIsCheckedChanged));
-
-    public static readonly DependencyProperty CheckChangedCommandProperty =
-      DependencyProperty.Register(
-        "CheckChangedCommand", typeof(ICommand),
-        typeof(FlatIconizableToggleButton), new PropertyMetadata(null));
-
-    public static readonly DependencyProperty CheckedCommandProperty =
-      DependencyProperty.Register(
-        "CheckedCommand", typeof(ICommand),
-        typeof(FlatIconizableToggleButton), new PropertyMetadata(null));
-
-    public static readonly DependencyProperty UnCheckedCommandProperty =
-      DependencyProperty.Register(
-        "UnCheckedCommand", typeof(ICommand),
-        typeof(FlatIconizableToggleButton), new PropertyMetadata(null));
-
-    public static readonly DependencyProperty
-      CheckChangedCommandParameterProperty =
-      DependencyProperty.Register(
-        "CheckChangedCommandParameter", typeof(object),
-        typeof(FlatIconizableToggleButton), new PropertyMetadata(null));
-
-    public static readonly DependencyProperty
-      CheckedCommandParameterProperty =
-      DependencyProperty.Register(
-        "CheckedCommandParameter", typeof(object),
-        typeof(FlatIconizableToggleButton), new PropertyMetadata(null));
-
-    public static readonly DependencyProperty
-      UnCheckedCommandParameterProperty =
-      DependencyProperty.Register(
-        "UnCheckedCommandParameter", typeof(object),
-        typeof(FlatIconizableToggleButton), new PropertyMetadata(null));
-
-    public static readonly DependencyProperty RadioControllerProperty =
-        DependencyProperty.Register(
-          "RadioController", typeof(RadioController),
-          typeof(FlatIconizableToggleButton),
-          new PropertyMetadata(null, OnRadioControllerPropertyChanged));
-
-    public static readonly DependencyProperty
-      RadioControllerParameterProperty =
-        DependencyProperty.Register(
-          "RadioControllerParameter", typeof(object),
-          typeof(FlatIconizableToggleButton),
-          new PropertyMetadata(null));
-
-    #endregion
-
-    #region Constructors
-
-    //
-    // Constructors
-
-    static FlatIconizableToggleButton()
+    [TemplateVisualState(Name = NormalState, GroupName = CommonStates)]
+    [TemplateVisualState(Name = DisabledState, GroupName = CommonStates)]
+    [TemplatePart(Name = "PART_Button", Type = typeof(ToggleButton))]
+    public class FlatIconizableToggleButton : FlatIconizableButtonBase<ToggleButton>
     {
-      DefaultStyleKeyProperty.OverrideMetadata(
-        typeof(FlatIconizableToggleButton),
-        new FrameworkPropertyMetadata(typeof(FlatIconizableToggleButton)));
-    }
+        #region Fields
 
-    #endregion
+        //
+        // Fields
+        private const string CommonStates = "CommonStates";
+        private const string NormalState = "Normal";
+        private const string DisabledState = "Disabled";
 
-    #region Properties
+        public static readonly DependencyProperty IsCheckedProperty =
+            DependencyProperty.Register(
+                "IsChecked", typeof(bool?), typeof(FlatIconizableToggleButton),
+                new FrameworkPropertyMetadata(
+                    false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
+                    OnIsCheckedChanged));
 
-    /// <summary>
-    /// Gets/sets whether the control is Checked (On) or not (Off).
-    /// </summary>
-    [TypeConverter(typeof(NullableBoolConverter))]
-    public bool? IsChecked
-    {
-      get { return (bool?)GetValue(IsCheckedProperty); }
-      set { SetValue(IsCheckedProperty, value); }
-    }
+        public static readonly DependencyProperty CheckChangedCommandProperty =
+            DependencyProperty.Register(
+                "CheckChangedCommand", typeof(ICommand), typeof(FlatIconizableToggleButton),
+                new PropertyMetadata(null));
 
-    /// <summary>
-    /// Gets/sets the command which will be executed if the IsChecked property
-    /// was changed.
-    /// </summary>
-    public ICommand CheckChangedCommand
-    {
-      get { return (ICommand)GetValue(CheckChangedCommandProperty); }
-      set { SetValue(CheckChangedCommandProperty, value); }
-    }
+        public static readonly DependencyProperty CheckedCommandProperty =
+            DependencyProperty.Register(
+                "CheckedCommand", typeof(ICommand), typeof(FlatIconizableToggleButton),
+                new PropertyMetadata(null));
 
-    /// <summary>
-    /// Gets/sets the command which will be executed if the checked event of
-    /// the control is fired.
-    /// </summary>
-    public ICommand CheckedCommand
-    {
-      get { return (ICommand)GetValue(CheckedCommandProperty); }
-      set { SetValue(CheckedCommandProperty, value); }
-    }
+        public static readonly DependencyProperty UnCheckedCommandProperty =
+            DependencyProperty.Register(
+                "UnCheckedCommand", typeof(ICommand), typeof(FlatIconizableToggleButton),
+                new PropertyMetadata(null));
 
-    /// <summary>
-    /// Gets/sets the command which will be executed if the checked event of
-    /// the control is fired.
-    /// </summary>
-    public ICommand UnCheckedCommand
-    {
-      get { return (ICommand)GetValue(UnCheckedCommandProperty); }
-      set { SetValue(UnCheckedCommandProperty, value); }
-    }
+        public static readonly DependencyProperty CheckChangedCommandParameterProperty =
+            DependencyProperty.Register(
+                "CheckChangedCommandParameter", typeof(object),
+                typeof(FlatIconizableToggleButton), new PropertyMetadata(null));
 
-    /// <summary>
-    /// Gets/sets the command parameter which will be passed by the
-    /// CheckChangedCommand.
-    /// </summary>
-    public object CheckChangedCommandParameter
-    {
-      get { return GetValue(CheckChangedCommandParameterProperty); }
-      set { SetValue(CheckChangedCommandParameterProperty, value); }
-    }
+        public static readonly DependencyProperty CheckedCommandParameterProperty =
+            DependencyProperty.Register(
+                "CheckedCommandParameter", typeof(object), typeof(FlatIconizableToggleButton),
+                new PropertyMetadata(null));
 
-    /// <summary>
-    /// Gets/sets the command parameter which will be passed by the
-    /// CheckedCommand.
-    /// </summary>
-    public object CheckedCommandParameter
-    {
-      get { return GetValue(CheckedCommandParameterProperty); }
-      set { SetValue(CheckedCommandParameterProperty, value); }
-    }
+        public static readonly DependencyProperty UnCheckedCommandParameterProperty =
+            DependencyProperty.Register(
+                "UnCheckedCommandParameter", typeof(object), typeof(FlatIconizableToggleButton),
+                new PropertyMetadata(null));
 
-    /// <summary>
-    /// Gets/sets the command parameter which will be passed by the
-    /// UnCheckedCommand.
-    /// </summary>
-    public object UnCheckedCommandParameter
-    {
-      get { return GetValue(UnCheckedCommandParameterProperty); }
-      set { SetValue(UnCheckedCommandParameterProperty, value); }
-    }
+        public static readonly DependencyProperty RadioControllerProperty =
+            DependencyProperty.Register(
+                "RadioController", typeof(RadioController), typeof(FlatIconizableToggleButton),
+                new PropertyMetadata(null, OnRadioControllerPropertyChanged));
 
-    /// <summary>
-    /// Gets or sets the radio control panel to handle checking/unchecking.
-    /// </summary>
-    [Bindable(true)]
-    public RadioController RadioController
-    {
-      get { return (RadioController)GetValue(RadioControllerProperty); }
-      set { SetValue(RadioControllerProperty, value); }
-    }
+        public static readonly DependencyProperty RadioControllerParameterProperty =
+            DependencyProperty.Register(
+                "RadioControllerParameter", typeof(object), typeof(FlatIconizableToggleButton),
+                new PropertyMetadata(null));
 
-    /// <summary>
-    /// Gets or sets the radio control parameter to be passed along with
-    /// selection callbacks.
-    /// </summary>
-    [Bindable(true)]
-    public object RadioControllerParameter
-    {
-      get { return GetValue(RadioControllerParameterProperty); }
-      set { SetValue(RadioControllerParameterProperty, value); }
-    }
-
-    #endregion
-
-    #region Methods
-
-    public event EventHandler<RoutedEventArgs> Checked;
-    public event EventHandler<RoutedEventArgs> Unchecked;
-    public event EventHandler<RoutedEventArgs> Indeterminate;
-
-    /// <summary>
-    /// An event that is raised when the value of IsChecked changes.
-    /// </summary>
-    public event EventHandler IsCheckedChanged;
-
-    //
-    // Methods
+        #endregion
 
 
-    private static void OnIsCheckedChanged(
-      DependencyObject d, DependencyPropertyChangedEventArgs e)
-    {
-      var thisButton = (FlatIconizableToggleButton)d;
 
-      if (thisButton.ButtonBase != null)
-      {
-        var oldValue = (bool?)e.OldValue;
-        var newValue = (bool?)e.NewValue;
+        #region Constructors
 
-        if (oldValue != newValue)
+        //
+        // Constructors
+
+        static FlatIconizableToggleButton()
         {
-          var command = thisButton.CheckChangedCommand;
-          var commandParameter =
-            thisButton.CheckChangedCommandParameter
-            ?? thisButton;
-
-          if (command != null && command.CanExecute(commandParameter))
-          {
-            command.Execute(commandParameter);
-          }
-
-          thisButton.IsCheckedChanged?.Invoke(thisButton, EventArgs.Empty);
+            DefaultStyleKeyProperty.OverrideMetadata(
+                typeof(FlatIconizableToggleButton),
+                new FrameworkPropertyMetadata(typeof(FlatIconizableToggleButton)));
         }
-      }
+
+        #endregion
+
+
+
+        #region Events
+
+        public event EventHandler<RoutedEventArgs> Checked;
+        public event EventHandler<RoutedEventArgs> Unchecked;
+        public event EventHandler<RoutedEventArgs> Indeterminate;
+
+        /// <summary>An event that is raised when the value of IsChecked changes.</summary>
+        public event EventHandler IsCheckedChanged;
+
+        #endregion
+
+
+
+        #region Properties
+
+        /// <summary>Gets/sets whether the control is Checked (On) or not (Off).</summary>
+        [TypeConverter(typeof(NullableBoolConverter))]
+        public bool? IsChecked
+        {
+            get { return (bool?)GetValue(IsCheckedProperty); }
+            set { SetValue(IsCheckedProperty, value); }
+        }
+
+        /// <summary>Gets/sets the command which will be executed if the IsChecked property was changed.</summary>
+        public ICommand CheckChangedCommand
+        {
+            get { return (ICommand)GetValue(CheckChangedCommandProperty); }
+            set { SetValue(CheckChangedCommandProperty, value); }
+        }
+
+        /// <summary>
+        ///     Gets/sets the command which will be executed if the checked event of the control is
+        ///     fired.
+        /// </summary>
+        public ICommand CheckedCommand
+        {
+            get { return (ICommand)GetValue(CheckedCommandProperty); }
+            set { SetValue(CheckedCommandProperty, value); }
+        }
+
+        /// <summary>
+        ///     Gets/sets the command which will be executed if the checked event of the control is
+        ///     fired.
+        /// </summary>
+        public ICommand UnCheckedCommand
+        {
+            get { return (ICommand)GetValue(UnCheckedCommandProperty); }
+            set { SetValue(UnCheckedCommandProperty, value); }
+        }
+
+        /// <summary>Gets/sets the command parameter which will be passed by the CheckChangedCommand.</summary>
+        public object CheckChangedCommandParameter
+        {
+            get { return GetValue(CheckChangedCommandParameterProperty); }
+            set { SetValue(CheckChangedCommandParameterProperty, value); }
+        }
+
+        /// <summary>Gets/sets the command parameter which will be passed by the CheckedCommand.</summary>
+        public object CheckedCommandParameter
+        {
+            get { return GetValue(CheckedCommandParameterProperty); }
+            set { SetValue(CheckedCommandParameterProperty, value); }
+        }
+
+        /// <summary>Gets/sets the command parameter which will be passed by the UnCheckedCommand.</summary>
+        public object UnCheckedCommandParameter
+        {
+            get { return GetValue(UnCheckedCommandParameterProperty); }
+            set { SetValue(UnCheckedCommandParameterProperty, value); }
+        }
+
+        /// <summary>Gets or sets the radio control panel to handle checking/unchecking.</summary>
+        [Bindable(true)]
+        public RadioController RadioController
+        {
+            get { return (RadioController)GetValue(RadioControllerProperty); }
+            set { SetValue(RadioControllerProperty, value); }
+        }
+
+        /// <summary>Gets or sets the radio control parameter to be passed along with selection callbacks.</summary>
+        [Bindable(true)]
+        public object RadioControllerParameter
+        {
+            get { return GetValue(RadioControllerParameterProperty); }
+            set { SetValue(RadioControllerParameterProperty, value); }
+        }
+
+        #endregion
+
+
+
+        #region Methods
+
+        //
+        // Methods
+
+
+        private static void OnIsCheckedChanged(
+            DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var thisButton = (FlatIconizableToggleButton)d;
+
+            if (thisButton.ButtonBase != null)
+            {
+                var oldValue = (bool?)e.OldValue;
+                var newValue = (bool?)e.NewValue;
+
+                if (oldValue != newValue)
+                {
+                    var command = thisButton.CheckChangedCommand;
+                    var commandParameter = thisButton.CheckChangedCommandParameter ?? thisButton;
+
+                    if (command != null && command.CanExecute(commandParameter))
+                        command.Execute(commandParameter);
+
+                    thisButton.IsCheckedChanged?.Invoke(thisButton, EventArgs.Empty);
+                }
+            }
+        }
+
+        private static void OnRadioControllerPropertyChanged(
+            DependencyObject dependencyObject,
+            DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
+        {
+            var thisButton = (FlatIconizableToggleButton)dependencyObject;
+
+            if (thisButton.RadioController != null && thisButton.ButtonBase != null)
+            {
+                ToggleButton toggleButton = thisButton.ButtonBase as ToggleButton;
+
+                thisButton.RadioController.AddElement(
+                              toggleButton,
+                              thisButton.RadioControllerParameter ?? thisButton.Name);
+            }
+        }
+
+        private void ChangeVisualState(bool useTransitions)
+        {
+            VisualStateManager.GoToState(
+                this, IsEnabled ? NormalState : DisabledState, useTransitions);
+        }
+
+
+        public override void OnApplyTemplate()
+        {
+            base.OnApplyTemplate();
+
+            if (ButtonBase != null)
+            {
+                ButtonBase.Checked -= CheckedHandler;
+                ButtonBase.Unchecked -= UncheckedHandler;
+                ButtonBase.Indeterminate -= IndeterminateHandler;
+
+                BindingOperations.ClearBinding(ButtonBase, ToggleButton.IsCheckedProperty);
+
+                ButtonBase.IsEnabledChanged -= IsEnabledHandler;
+            }
+
+            ButtonBase = EnforceInstance<ToggleButton>("PART_Button");
+
+            if (ButtonBase != null)
+            {
+                ButtonBase.Checked += CheckedHandler;
+                ButtonBase.Unchecked += UncheckedHandler;
+                ButtonBase.Indeterminate += IndeterminateHandler;
+
+                var binding = new Binding("IsChecked") { Source = this };
+                ButtonBase.SetBinding(ToggleButton.IsCheckedProperty, binding);
+
+                ButtonBase.IsEnabledChanged += IsEnabledHandler;
+
+                RadioController?.AddElement(ButtonBase, RadioControllerParameter);
+            }
+
+            ChangeVisualState(false);
+        }
+
+        private void IsEnabledHandler(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            ChangeVisualState(false);
+        }
+
+        private void CheckedHandler(object sender, RoutedEventArgs e)
+        {
+            var command = CheckedCommand;
+            var commandParameter = CheckedCommandParameter ?? this;
+            if (command != null && command.CanExecute(commandParameter))
+                command.Execute(commandParameter);
+
+            SafeRaise.Raise(Checked, this, e);
+        }
+
+        private void UncheckedHandler(object sender, RoutedEventArgs e)
+        {
+            var command = UnCheckedCommand;
+            var commandParameter = UnCheckedCommandParameter ?? this;
+            if (command != null && command.CanExecute(commandParameter))
+                command.Execute(commandParameter);
+
+            SafeRaise.Raise(Unchecked, this, e);
+        }
+
+        private void IndeterminateHandler(object sender, RoutedEventArgs e)
+        {
+            SafeRaise.Raise(Indeterminate, this, e);
+        }
+
+        #endregion
     }
-
-    private static void OnRadioControllerPropertyChanged(
-      DependencyObject dependencyObject,
-      DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
-    {
-      var thisButton = (FlatIconizableToggleButton)dependencyObject;
-
-      if (thisButton.RadioController != null
-        && thisButton.ButtonBase != null)
-      {
-        ToggleButton toggleButton = thisButton.ButtonBase as ToggleButton;
-
-        thisButton.RadioController.AddElement(
-          toggleButton,
-          thisButton.RadioControllerParameter ?? thisButton.Name);
-      }
-    }
-
-    private void ChangeVisualState(bool useTransitions)
-    {
-      VisualStateManager.GoToState(
-        this,
-        IsEnabled
-          ? NormalState
-          : DisabledState,
-        useTransitions);
-    }
-
-
-    public override void OnApplyTemplate()
-    {
-      base.OnApplyTemplate();
-
-      if (ButtonBase != null)
-      {
-        ButtonBase.Checked -= CheckedHandler;
-        ButtonBase.Unchecked -= UncheckedHandler;
-        ButtonBase.Indeterminate -= IndeterminateHandler;
-
-        BindingOperations.ClearBinding(
-          ButtonBase, ToggleButton.IsCheckedProperty);
-
-        ButtonBase.IsEnabledChanged -= IsEnabledHandler;
-      }
-
-      ButtonBase = EnforceInstance<ToggleButton>("PART_Button");
-
-      if (ButtonBase != null)
-      {
-        ButtonBase.Checked += CheckedHandler;
-        ButtonBase.Unchecked += UncheckedHandler;
-        ButtonBase.Indeterminate += IndeterminateHandler;
-
-        var binding = new Binding("IsChecked") { Source = this };
-        ButtonBase.SetBinding(ToggleButton.IsCheckedProperty, binding);
-
-        ButtonBase.IsEnabledChanged += IsEnabledHandler;
-
-        RadioController?.AddElement(ButtonBase, RadioControllerParameter);
-      }
-
-      ChangeVisualState(false);
-    }
-
-    private void IsEnabledHandler(
-      object sender, DependencyPropertyChangedEventArgs e)
-    {
-      ChangeVisualState(false);
-    }
-
-    private void CheckedHandler(object sender, RoutedEventArgs e)
-    {
-      var command = CheckedCommand;
-      var commandParameter = CheckedCommandParameter ?? this;
-      if (command != null && command.CanExecute(commandParameter))
-      {
-        command.Execute(commandParameter);
-      }
-
-      SafeRaise.Raise(Checked, this, e);
-    }
-
-    private void UncheckedHandler(object sender, RoutedEventArgs e)
-    {
-      var command = UnCheckedCommand;
-      var commandParameter = UnCheckedCommandParameter ?? this;
-      if (command != null && command.CanExecute(commandParameter))
-      {
-        command.Execute(commandParameter);
-      }
-
-      SafeRaise.Raise(Unchecked, this, e);
-    }
-
-    private void IndeterminateHandler(object sender, RoutedEventArgs e)
-    {
-      SafeRaise.Raise(Indeterminate, this, e);
-    }
-
-    #endregion
-  }
 }

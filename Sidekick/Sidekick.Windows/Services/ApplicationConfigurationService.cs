@@ -72,7 +72,7 @@ namespace Sidekick.Windows.Services
         string themeName = GetValue(
           Settings.Application.Theme.AppTheme, Settings.Application.Theme.AppThemeDefaultValue);
 
-        return ThemeManager.GetAppTheme(themeName);
+        return SidekickThemeManager.GetAppTheme(themeName);
       }
       set { SetValue(Settings.Application.Theme.AppTheme, value.Name); }
     }
@@ -87,7 +87,7 @@ namespace Sidekick.Windows.Services
         string accentName = GetValue(
           Settings.Application.Theme.Accent, Settings.Application.Theme.AccentDefaultValue);
 
-        return ThemeManager.GetAccent(accentName);
+        return SidekickThemeManager.GetAccent(accentName);
       }
       set { SetValue(Settings.Application.Theme.Accent, value.Name); }
     }

@@ -89,7 +89,7 @@
 
       <Rectangle x:Name="SettingSeparator"
                  Grid.Row="1"
-                 Style="{DynamicResource VerticalSeparator}" />
+                 Style="{DynamicResource HorizontalSeparator}" />
 
       <!--Settings container-->
       <Grid x:Name="SettingsContainer"
@@ -121,7 +121,7 @@
     <!--Separator-->
     <Rectangle Name="ContentSeparator"
                Grid.Column="1"
-               Style="{DynamicResource HorizontalSeparator}" />
+               Style="{DynamicResource VerticalSeparator}" />
 
     <!--Content holder-->
     <Grid Name="ContentRootGrid"

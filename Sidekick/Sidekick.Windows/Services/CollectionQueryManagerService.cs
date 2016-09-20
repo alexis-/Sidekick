@@ -126,9 +126,10 @@ namespace Sidekick.Windows.Services
     private void QueriesOnCollectionChanged(
       object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
     {
-      if (notifyCollectionChangedEventArgs.Action == NotifyCollectionChangedAction.Add)
+      /*if (notifyCollectionChangedEventArgs.Action == NotifyCollectionChangedAction.Add)
         notifyCollectionChangedEventArgs.NewItems.OfType<CollectionQuery>()
-                                        .ForEach(i => i.EnsureIntegrity(_reflectionService));
+                                        .ForEach(i => i.EnsureIntegrity(_reflectionService));*/
+      CollectionQueries.Queries.ForEach(i => i.EnsureIntegrity(_reflectionService));
     }
 
     #endregion

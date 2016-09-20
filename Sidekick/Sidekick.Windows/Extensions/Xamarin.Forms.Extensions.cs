@@ -19,41 +19,27 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-namespace Sidekick.SpacedRepetition.Models
+namespace Sidekick.Windows.Extensions
 {
-  using System;
+  using System.Windows.Media;
 
-  using Sidekick.Shared.Attributes.Database;
-  using Sidekick.Shared.Extensions;
-  using Sidekick.Shared.Utils;
-
-  /// <summary>
-  ///   Card model for SpacedRepetition system. Keeps track of individual cards progress
-  ///   (ease, interval, ...) and datas.
-  /// </summary>
-  public partial class Card
+  /// <summary>Xamarin.Forms-related extensions methods</summary>
+  public static class XamarinFormsExtensions
   {
-    #region Properties
+    #region Methods
 
     /// <summary>
-    ///   Used in reviewing card process. Store time of review, from which other values will be
-    ///   computed (Due, Steps, ...)
+    ///   Converts a Xamarin <see cref="Xamarin.Forms.Color" /> to a Windows
+    ///   <see cref="Color" />.
     /// </summary>
-    [Ignore]
-    public int CurrentReviewTime { get; set; }
-
-    /// <summary>Either return Config's Lapsing or Learning steps, depending on Card Lapse value.</summary>
-    [Ignore]
-    public Delay[] LearningOrLapsingSteps
-      => Lapses > 0 ? Config.LapseSteps : Config.LearningSteps;
-
-    /// <summary>Gets due value in DateTime format.</summary>
-    [Ignore]
-    public DateTime DueDateTime => DateTimeExtensions.FromUnixTimestamp(Due);
-
-    /// <summary>Configuration inherited by current Card</summary>
-    [Ignore]
-    internal CollectionConfig Config { get; set; }
+    /// <param name="color">The Xamarin color.</param>
+    /// <returns></returns>
+    public static Color ToWPFColor(this Xamarin.Forms.Color color)
+    {
+      return Color.FromArgb(
+        (byte)(color.A * 255), (byte)(color.R * 255), (byte)(color.G * 255),
+        (byte)(color.B * 255));
+    }
 
     #endregion
   }

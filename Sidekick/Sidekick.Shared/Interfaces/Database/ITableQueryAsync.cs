@@ -36,6 +36,10 @@ namespace Sidekick.Shared.Interfaces.Database
   {
     #region Methods
 
+    ITableQueryAsync<T> AddOrderBy<TValue>(Expression<Func<T, TValue>> orderExpr, bool asc);
+
+    ITableQueryAsync<T> AddOrderBy(string propertyName, bool asc);
+
     object Clone();
 
     Task<int> CountAsync(CancellationToken cancellationToken = default(CancellationToken));
@@ -56,7 +60,11 @@ namespace Sidekick.Shared.Interfaces.Database
 
     ITableQueryAsync<T> OrderBy<TValue>(Expression<Func<T, TValue>> orderExpr);
 
+    ITableQueryAsync<T> OrderBy(string propertyName);
+
     ITableQueryAsync<T> OrderByDescending<TValue>(Expression<Func<T, TValue>> orderExpr);
+
+    ITableQueryAsync<T> OrderByDescending(string propertyName);
 
     ITableQueryAsync<T> OrderByRand();
 
@@ -70,7 +78,11 @@ namespace Sidekick.Shared.Interfaces.Database
 
     ITableQueryAsync<T> ThenBy<TValue>(Expression<Func<T, TValue>> orderExpr);
 
+    ITableQueryAsync<T> ThenBy(string propertyName);
+
     ITableQueryAsync<T> ThenByDescending<TValue>(Expression<Func<T, TValue>> orderExpr);
+
+    ITableQueryAsync<T> ThenByDescending(string propertyName);
 
     ITableQueryAsync<T> Where(Expression<Func<T, bool>> predExpr);
 

@@ -19,61 +19,83 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System;
-
-namespace Sidekick.SpacedRepetition.Const
+namespace Sidekick.SpacedRepetition.Models
 {
-  public struct GradeInfo
+  using System;
+
+  /// <summary>
+  ///   Answer meta-datas : Grade value, Localized description, 
+  /// </summary>
+  public struct ReviewAnswerInfo
   {
-    public Grade Grade { get; set; }
-    public string LocalizableText { get; set; }
-    public DateTime NextReview { get; set; }
-    public string[] CardValuesAftermath { get; set; }
+    #region Predefined
 
-
-    //
-    // Pre-defined GradeInfo
-
-    public static GradeInfo GradeFailSevere =>
-      new GradeInfo
+    /// <summary>Gets the fail severe.</summary>
+    public static ReviewAnswerInfo FailSevere =>
+      new ReviewAnswerInfo
       {
         Grade = Grade.FailSevere,
         LocalizableText = "SpacedRepetition_Grade_FailSevere"
       };
 
-    public static GradeInfo GradeFailMedium =>
-      new GradeInfo
+    /// <summary>Gets the fail medium.</summary>
+    public static ReviewAnswerInfo FailMedium =>
+      new ReviewAnswerInfo
       {
         Grade = Grade.FailMedium,
         LocalizableText = "SpacedRepetition_Grade_FailMedium"
       };
 
-    public static GradeInfo GradeFail =>
-      new GradeInfo
+    /// <summary>Gets the fail.</summary>
+    public static ReviewAnswerInfo Fail =>
+      new ReviewAnswerInfo
       {
         Grade = Grade.Fail,
         LocalizableText = "SpacedRepetition_Grade_Fail"
       };
 
-    public static GradeInfo GradeHard =>
-      new GradeInfo
+    /// <summary>Gets the hard.</summary>
+    public static ReviewAnswerInfo Hard =>
+      new ReviewAnswerInfo
       {
         Grade = Grade.Hard,
         LocalizableText = "SpacedRepetition_Grade_Hard"
       };
 
-    public static GradeInfo GradeGood =>
-      new GradeInfo
+    /// <summary>Gets the good.</summary>
+    public static ReviewAnswerInfo Good =>
+      new ReviewAnswerInfo
       {
         Grade = Grade.Good,
         LocalizableText = "SpacedRepetition_Grade_Good"
       };
 
-    public static GradeInfo GradeEasy =>
-      new GradeInfo
+    /// <summary>Gets the easy.</summary>
+    public static ReviewAnswerInfo Easy =>
+      new ReviewAnswerInfo
       {
         Grade = Grade.Easy,
         LocalizableText = "SpacedRepetition_Grade_Easy"
       };
+
+    #endregion
+
+
+
+    #region Properties
+
+    /// <summary>Answer grade.</summary>
+    public Grade Grade { get; set; }
+
+    /// <summary>Localizable text reference.</summary>
+    public string LocalizableText { get; set; }
+
+    /// <summary>Next review date time.</summary>
+    public DateTime NextReview { get; set; }
+
+    /// <summary>Aftermath values of answering with given <see cref="Grade"/>.</summary>
+    public string[] CardValuesAftermath { get; set; }
+
+    #endregion
   }
 }

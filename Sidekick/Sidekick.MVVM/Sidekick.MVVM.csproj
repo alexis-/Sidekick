@@ -36,7 +36,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Extensions\SpacedRepetition\GradeExtensions.cs" />
+    <Compile Include="Extensions\SpacedRepetition\Grade.Extensions.cs" />
     <Compile Include="Models\DbPageableCollection.cs" />
     <Compile Include="Models\InMemoryPageableCollection.cs" />
     <Compile Include="Models\PageableCollectionBase.cs" />
@@ -47,8 +47,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="ViewModels\MainContentViewModelBase.cs" />
-    <Compile Include="ViewModels\SpacedRepetition\CardAnswerButtonsViewModel.cs" />
-    <Compile Include="ViewModels\SpacedRepetition\CollectionViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Anotar.Catel, Version=3.1.0.0, Culture=neutral, PublicKeyToken=9d5b24f0733c26f7, processorArchitecture=MSIL">

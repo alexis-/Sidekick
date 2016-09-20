@@ -43,21 +43,19 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Const\CardPracticeState.cs" />
-    <Compile Include="Const\Const.SpacedRepetition.cs" />
-    <Compile Include="Const\Grade.cs" />
-    <Compile Include="Const\GradeInfo.cs" />
-    <Compile Include="Extensions\CardExtensions.cs" />
-    <Compile Include="Extensions\GradeExtensions.cs" />
-    <Compile Include="Generators\CardGenerator.cs" />
-    <Compile Include="Generators\CollectionGenerator.cs" />
-    <Compile Include="Generators\TimeGenerator.cs" />
+    <Compile Include="Models\PracticeState.cs" />
+    <Compile Include="Const.SpacedRepetition.cs" />
+    <Compile Include="Models\Grade.cs" />
+    <Compile Include="Models\ReviewAnswerInfo.cs" />
+    <Compile Include="Extensions\Card.Action.Extensions.cs" />
+    <Compile Include="Extensions\Grade.Extensions.cs" />
+    <Compile Include="Generators\Generator.Card.cs" />
+    <Compile Include="Generators\Generator.Collection.cs" />
+    <Compile Include="Generators\Generator.Time.cs" />
     <Compile Include="Interfaces\IReviewCollection.cs" />
     <Compile Include="Interfaces\ISpacedRepetition.cs" />
-    <Compile Include="Models\Card.Impl.cs" />
     <Compile Include="Models\Card.Access.cs" />
     <Compile Include="Models\Card.Misc.cs" />
-    <Compile Include="Models\Card.Scheduling.cs" />
     <Compile Include="Models\Card.Validation.cs" />
     <Compile Include="Models\Card.cs" />
     <Compile Include="Models\CollectionConfig.cs" />
@@ -70,17 +68,14 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Review\DueReviewList.cs" />
-    <Compile Include="Review\LearnReviewList.cs" />
-    <Compile Include="Review\NewReviewList.cs" />
-    <Compile Include="Review\ReviewAsyncDbListBase.cs" />
-    <Compile Include="Review\ReviewCollectionImpl.cs" />
-    <Compile Include="Review\ReviewComparers.cs" />
-    <Compile Include="Review\ReviewSession.cs" />
+    <Compile Include="Review\Review.Collection.Due.cs" />
+    <Compile Include="Review\Review.Collection.Learn.cs" />
+    <Compile Include="Review\Review.Collection.New.cs" />
+    <Compile Include="Review\Review.Collection.AsyncBase.cs" />
+    <Compile Include="Review\Review.Collection.Impl.cs" />
+    <Compile Include="Review\Review.Comparers.cs" />
+    <Compile Include="Review\Review.Session.cs" />
     <Compile Include="SM2.Impl.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Models\Card.Review.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Anotar.Catel, Version=3.1.0.0, Culture=neutral, PublicKeyToken=9d5b24f0733c26f7, processorArchitecture=MSIL">
@@ -99,8 +94,12 @@
       <HintPath>..\..\packages\Newtonsoft.Json.9.0.1\lib\portable-net45+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Stubble.Core">
+      <HintPath>..\..\Libs\Stubble\src\Stubble.Core\bin\Release\net45\Stubble.Core.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extensions\Card.Review.Extensions.cs" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

@@ -51,13 +51,13 @@ namespace Sidekick.SpacedRepetition.Models
     #region Properties
 
     /// <summary>
-    ///   Database identifier, date time of creation time - Unix timestamp. Database
-    ///   field.
+    ///   Database field.
+    ///   Database identifier, date time of creation time - Unix timestamp. 
     /// </summary>
     [PrimaryKey]
     public int Id { get; set; }
 
-    /// <summary>Last modified date time - Unix timestamp Database field.</summary>
+    /// <summary>Database field. Last modified date time - Unix timestamp.</summary>
     public int LastModified { get; set; }
 
     /// <summary>Associated cards.</summary>
