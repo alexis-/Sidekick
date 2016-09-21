@@ -25,9 +25,10 @@ namespace Sidekick.SpacedRepetition.Review
   using System.Linq;
   using System.Threading.Tasks;
 
+  using AgnosticDatabase.Interfaces;
+
   using MethodTimer;
 
-  using Sidekick.Shared.Interfaces.Database;
   using Sidekick.Shared.Utils.Collections;
   using Sidekick.Shared.Utils.LazyLoad;
   using Sidekick.SpacedRepetition.Extensions;

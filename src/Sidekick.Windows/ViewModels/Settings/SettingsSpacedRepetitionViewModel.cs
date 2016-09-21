@@ -24,10 +24,11 @@ namespace Sidekick.Windows.ViewModels.Settings
   using System.Threading.Tasks;
   using System.Windows.Input;
 
+  using AgnosticDatabase.Interfaces;
+
   using Catel.MVVM;
   using Catel.Services;
 
-  using Sidekick.Shared.Interfaces.Database;
   using Sidekick.SpacedRepetition.Generators;
   using Sidekick.SpacedRepetition.Models;
 

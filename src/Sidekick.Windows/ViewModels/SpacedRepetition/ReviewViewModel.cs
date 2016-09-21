@@ -25,12 +25,13 @@ namespace Sidekick.Windows.ViewModels.SpacedRepetition
   using System.Linq;
   using System.Threading.Tasks;
 
+  using AgnosticDatabase.Interfaces;
+
   using Catel;
   using Catel.MVVM;
   using Catel.Services;
 
   using Sidekick.MVVM.ViewModels;
-  using Sidekick.Shared.Interfaces.Database;
   using Sidekick.SpacedRepetition.Extensions;
   using Sidekick.SpacedRepetition.Interfaces;
   using Sidekick.SpacedRepetition.Models;

@@ -24,9 +24,10 @@ namespace Sidekick.Shared.Tests
   using System;
   using System.Collections.Generic;
 
-  using FluentAssertions;
+  using AgnosticDatabase.Attributes;
 
-  using Sidekick.Shared.Attributes.Database;
+  using FluentAssertions;
+  
   using Sidekick.Shared.Attributes.LazyLoad;
   using Sidekick.Shared.Utils;
   using Sidekick.Shared.Utils.LazyLoad;

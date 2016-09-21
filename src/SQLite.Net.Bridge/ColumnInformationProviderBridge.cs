@@ -26,7 +26,7 @@ namespace SQLite.Net.Bridge
   using System.Linq;
   using System.Reflection;
 
-  using Sidekick.Shared.Attributes.Database;
+  using AgnosticDatabase.Attributes;
 
   /// <summary>
   ///   Bridges database-generic attributes with SQLite attributes.

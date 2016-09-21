@@ -25,9 +25,10 @@ namespace SQLite.Net.Bridge.Tests
   using System.Linq;
   using System.Threading.Tasks;
 
-  using FluentAssertions;
+  using AgnosticDatabase.Attributes;
 
-  using Sidekick.Shared.Attributes.Database;
+  using FluentAssertions;
+  
   using Sidekick.Shared.Utils;
 
   using Xunit;

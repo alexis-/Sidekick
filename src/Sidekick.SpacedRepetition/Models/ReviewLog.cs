@@ -21,7 +21,7 @@
 
 namespace Sidekick.SpacedRepetition.Models
 {
-  using Sidekick.Shared.Attributes.Database;
+  using AgnosticDatabase.Attributes;
 
   /// <summary>Describes a single card review</summary>
   [Table("ReviewsLogs")]

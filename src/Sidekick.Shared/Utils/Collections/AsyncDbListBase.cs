@@ -26,7 +26,8 @@ namespace Sidekick.Shared.Utils.Collections
   using System.Linq;
   using System.Threading.Tasks;
 
-  using Sidekick.Shared.Interfaces.Database;
+  using AgnosticDatabase.Interfaces;
+
   using Sidekick.Shared.Utils.LazyLoad;
 
   /// <summary>

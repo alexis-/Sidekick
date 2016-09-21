@@ -25,6 +25,8 @@ namespace Sidekick.Windows.Services.Initialization
   using System.Threading.Tasks;
   using System.Windows;
 
+  using AgnosticDatabase.Interfaces;
+
   using Anotar.Catel;
 
   using Catel;
@@ -40,7 +42,6 @@ namespace Sidekick.Windows.Services.Initialization
 
   using Orchestra.Services;
 
-  using Sidekick.Shared.Interfaces.Database;
   using Sidekick.Windows.Services.Database;
   using Sidekick.Windows.Services.Interfaces;
   using Sidekick.Windows.ViewModels.SpacedRepetition;
@@ -62,8 +63,10 @@ namespace Sidekick.Windows.Services.Initialization
 
     #region Constructors
 
-    /// <summary>Initializes a new instance of the <see cref="ApplicationInitializationService" />
-    ///   class.</summary>
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ApplicationInitializationService" />
+    /// class.
+    /// </summary>
     /// <param name="serviceLocator">The service locator.</param>
     /// <param name="commandManager">The command manager.</param>
     /// <param name="uiVisualizer">The UI visualizer.</param>

@@ -19,24 +19,30 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using Catel.Services;
-using Catel.Services.Models;
-using Sidekick.Shared.Interfaces.Database;
-using Sidekick.SpacedRepetition.Interfaces;
-using Sidekick.SpacedRepetition.Models;
-using Sidekick.SpacedRepetition.Review;
-
 namespace Sidekick.SpacedRepetition
 {
+  using AgnosticDatabase.Interfaces;
+
+  using Catel.Services;
+  using Catel.Services.Models;
+
+  using Sidekick.SpacedRepetition.Interfaces;
+  using Sidekick.SpacedRepetition.Models;
+  using Sidekick.SpacedRepetition.Review;
+
+  /// <summary>
+  ///   SM2 Spaced Repetition implementation.
+  /// </summary>
+  /// <seealso cref="Sidekick.SpacedRepetition.Interfaces.ISpacedRepetition" />
   public class SM2Impl : ISpacedRepetition
   {
     #region Constructors
 
-    public SM2Impl()
-    {
-    }
+    public SM2Impl() { }
 
     #endregion
+
+
 
     #region Properties
 
@@ -46,16 +52,23 @@ namespace Sidekick.SpacedRepetition
 
     #endregion
 
+
+
     #region Methods
 
     //
     // Core methods
 
+    /// <summary>Creates the note.</summary>
+    /// <returns></returns>
     public Note CreateNote()
     {
       return new Note();
     }
 
+    /// <summary>Gets the review collection.</summary>
+    /// <param name="db">The database.</param>
+    /// <returns></returns>
     public IReviewCollection GetReviewCollection(IDatabaseAsync db)
     {
       return new ReviewCollectionImpl(db, CollectionConfig.Default);
@@ -65,12 +78,12 @@ namespace Sidekick.SpacedRepetition
     //
     // Misc
 
+    /// <summary>Gets the language source.</summary>
+    /// <returns></returns>
     public ILanguageSource GetLanguageSource()
     {
       return new LanguageResourceSource(
-        "Sidekick.SpacedRepetition",
-        "Sidekick.SpacedRepetition.Properties",
-        "Resources");
+        "Sidekick.SpacedRepetition", "Sidekick.SpacedRepetition.Properties", "Resources");
     }
 
     #endregion

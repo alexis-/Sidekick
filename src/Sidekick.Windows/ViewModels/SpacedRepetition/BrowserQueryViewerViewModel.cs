@@ -26,6 +26,8 @@ namespace Sidekick.Windows.ViewModels.SpacedRepetition
   using System.Threading.Tasks;
   using System.Windows.Input;
 
+  using AgnosticDatabase.Interfaces;
+
   using Catel;
   using Catel.IoC;
   using Catel.MVVM;
@@ -33,7 +35,6 @@ namespace Sidekick.Windows.ViewModels.SpacedRepetition
 
   using Orc.FilterBuilder.Models;
 
-  using Sidekick.Shared.Interfaces.Database;
   using Sidekick.Windows.Models;
   using Sidekick.Windows.Services;
 

@@ -1,0 +1,8 @@
+  <PropertyGroup>
+    <TestRootPath>..\..\Src</TestRootPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(TestRootPath)\**\*.cs">
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+    </Compile>
+  </ItemGroup>

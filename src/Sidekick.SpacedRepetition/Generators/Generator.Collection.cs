@@ -25,7 +25,10 @@ namespace Sidekick.SpacedRepetition.Generators
   using System.Collections.Generic;
   using System.Threading.Tasks;
 
-  using Sidekick.Shared.Interfaces.Database;
+  using AgnosticDatabase.Interfaces;
+
+  using Sidekick.SpacedRepetition.Interfaces;
+
   using Sidekick.SpacedRepetition.Models;
 
   /// <summary>
@@ -87,7 +90,7 @@ namespace Sidekick.SpacedRepetition.Generators
 
     /// <summary>
     ///   Generate a new collection based on specified parameters.
-    ///   If a <see cref="IDatabaseAsync" /> instance is specified, collection will also be saved
+    ///   If a <see cref="AgnosticDatabase.Interfaces.IDatabaseAsync" /> instance is specified, collection will also be saved
     ///   to Database.
     /// </summary>
     /// <param name="db">Database instance.</param>

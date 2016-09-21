@@ -27,11 +27,12 @@ namespace Sidekick.Shared.Utils.LazyLoad
   using System.Reflection;
   using System.Threading.Tasks;
 
+  using AgnosticDatabase.Interfaces;
+
   using Sidekick.Shared.Attributes.LazyLoad;
-  using Sidekick.Shared.Interfaces.Database;
 
   /// <summary>
-  ///   Helps handling lazy operations in combination with a <see cref="IDatabaseAsync" /> provider.
+  ///   Helps handling lazy operations in combination with a <see cref="AgnosticDatabase.Interfaces.IDatabaseAsync" /> provider.
   /// </summary>
   /// <typeparam name="T">Table type</typeparam>
   public class DbLazyLoad<T>

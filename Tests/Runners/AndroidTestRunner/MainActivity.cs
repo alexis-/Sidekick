@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-namespace Sidekick.Android.TestRunner
+namespace Sidekick.Tests.Runner.Android
 {
   using System.Reflection;
 

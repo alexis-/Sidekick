@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>dd5e4bc4-72bf-4465-836b-7e643f56bded</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Sidekick.SpacedRepetition.Tests</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Card.Test.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CardDb.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Generator.Collection.Test.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Review.Collection.Impl.Test.cs" />
+  </ItemGroup>
+</Project>

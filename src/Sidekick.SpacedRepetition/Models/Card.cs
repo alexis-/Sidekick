@@ -25,12 +25,13 @@ namespace Sidekick.SpacedRepetition.Models
   using System.Diagnostics;
   using System.Text;
 
+  using AgnosticDatabase.Attributes;
+
   using Catel.ComponentModel;
   using Catel.Data;
 
   using Newtonsoft.Json;
 
-  using Sidekick.Shared.Attributes.Database;
   using Sidekick.Shared.Extensions;
 
   /// <summary>

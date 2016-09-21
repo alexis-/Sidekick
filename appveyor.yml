@@ -1,5 +1,6 @@
 install:
   - git submodule update --init --recursive
+  - nuget sources add -Name SyncFusion.WPF -Source http://nuget.syncfusion.com/wpf
   - nuget restore libs/SQLite.Net-PCL/SQLite.Net.OSS.sln
   - nuget restore libs/Orc.FilterBuilder/src/Orc.FilterBuilder.sln
 

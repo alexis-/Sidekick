@@ -1,1 +1,0 @@
-<Playlist Version="1.0"><Add Test="SQLite.Net.Bridge.Tests.SQLiteBasicTest.CreateAndFetchObjects" /><Add Test="SQLite.Net.Bridge.Tests.SQLiteNetBasicTest.CreateAndFetchObjects" /></Playlist>

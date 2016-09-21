@@ -25,10 +25,11 @@ namespace Sidekick.SpacedRepetition.Review
   using System.Collections.Generic;
   using System.Threading.Tasks;
 
+  using AgnosticDatabase.Interfaces;
+
   using MethodTimer;
 
   using Sidekick.Shared.Extensions;
-  using Sidekick.Shared.Interfaces.Database;
   using Sidekick.Shared.Utils;
   using Sidekick.SpacedRepetition.Extensions;
   using Sidekick.SpacedRepetition.Interfaces;

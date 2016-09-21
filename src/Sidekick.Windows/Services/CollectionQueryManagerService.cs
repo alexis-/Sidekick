@@ -25,13 +25,14 @@ namespace Sidekick.Windows.Services
   using System.Linq;
   using System.Threading.Tasks;
 
+  using AgnosticDatabase.Interfaces;
+
   using Catel.Collections;
   using Catel.IoC;
 
   using Orc.FilterBuilder;
   using Orc.FilterBuilder.Services;
 
-  using Sidekick.Shared.Interfaces.Database;
   using Sidekick.Windows.Models;
 
   /// <summary>Handles CollectionQuery operations (saving, loading, adding, ...).</summary>

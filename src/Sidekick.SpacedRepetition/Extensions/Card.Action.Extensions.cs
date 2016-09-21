@@ -24,8 +24,9 @@ namespace Sidekick.SpacedRepetition.Extensions
   using System;
   using System.Threading.Tasks;
 
+  using AgnosticDatabase.Interfaces;
+
   using Sidekick.Shared.Extensions;
-  using Sidekick.Shared.Interfaces.Database;
   using Sidekick.SpacedRepetition.Models;
 
   /// <summary>Card review-actions-related extension methods.</summary>

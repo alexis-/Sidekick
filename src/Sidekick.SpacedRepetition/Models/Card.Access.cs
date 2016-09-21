@@ -23,7 +23,8 @@ namespace Sidekick.SpacedRepetition.Models
 {
   using System;
 
-  using Sidekick.Shared.Attributes.Database;
+  using AgnosticDatabase.Attributes;
+
   using Sidekick.Shared.Extensions;
   using Sidekick.Shared.Utils;
 

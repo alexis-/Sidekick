@@ -25,11 +25,11 @@ namespace Sidekick.MVVM.Models
   using System.Collections.Generic;
   using System.Threading.Tasks;
 
+  using AgnosticDatabase.Interfaces;
+
   using Anotar.Catel;
 
   using Catel.Collections;
-
-  using Sidekick.Shared.Interfaces.Database;
 
   /// <summary>
   ///   Pageable collection for IDatabaseAsync store.

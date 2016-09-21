@@ -28,13 +28,11 @@ namespace SQLite.Net.Bridge
   using System.Threading;
   using System.Threading.Tasks;
 
-  using Sidekick.Shared.Interfaces.Database;
+  using AgnosticDatabase.Interfaces;
 
-  /// <summary>
-  ///   Builds query on a given table.
-  /// </summary>
+  /// <summary>Builds query on a given table.</summary>
   /// <typeparam name="T">Table type</typeparam>
-  /// <seealso cref="Sidekick.Shared.Interfaces.Database.ITableQueryAsync{T}" />
+  /// <seealso cref="AgnosticDatabase.Interfaces.ITableQueryAsync{T}" />
   public class TableQueryAsync<T> : ITableQueryAsync<T>
     where T : class
   {
@@ -53,14 +51,12 @@ namespace SQLite.Net.Bridge
 
     #region Constructors
 
-    /// <summary>
-    ///   Initializes a new instance of the <see cref="TableQueryAsync{T}" /> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="TableQueryAsync{T}" /> class.</summary>
     /// <param name="innerQuery">The inner query.</param>
     /// <param name="db">Database instance.</param>
     /// <param name="taskScheduler">
-    ///   If null this parameter will be TaskScheduler.Default (evaluated when used in each method,
-    ///   not in ctor)
+    ///   If null this parameter will be TaskScheduler.Default (evaluated
+    ///   when used in each method, not in ctor)
     /// </param>
     /// <param name="taskCreationOptions">Defaults to DenyChildAttach</param>
     /// <exception cref="System.ArgumentNullException">innerQuery is NULL.</exception>
@@ -83,7 +79,8 @@ namespace SQLite.Net.Bridge
 
     #region Methods
 
-    public ITableQueryAsync<T> AddOrderBy<TValue>(Expression<Func<T, TValue>> orderExpr, bool asc)
+    public ITableQueryAsync<T> AddOrderBy<TValue>(
+      Expression<Func<T, TValue>> orderExpr, bool asc)
     {
       if (orderExpr == null)
         throw new ArgumentNullException("orderExpr");
@@ -238,8 +235,8 @@ namespace SQLite.Net.Bridge
         throw new ArgumentNullException("propertyName");
 
       return new TableQueryAsync<T>(
-        _innerQuery.OrderByDescending(propertyName), _db, _taskScheduler ?? TaskScheduler.Default,
-        _taskCreationOptions);
+        _innerQuery.OrderByDescending(propertyName), _db,
+        _taskScheduler ?? TaskScheduler.Default, _taskCreationOptions);
     }
 
 

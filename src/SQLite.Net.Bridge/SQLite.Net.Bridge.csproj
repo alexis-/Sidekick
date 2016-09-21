@@ -41,9 +41,9 @@
       <Project>{4971d437-0694-4297-a8cc-146ce08c3bd9}</Project>
       <Name>SQLite.Net</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Sidekick.Shared\Sidekick.Shared.csproj">
-      <Project>{2b6bb05d-c1e6-42fd-8837-7a20860bbc11}</Project>
-      <Name>Sidekick.Shared</Name>
+    <ProjectReference Include="..\AgnosticDatabase\AgnosticDatabase.csproj">
+      <Project>{c5d0f847-3359-4814-9edf-733e3010cc16}</Project>
+      <Name>AgnosticDatabase</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

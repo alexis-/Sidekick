@@ -7,5 +7,5 @@
   <Anotar.Catel />
   <Stamp />
   <AsyncErrorHandler />
-  <Scalpel />
+  <Scalpel RemoveReferences="SQLite.Net.Platform.Test|FluentAssertions|FluentAssertions.Core|PCLStorage" />
 </Weavers>

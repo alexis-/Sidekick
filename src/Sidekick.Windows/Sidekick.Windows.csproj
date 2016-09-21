@@ -278,6 +278,10 @@
       <Project>{4971d437-0694-4297-a8cc-146ce08c3bd9}</Project>
       <Name>SQLite.Net</Name>
     </ProjectReference>
+    <ProjectReference Include="..\AgnosticDatabase\AgnosticDatabase.csproj">
+      <Project>{c5d0f847-3359-4814-9edf-733e3010cc16}</Project>
+      <Name>AgnosticDatabase</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Sidekick.MVVM\Sidekick.MVVM.csproj">
       <Project>{8ff533cc-7198-4a6f-816f-ff24e551f2f3}</Project>
       <Name>Sidekick.MVVM</Name>

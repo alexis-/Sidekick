@@ -35,9 +35,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{971EF148
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Runners", "Runners", "{649187D2-C8AA-42D6-96EA-6CA96D795542}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sidekick.TestRunner", "tests\Runners\WindowsTestRunner\Sidekick.TestRunner.csproj", "{52F5B60E-7CA5-451A-8E14-B5A530011D0A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sidekick.Tests.Runner.Windows", "tests\Runners\WindowsTestRunner\Sidekick.Tests.Runner.Windows.csproj", "{52F5B60E-7CA5-451A-8E14-B5A530011D0A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sidekick.Android.TestRunner", "tests\Runners\AndroidTestRunner\Sidekick.Android.TestRunner.csproj", "{AA666A46-41BE-410C-B651-7E266F8A91E9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sidekick.Tests.Runner.Android", "tests\Runners\AndroidTestRunner\Sidekick.Tests.Runner.Android.csproj", "{AA666A46-41BE-410C-B651-7E266F8A91E9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sidekick.MVVM", "src\Sidekick.MVVM\Sidekick.MVVM.csproj", "{8FF533CC-7198-4A6F-816F-FF24E551F2F3}"
 EndProject
@@ -84,9 +84,33 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "misc", "misc", "{EE3BA832-1
 		readme.md = readme.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgnosticDatabase", "src\AgnosticDatabase\AgnosticDatabase.csproj", "{C5D0F847-3359-4814-9EDF-733E3010CC16}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Sidekick.SpacedRepetition.Tests", "tests\Sidekick.SpacedRepetition.Tests\Sidekick.SpacedRepetition.Tests.shproj", "{DD5E4BC4-72BF-4465-836B-7E643F56BDED}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Sidekick.Shared.Tests", "tests\Sidekick.Shared\Sidekick.Shared.Tests.shproj", "{79063AC7-A703-4EAC-BE97-881E4F31EA8E}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SQLite.Net.Bridge.Tests", "tests\SQLite.Net.Bridge.Tests\SQLite.Net.Bridge.Tests.shproj", "{DDF4B2EF-31CD-4978-9A1F-00796E3990F3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DB", "DB", "{88A43661-9BA3-4F71-837E-75E3EBBD8B74}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SQLite.Net.Platform.Test", "tests\DB\SQLite.Net.Platform.Test\SQLite.Net.Platform.Test.shproj", "{6C2CEAB5-1A88-493B-BD45-B913D43569B9}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		libs\Orc.FilterBuilder\src\Orc.FilterBuilder\Orc.FilterBuilder.Shared\Orc.FilterBuilder.Shared.projitems*{050cea5d-dacb-41c0-bdb7-2149dfcc53a1}*SharedItemsImports = 13
+		tests\DB\SQLite.Net.Platform.Test\SQLite.Net.Platform.Test.projitems*{52f5b60e-7ca5-451a-8e14-b5a530011d0a}*SharedItemsImports = 4
+		tests\Sidekick.Shared\Sidekick.Shared.projitems*{52f5b60e-7ca5-451a-8e14-b5a530011d0a}*SharedItemsImports = 4
+		tests\Sidekick.SpacedRepetition.Tests\Sidekick.SpacedRepetition.Tests.projitems*{52f5b60e-7ca5-451a-8e14-b5a530011d0a}*SharedItemsImports = 4
+		tests\SQLite.Net.Bridge.Tests\SQLite.Net.Bridge.Tests.projitems*{52f5b60e-7ca5-451a-8e14-b5a530011d0a}*SharedItemsImports = 4
+		tests\DB\SQLite.Net.Platform.Test\SQLite.Net.Platform.Test.projitems*{6c2ceab5-1a88-493b-bd45-b913d43569b9}*SharedItemsImports = 13
+		tests\Sidekick.Shared\Sidekick.Shared.projitems*{79063ac7-a703-4eac-be97-881e4f31ea8e}*SharedItemsImports = 13
+		tests\DB\SQLite.Net.Platform.Test\SQLite.Net.Platform.Test.projitems*{aa666a46-41be-410c-b651-7e266f8a91e9}*SharedItemsImports = 4
+		tests\Sidekick.Shared\Sidekick.Shared.projitems*{aa666a46-41be-410c-b651-7e266f8a91e9}*SharedItemsImports = 4
+		tests\Sidekick.SpacedRepetition.Tests\Sidekick.SpacedRepetition.Tests.projitems*{aa666a46-41be-410c-b651-7e266f8a91e9}*SharedItemsImports = 4
+		tests\SQLite.Net.Bridge.Tests\SQLite.Net.Bridge.Tests.projitems*{aa666a46-41be-410c-b651-7e266f8a91e9}*SharedItemsImports = 4
+		tests\Sidekick.SpacedRepetition.Tests\Sidekick.SpacedRepetition.Tests.projitems*{dd5e4bc4-72bf-4465-836b-7e643f56bded}*SharedItemsImports = 13
+		tests\SQLite.Net.Bridge.Tests\SQLite.Net.Bridge.Tests.projitems*{ddf4b2ef-31cd-4978-9a1f-00796e3990f3}*SharedItemsImports = 13
 		libs\Orc.FilterBuilder\src\Orc.FilterBuilder\Orc.FilterBuilder.Shared.WPF\Orc.FilterBuilder.Shared.WPF.projitems*{df2fdbdc-f137-419d-a0ae-451b70b0b9e8}*SharedItemsImports = 4
 		libs\Orc.FilterBuilder\src\Orc.FilterBuilder\Orc.FilterBuilder.Shared\Orc.FilterBuilder.Shared.projitems*{df2fdbdc-f137-419d-a0ae-451b70b0b9e8}*SharedItemsImports = 4
 		libs\Orc.FilterBuilder\src\Orc.FilterBuilder\Orc.FilterBuilder.Shared.WPF\Orc.FilterBuilder.Shared.WPF.projitems*{f6aacf5a-663b-4315-b7a9-05f785f3e9da}*SharedItemsImports = 13
@@ -290,6 +314,18 @@ Global
 		{6A2A280D-0E0C-4B1C-AF10-3291E9E41E02}.Release|iPhone.Build.0 = Release|Any CPU
 		{6A2A280D-0E0C-4B1C-AF10-3291E9E41E02}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
 		{6A2A280D-0E0C-4B1C-AF10-3291E9E41E02}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
+		{C5D0F847-3359-4814-9EDF-733E3010CC16}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5D0F847-3359-4814-9EDF-733E3010CC16}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5D0F847-3359-4814-9EDF-733E3010CC16}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{C5D0F847-3359-4814-9EDF-733E3010CC16}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{C5D0F847-3359-4814-9EDF-733E3010CC16}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{C5D0F847-3359-4814-9EDF-733E3010CC16}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{C5D0F847-3359-4814-9EDF-733E3010CC16}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C5D0F847-3359-4814-9EDF-733E3010CC16}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C5D0F847-3359-4814-9EDF-733E3010CC16}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{C5D0F847-3359-4814-9EDF-733E3010CC16}.Release|iPhone.Build.0 = Release|Any CPU
+		{C5D0F847-3359-4814-9EDF-733E3010CC16}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{C5D0F847-3359-4814-9EDF-733E3010CC16}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -319,5 +355,11 @@ Global
 		{DF2FDBDC-F137-419D-A0AE-451B70B0B9E8} = {79C68DE5-95C8-4611-9B6F-07990BA2742B}
 		{41408309-8139-4F21-B662-6FC64113AB23} = {EEBA07BA-ECA2-40A0-8911-DB95F72961B2}
 		{6A2A280D-0E0C-4B1C-AF10-3291E9E41E02} = {41408309-8139-4F21-B662-6FC64113AB23}
+		{C5D0F847-3359-4814-9EDF-733E3010CC16} = {92CF3132-2C2F-4A71-9ADF-7D8219318193}
+		{DD5E4BC4-72BF-4465-836B-7E643F56BDED} = {971EF148-F3B6-4795-A933-74AC739C636D}
+		{79063AC7-A703-4EAC-BE97-881E4F31EA8E} = {971EF148-F3B6-4795-A933-74AC739C636D}
+		{DDF4B2EF-31CD-4978-9A1F-00796E3990F3} = {971EF148-F3B6-4795-A933-74AC739C636D}
+		{88A43661-9BA3-4F71-837E-75E3EBBD8B74} = {971EF148-F3B6-4795-A933-74AC739C636D}
+		{6C2CEAB5-1A88-493B-BD45-B913D43569B9} = {88A43661-9BA3-4F71-837E-75E3EBBD8B74}
 	EndGlobalSection
 EndGlobal

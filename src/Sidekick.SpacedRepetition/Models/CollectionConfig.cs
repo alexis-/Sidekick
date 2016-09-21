@@ -21,7 +21,8 @@
 
 namespace Sidekick.SpacedRepetition.Models
 {
-  using Sidekick.Shared.Attributes.Database;
+  using AgnosticDatabase.Attributes;
+
   using Sidekick.Shared.Utils;
 
   [Table("CollectionConfigs")]

@@ -85,6 +85,10 @@
     <Content Include="FodyWeavers.xml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\AgnosticDatabase\AgnosticDatabase.csproj">
+      <Project>{C5D0F847-3359-4814-9EDF-733E3010CC16}</Project>
+      <Name>AgnosticDatabase</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Sidekick.Shared\Sidekick.Shared.csproj">
       <Project>{2b6bb05d-c1e6-42fd-8837-7a20860bbc11}</Project>
       <Name>Sidekick.Shared</Name>

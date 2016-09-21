@@ -21,11 +21,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DB", "DB", "{92CF3132-2C2F-
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQLite.Net.Bridge", "src\SQLite.Net.Bridge\SQLite.Net.Bridge.csproj", "{97A6601D-F0C7-47ED-AD6B-7A15E623422D}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{971EF148-F3B6-4795-A933-74AC739C636D}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{971EF148-F3B6-4795-A933-74AC739C636D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Runners", "Runners", "{649187D2-C8AA-42D6-96EA-6CA96D795542}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sidekick.TestRunner", "tests\Runners\WindowsTestRunner\Sidekick.TestRunner.csproj", "{52F5B60E-7CA5-451A-8E14-B5A530011D0A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sidekick.Tests.Runner.Windows", "tests\Runners\WindowsTestRunner\Sidekick.Tests.Runner.Windows.csproj", "{52F5B60E-7CA5-451A-8E14-B5A530011D0A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sidekick.MVVM", "src\Sidekick.MVVM\Sidekick.MVVM.csproj", "{8FF533CC-7198-4A6F-816F-FF24E551F2F3}"
 EndProject
@@ -49,13 +49,7 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Orc.FilterBuilder.Shared.WP
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orc.FilterBuilder.NET45", "libs\Orc.FilterBuilder\src\Orc.FilterBuilder\Orc.FilterBuilder.NET45\Orc.FilterBuilder.NET45.csproj", "{DF2FDBDC-F137-419D-A0AE-451B70B0B9E8}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B229537D-B5A5-4553-A33A-198B284BBD4A}"
-	ProjectSection(SolutionItems) = preProject
-		README_Fody.txt = README_Fody.txt
-		README_SpacedRepetition.txt = README_SpacedRepetition.txt
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dependencies", "Dependencies", "{EEBA07BA-ECA2-40A0-8911-DB95F72961B2}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "libs", "libs", "{EEBA07BA-ECA2-40A0-8911-DB95F72961B2}"
 	ProjectSection(SolutionItems) = preProject
 		libs\readme.md = libs\readme.md
 	EndProjectSection
@@ -64,14 +58,41 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Stubble", "Stubble", "{4140
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Stubble.Core", "libs\Stubble\src\Stubble.Core\Stubble.Core.xproj", "{6A2A280D-0E0C-4B1C-AF10-3291E9E41E02}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Src", "Src", "{FF853886-28B5-46D9-860C-4E27CE739235}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{FF853886-28B5-46D9-860C-4E27CE739235}"
 	ProjectSection(SolutionItems) = preProject
 		src\readme.md = src\readme.md
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "misc", "misc", "{EE3BA832-1E0A-4B68-91B9-75D04E8AF98E}"
+	ProjectSection(SolutionItems) = preProject
+		appveyor.yml = appveyor.yml
+		LICENSE = LICENSE
+		readme.md = readme.md
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgnosticDatabase", "src\AgnosticDatabase\AgnosticDatabase.csproj", "{C5D0F847-3359-4814-9EDF-733E3010CC16}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Sidekick.SpacedRepetition.Tests", "tests\Sidekick.SpacedRepetition.Tests\Sidekick.SpacedRepetition.Tests.shproj", "{DD5E4BC4-72BF-4465-836B-7E643F56BDED}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Sidekick.Shared.Tests", "tests\Sidekick.Shared\Sidekick.Shared.Tests.shproj", "{79063AC7-A703-4EAC-BE97-881E4F31EA8E}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SQLite.Net.Bridge.Tests", "tests\SQLite.Net.Bridge.Tests\SQLite.Net.Bridge.Tests.shproj", "{DDF4B2EF-31CD-4978-9A1F-00796E3990F3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DB", "DB", "{88A43661-9BA3-4F71-837E-75E3EBBD8B74}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SQLite.Net.Platform.Test", "tests\DB\SQLite.Net.Platform.Test\SQLite.Net.Platform.Test.shproj", "{6C2CEAB5-1A88-493B-BD45-B913D43569B9}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		libs\Orc.FilterBuilder\src\Orc.FilterBuilder\Orc.FilterBuilder.Shared\Orc.FilterBuilder.Shared.projitems*{050cea5d-dacb-41c0-bdb7-2149dfcc53a1}*SharedItemsImports = 13
+		tests\DB\SQLite.Net.Platform.Test\SQLite.Net.Platform.Test.projitems*{52f5b60e-7ca5-451a-8e14-b5a530011d0a}*SharedItemsImports = 4
+		tests\Sidekick.Shared\Sidekick.Shared.projitems*{52f5b60e-7ca5-451a-8e14-b5a530011d0a}*SharedItemsImports = 4
+		tests\Sidekick.SpacedRepetition.Tests\Sidekick.SpacedRepetition.Tests.projitems*{52f5b60e-7ca5-451a-8e14-b5a530011d0a}*SharedItemsImports = 4
+		tests\SQLite.Net.Bridge.Tests\SQLite.Net.Bridge.Tests.projitems*{52f5b60e-7ca5-451a-8e14-b5a530011d0a}*SharedItemsImports = 4
+		tests\DB\SQLite.Net.Platform.Test\SQLite.Net.Platform.Test.projitems*{6c2ceab5-1a88-493b-bd45-b913d43569b9}*SharedItemsImports = 13
+		tests\Sidekick.Shared\Sidekick.Shared.projitems*{79063ac7-a703-4eac-be97-881e4f31ea8e}*SharedItemsImports = 13
+		tests\Sidekick.SpacedRepetition.Tests\Sidekick.SpacedRepetition.Tests.projitems*{dd5e4bc4-72bf-4465-836b-7e643f56bded}*SharedItemsImports = 13
+		tests\SQLite.Net.Bridge.Tests\SQLite.Net.Bridge.Tests.projitems*{ddf4b2ef-31cd-4978-9a1f-00796e3990f3}*SharedItemsImports = 13
 		libs\Orc.FilterBuilder\src\Orc.FilterBuilder\Orc.FilterBuilder.Shared.WPF\Orc.FilterBuilder.Shared.WPF.projitems*{df2fdbdc-f137-419d-a0ae-451b70b0b9e8}*SharedItemsImports = 4
 		libs\Orc.FilterBuilder\src\Orc.FilterBuilder\Orc.FilterBuilder.Shared\Orc.FilterBuilder.Shared.projitems*{df2fdbdc-f137-419d-a0ae-451b70b0b9e8}*SharedItemsImports = 4
 		libs\Orc.FilterBuilder\src\Orc.FilterBuilder\Orc.FilterBuilder.Shared.WPF\Orc.FilterBuilder.Shared.WPF.projitems*{f6aacf5a-663b-4315-b7a9-05f785f3e9da}*SharedItemsImports = 13
@@ -217,6 +238,18 @@ Global
 		{6A2A280D-0E0C-4B1C-AF10-3291E9E41E02}.Release|iPhone.Build.0 = Release|Any CPU
 		{6A2A280D-0E0C-4B1C-AF10-3291E9E41E02}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
 		{6A2A280D-0E0C-4B1C-AF10-3291E9E41E02}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
+		{C5D0F847-3359-4814-9EDF-733E3010CC16}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5D0F847-3359-4814-9EDF-733E3010CC16}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5D0F847-3359-4814-9EDF-733E3010CC16}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{C5D0F847-3359-4814-9EDF-733E3010CC16}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{C5D0F847-3359-4814-9EDF-733E3010CC16}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{C5D0F847-3359-4814-9EDF-733E3010CC16}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{C5D0F847-3359-4814-9EDF-733E3010CC16}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C5D0F847-3359-4814-9EDF-733E3010CC16}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C5D0F847-3359-4814-9EDF-733E3010CC16}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{C5D0F847-3359-4814-9EDF-733E3010CC16}.Release|iPhone.Build.0 = Release|Any CPU
+		{C5D0F847-3359-4814-9EDF-733E3010CC16}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{C5D0F847-3359-4814-9EDF-733E3010CC16}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -229,7 +262,7 @@ Global
 		{97A6601D-F0C7-47ED-AD6B-7A15E623422D} = {92CF3132-2C2F-4A71-9ADF-7D8219318193}
 		{649187D2-C8AA-42D6-96EA-6CA96D795542} = {971EF148-F3B6-4795-A933-74AC739C636D}
 		{52F5B60E-7CA5-451A-8E14-B5A530011D0A} = {649187D2-C8AA-42D6-96EA-6CA96D795542}
-		{8FF533CC-7198-4A6F-816F-FF24E551F2F3} = {F127C5FF-56FE-4C39-9C86-A15F4803DEF5}
+		{8FF533CC-7198-4A6F-816F-FF24E551F2F3} = {177E8D13-0104-4784-94D7-E73CC2EA6367}
 		{617680BC-0BE1-42DB-9384-62F9C1608071} = {FF853886-28B5-46D9-860C-4E27CE739235}
 		{F127C5FF-56FE-4C39-9C86-A15F4803DEF5} = {FF853886-28B5-46D9-860C-4E27CE739235}
 		{177E8D13-0104-4784-94D7-E73CC2EA6367} = {FF853886-28B5-46D9-860C-4E27CE739235}
@@ -242,5 +275,11 @@ Global
 		{DF2FDBDC-F137-419D-A0AE-451B70B0B9E8} = {79C68DE5-95C8-4611-9B6F-07990BA2742B}
 		{41408309-8139-4F21-B662-6FC64113AB23} = {EEBA07BA-ECA2-40A0-8911-DB95F72961B2}
 		{6A2A280D-0E0C-4B1C-AF10-3291E9E41E02} = {41408309-8139-4F21-B662-6FC64113AB23}
+		{C5D0F847-3359-4814-9EDF-733E3010CC16} = {92CF3132-2C2F-4A71-9ADF-7D8219318193}
+		{DD5E4BC4-72BF-4465-836B-7E643F56BDED} = {971EF148-F3B6-4795-A933-74AC739C636D}
+		{79063AC7-A703-4EAC-BE97-881E4F31EA8E} = {971EF148-F3B6-4795-A933-74AC739C636D}
+		{DDF4B2EF-31CD-4978-9A1F-00796E3990F3} = {971EF148-F3B6-4795-A933-74AC739C636D}
+		{88A43661-9BA3-4F71-837E-75E3EBBD8B74} = {971EF148-F3B6-4795-A933-74AC739C636D}
+		{6C2CEAB5-1A88-493B-BD45-B913D43569B9} = {88A43661-9BA3-4F71-837E-75E3EBBD8B74}
 	EndGlobalSection
 EndGlobal

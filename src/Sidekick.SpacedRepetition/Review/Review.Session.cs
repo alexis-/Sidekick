@@ -26,8 +26,9 @@ namespace Sidekick.SpacedRepetition.Review
   using System.Linq;
   using System.Threading.Tasks;
 
+  using AgnosticDatabase.Interfaces;
+
   using Sidekick.Shared.Extensions;
-  using Sidekick.Shared.Interfaces.Database;
   using Sidekick.SpacedRepetition.Models;
 
   /// <summary>Defines all reviews on a given day (session)</summary>

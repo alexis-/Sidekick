@@ -24,9 +24,10 @@ namespace Sidekick.SpacedRepetition.Models
   using System;
   using System.Collections.Generic;
 
+  using AgnosticDatabase.Attributes;
+
   using Catel.Data;
 
-  using Sidekick.Shared.Attributes.Database;
   using Sidekick.Shared.Extensions;
 
   /// <summary>Note model for Spaced Repetition system.</summary>

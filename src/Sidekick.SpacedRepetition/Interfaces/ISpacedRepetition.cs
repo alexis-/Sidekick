@@ -21,9 +21,13 @@
 
 namespace Sidekick.SpacedRepetition.Interfaces
 {
-  using Sidekick.Shared.Interfaces.Database;
+  using AgnosticDatabase.Interfaces;
+
   using Sidekick.SpacedRepetition.Models;
 
+  /// <summary>
+  ///   Spaced Repetition interface.
+  /// </summary>
   public interface ISpacedRepetition
   {
     #region Properties

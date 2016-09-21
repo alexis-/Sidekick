@@ -25,32 +25,28 @@ namespace SQLite.Net.Bridge
   using System.Collections.Generic;
   using System.Linq.Expressions;
 
-  using Sidekick.Shared.Interfaces.Database;
+  using AgnosticDatabase.Interfaces;
 
   using SQLite.Net.Interop;
 
   /// <summary>
-  ///   Builds quety on a given table.
-  ///   Bridges database-generic interface with SQLite.NET implementation.
+  ///   Builds quety on a given table. Bridges database-generic interface with SQLite.NET
+  ///   implementation.
   /// </summary>
   /// <typeparam name="T">Table type</typeparam>
   /// <seealso cref="SQLite.Net.TableQuery{T}" />
-  /// <seealso cref="Sidekick.Shared.Interfaces.Database.ITableQuery{T}" />
+  /// <seealso cref="AgnosticDatabase.Interfaces.ITableQuery{T}" />
   public class TableQueryBridge<T> : TableQuery<T>, ITableQuery<T>
   {
     #region Constructors
 
-    /// <summary>
-    ///   Initializes a new instance of the <see cref="TableQueryBridge{T}" /> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="TableQueryBridge{T}" /> class.</summary>
     /// <param name="platformImplementation">The platform implementation.</param>
     /// <param name="conn">The connection.</param>
     public TableQueryBridge(ISQLitePlatform platformImplementation, SQLiteConnection conn)
       : base(platformImplementation, conn) { }
 
-    /// <summary>
-    ///   Initializes a new instance of the <see cref="TableQueryBridge{T}" /> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="TableQueryBridge{T}" /> class.</summary>
     /// <param name="platformImplementation">The platform implementation.</param>
     /// <param name="conn">The connection.</param>
     /// <param name="table">The table.</param>
@@ -58,9 +54,7 @@ namespace SQLite.Net.Bridge
       ISQLitePlatform platformImplementation, SQLiteConnection conn, TableMapping table)
       : base(platformImplementation, conn, table) { }
 
-    /// <summary>
-    ///   Initializes a new instance of the <see cref="TableQueryBridge{T}" /> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="TableQueryBridge{T}" /> class.</summary>
     /// <param name="other">The other.</param>
     protected TableQueryBridge(TableQueryBridge<T> other) : base(other) { }
 
@@ -70,7 +64,8 @@ namespace SQLite.Net.Bridge
 
     #region Methods
 
-    ITableQuery<T> ITableQuery<T>.AddOrderBy<TValue>(Expression<Func<T, TValue>> orderExpr, bool asc)
+    ITableQuery<T> ITableQuery<T>.AddOrderBy<TValue>(
+      Expression<Func<T, TValue>> orderExpr, bool asc)
     {
       return (TableQueryBridge<T>)AddOrderBy(orderExpr, asc);
     }
@@ -80,9 +75,7 @@ namespace SQLite.Net.Bridge
       return (TableQueryBridge<T>)AddOrderBy(propertyName, asc);
     }
 
-    /// <summary>
-    ///   Clones this instance.
-    /// </summary>
+    /// <summary>Clones this instance.</summary>
     /// <returns></returns>
     public override object Clone()
     {
@@ -94,9 +87,7 @@ namespace SQLite.Net.Bridge
       return Count();
     }
 
-    /// <summary>
-    ///   Executes delete.
-    /// </summary>
+    /// <summary>Executes delete.</summary>
     /// <returns></returns>
     public int Delete()
     {

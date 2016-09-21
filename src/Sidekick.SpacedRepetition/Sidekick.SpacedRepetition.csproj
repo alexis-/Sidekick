@@ -36,13 +36,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <!-- A reference to the entire .NET Framework is automatically included -->
-    <ProjectReference Include="..\Sidekick.Shared\Sidekick.Shared.csproj">
-      <Project>{2b6bb05d-c1e6-42fd-8837-7a20860bbc11}</Project>
-      <Name>Sidekick.Shared</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Models\PracticeState.cs" />
     <Compile Include="Const.SpacedRepetition.cs" />
     <Compile Include="Models\Grade.cs" />
@@ -114,6 +107,19 @@
   <ItemGroup>
     <Content Include="Documentation\Sched.answerCard.png" />
     <Content Include="FodyWeavers.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AgnosticDatabase\AgnosticDatabase.csproj">
+      <Project>{C5D0F847-3359-4814-9EDF-733E3010CC16}</Project>
+      <Name>AgnosticDatabase</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Sidekick.Shared\Sidekick.Shared.csproj">
+      <Project>{2b6bb05d-c1e6-42fd-8837-7a20860bbc11}</Project>
+      <Name>Sidekick.Shared</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <Import Project="..\..\packages\Fody.1.29.4\build\portable-net+sl+win+wpa+wp\Fody.targets" Condition="Exists('..\..\packages\Fody.1.29.4\build\portable-net+sl+win+wpa+wp\Fody.targets')" />

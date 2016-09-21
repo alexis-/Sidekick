@@ -24,6 +24,8 @@ namespace Sidekick.Windows.Models
   using System;
   using System.IO;
 
+  using AgnosticDatabase.Interfaces;
+
   using Catel;
   using Catel.Fody;
   using Catel.Runtime.Serialization.Json;
@@ -31,7 +33,6 @@ namespace Sidekick.Windows.Models
   using Orc.FilterBuilder;
   using Orc.FilterBuilder.Models;
 
-  using Sidekick.Shared.Interfaces.Database;
   using Sidekick.SpacedRepetition.Models;
 
   using SQLite.Net.Attributes;

@@ -19,19 +19,21 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using Sidekick.Shared.Interfaces.Database;
-using SQLite.Net.Interop;
-
 namespace SQLite.Net.Bridge
 {
+  using System.Collections.Generic;
+  using System.Linq;
+  using System.Reflection;
+
+  using AgnosticDatabase.Interfaces;
+
+  using SQLite.Net.Interop;
+
   /// <summary>
-  ///   Gather informations from given table and its columns.
-  ///   Bridges database-generic interface with SQLite.NET implementation.
+  ///   Gather informations from given table and its columns. Bridges database-generic
+  ///   interface with SQLite.NET implementation.
   /// </summary>
-  /// <seealso cref="Sidekick.Shared.Interfaces.Database.ITableMapping" />
+  /// <seealso cref="AgnosticDatabase.Interfaces.ITableMapping" />
   public class TableMappingBridge : ITableMapping
   {
     #region Constructors
@@ -39,16 +41,16 @@ namespace SQLite.Net.Bridge
     //
     // Constructor
 
-    public TableMappingBridge(TableMapping tableMapping,
-      IReflectionService reflectionService)
+    public TableMappingBridge(TableMapping tableMapping, IReflectionService reflectionService)
     {
       TableMapping = tableMapping;
 
-      Properties = reflectionService.GetPublicInstanceProperties(
-        tableMapping.MappedType);
+      Properties = reflectionService.GetPublicInstanceProperties(tableMapping.MappedType);
     }
 
     #endregion
+
+
 
     #region Properties
 
@@ -56,6 +58,8 @@ namespace SQLite.Net.Bridge
     public IEnumerable<PropertyInfo> Properties { get; }
 
     #endregion
+
+
 
     #region Methods
 
