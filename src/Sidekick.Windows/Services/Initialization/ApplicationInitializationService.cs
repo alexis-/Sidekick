@@ -156,6 +156,9 @@ namespace Sidekick.Windows.Services.Initialization
           answerGesture.Item1, answerGesture.Item2,
           throwExceptionWhenCommandIsAlreadyCreated: false);
 
+      // Search command (search toolbar icon)
+      commandManager.CreateCommand(Commands.General.Search, Commands.General.SearchInputGesture);
+
       // commandManager.CreateCommand("File.Refresh", new InputGesture(Key.R, ModifierKeys.Control),
       //   throwExceptionWhenCommandIsAlreadyCreated: false);
       // commandManager.CreateCommand("File.Save", new InputGesture(Key.S, ModifierKeys.Control),

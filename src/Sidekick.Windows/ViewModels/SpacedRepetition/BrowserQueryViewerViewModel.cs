@@ -26,14 +26,10 @@ namespace Sidekick.Windows.ViewModels.SpacedRepetition
   using System.Threading.Tasks;
   using System.Windows.Input;
 
-  using AgnosticDatabase.Interfaces;
-
   using Catel;
   using Catel.IoC;
   using Catel.MVVM;
   using Catel.Services;
-
-  using Orc.FilterBuilder.Models;
 
   using Sidekick.Windows.Models;
   using Sidekick.Windows.Services;
@@ -46,7 +42,6 @@ namespace Sidekick.Windows.ViewModels.SpacedRepetition
 
     private readonly CollectionQueryManagerService _collectionQueryManagerService;
 
-    private readonly IDatabaseAsync _db;
     private readonly IPleaseWaitService _pleaseWaitService;
 
     #endregion
@@ -67,14 +62,9 @@ namespace Sidekick.Windows.ViewModels.SpacedRepetition
 
       _pleaseWaitService = pleaseWaitService;
       _collectionQueryManagerService = collectionQueryManagerService;
-      
+
       CollectionQueries = _collectionQueryManagerService.CollectionQueries;
       SelectedQuery = Queries.FirstOrDefault();
-
-      CollectionViewModel =
-        TypeFactory.Default.CreateInstanceWithParametersAndAutoCompletion(
-                     typeof(CollectionDataGridViewModel), SelectedQuery) as
-          CollectionDataGridViewModel;
 
       AddQueryCommand = new Command(OnAddQueryCommandExecute, tag: "AddQuery");
     }
@@ -108,12 +98,26 @@ namespace Sidekick.Windows.ViewModels.SpacedRepetition
 
     #region Methods
 
+    /// <summary>
+    /// Closes this instance. Always called after the <see cref="M:Catel.MVVM.ViewModelBase.Cancel" /> of <see cref="M:Catel.MVVM.ViewModelBase.Save" /> method.
+    /// </summary>
+    /// <returns></returns>
+    protected override Task CloseAsync()
+    {
+      return CollectionViewModel.CloseViewModelAsync(null);
+    }
+
     private void OnAddQueryCommandExecute() { }
 
-    private void OnSelectedQueryChanged()
+    private async void OnSelectedQueryChanged()
     {
       if (CollectionViewModel != null)
-        CollectionViewModel.Query = SelectedQuery;
+        await CollectionViewModel.CloseViewModelAsync(null).ConfigureAwait(true);
+      
+      CollectionViewModel =
+        TypeFactory.Default.CreateInstanceWithParametersAndAutoCompletion(
+                     typeof(CollectionDataGridViewModel), SelectedQuery) as
+          CollectionDataGridViewModel;
     }
 
     #endregion

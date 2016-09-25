@@ -62,6 +62,42 @@ namespace Sidekick.SpacedRepetition.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Spaced Repetition.
+        /// </summary>
+        internal static string SpacedRepetition_Card_GroupedHeader_SpacedRepetition {
+            get {
+                return ResourceManager.GetString("SpacedRepetition_Card_GroupedHeader_SpacedRepetition", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to State.
+        /// </summary>
+        internal static string SpacedRepetition_Card_GroupedHeader_State {
+            get {
+                return ResourceManager.GetString("SpacedRepetition_Card_GroupedHeader_State", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Times.
+        /// </summary>
+        internal static string SpacedRepetition_Card_GroupedHeader_Times {
+            get {
+                return ResourceManager.GetString("SpacedRepetition_Card_GroupedHeader_Times", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Data.
+        /// </summary>
+        internal static string SpacedRepetition_Card_Header_Data {
+            get {
+                return ResourceManager.GetString("SpacedRepetition_Card_Header_Data", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Due.
         /// </summary>
         internal static string SpacedRepetition_Card_Header_Due {

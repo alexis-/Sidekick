@@ -5,10 +5,24 @@
                            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                            xmlns:orchestra="https://github.com/orcomp/orchestra"
                            xmlns:spacedRepetition="clr-namespace:Sidekick.Windows.Views.SpacedRepetition"
+                           xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+                           xmlns:wpfControls="clr-namespace:Sidekick.WPF.Controls;assembly=Sidekick.WPF"
+                           xmlns:catel="http://catel.codeplex.com"
+                           xmlns:windows="clr-namespace:Sidekick.Windows"
                            mc:Ignorable="d"
                            Height="680"
                            Width="1100">
+  <orchestra:MetroDataWindow.RightWindowCommands>
+    <controls:WindowCommands>
+      <wpfControls:FlatIconizableButton x:Name="SearchButton"
+                                        Icon="{DynamicResource appbar_magnify}"
+                                        IconSize="14 14"
+                                        Command="{catel:CommandManagerBinding 'General.Search'}"
+                                        Width="32" Height="32"
+                                        Visibility="{Binding Path=IsEnabled, ElementName=SearchButton, Converter={catel:BooleanToCollapsingVisibilityConverter}}" />
+    </controls:WindowCommands>
+  </orchestra:MetroDataWindow.RightWindowCommands>
 
   <spacedRepetition:BrowserView />
-  
+
 </orchestra:MetroDataWindow>

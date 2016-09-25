@@ -31,6 +31,21 @@ namespace Sidekick.Shared.Extensions
   {
     #region Methods
 
+    /// <summary>Return value if dictionary contains key, or default TValue type value</summary>
+    /// <typeparam name="TKey">The type of the key.</typeparam>
+    /// <typeparam name="TValue">The type of the value.</typeparam>
+    /// <param name="dictionary">The dictionary.</param>
+    /// <param name="key">The key.</param>
+    /// <returns></returns>
+    public static TValue SafeGet<TKey, TValue>(
+      this Dictionary<TKey, TValue> dictionary, TKey key)
+    {
+      if (dictionary.ContainsKey(key))
+        return dictionary[key];
+
+      return default(TValue);
+    }
+
     /// <summary>
     /// Gets the value if it exists in the dictionary, adds it otherwise
     /// </summary>

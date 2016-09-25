@@ -23,20 +23,48 @@ namespace Sidekick.Windows.Views.SpacedRepetition
 {
   using Catel.Windows.Controls;
 
+  using Sidekick.Windows.ViewModels.SpacedRepetition;
+
   /// <summary>Interaction logic for CollectionDataGridView.xaml</summary>
   public partial class CollectionDataGridView : UserControl
   {
     #region Constructors
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="CollectionDataGridView"/> class.
-    /// </summary>
-    /// <remarks>
-    /// This method is required for design time support.
-    /// </remarks>
+    /// <summary>Initializes a new instance of the <see cref="CollectionDataGridView" /> class.</summary>
+    /// <remarks>This method is required for design time support.</remarks>
     public CollectionDataGridView()
     {
       InitializeComponent();
+
+      CloseViewModelOnUnloaded = false;
+    }
+
+    #endregion
+
+
+
+    #region Methods
+
+    /// <summary>
+    ///   Called when the <see cref="P:Catel.Windows.Controls.UserControl.ViewModel" /> has
+    ///   changed.
+    /// </summary>
+    /// <remarks>
+    ///   This method does not implement any logic and saves a developer from
+    ///   subscribing/unsubscribing to the
+    ///   <see cref="E:Catel.Windows.Controls.UserControl.ViewModelChanged" /> event inside the same
+    ///   user control.
+    /// </remarks>
+    protected override void OnViewModelChanged()
+    {
+      if (ViewModel != null)
+      {
+        var viewModel = (CollectionDataGridViewModel)ViewModel;
+
+        viewModel.SfDataPager = DataPager;
+      }
+
+      base.OnViewModelChanged();
     }
 
     #endregion

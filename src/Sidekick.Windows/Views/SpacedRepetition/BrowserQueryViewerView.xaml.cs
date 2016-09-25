@@ -39,6 +39,8 @@ namespace Sidekick.Windows.Views.SpacedRepetition
     public BrowserQueryViewerView()
     {
       InitializeComponent();
+
+      CloseViewModelOnUnloaded = false;
     }
 
     #endregion

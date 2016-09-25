@@ -19,33 +19,42 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+// ReSharper disable PossibleNullReferenceException
+
 namespace Sidekick.Windows.ViewModels.SpacedRepetition
 {
   using System.ComponentModel;
   using System.Threading.Tasks;
+  using System.Windows.Input;
 
   using AgnosticDatabase.Interfaces;
 
   using Catel;
-  using Catel.Collections;
   using Catel.MVVM;
   using Catel.Services;
 
-  using Sidekick.MVVM.Models;
   using Sidekick.SpacedRepetition.Models;
+  using Sidekick.Windows.Helper;
   using Sidekick.Windows.Models;
-  using Sidekick.WPF.Controls;
+
+  using Syncfusion.UI.Xaml.Controls.DataPager;
 
   /// <summary>Displays card collection in a DataGrid.</summary>
   /// <seealso cref="Catel.MVVM.ViewModelBase" />
-  public class CollectionDataGridViewModel : ViewModelBase, ISortController
+  public class CollectionDataGridViewModel : ViewModelBase
   {
     #region Fields
+
+    /// <summary>
+    ///   Gets or sets the sf data pager. Terrible hack to circumvent some limitations of
+    ///   SfDataPager
+    /// </summary>
+    // ReSharper disable once StyleCop.SA1401
+    internal SfDataPager SfDataPager;
 
     private readonly IDatabaseAsync _db;
     private readonly IPleaseWaitService _pleaseWaitService;
     private SortDescriptionCollection _sortDescriptions;
-    private Task _sortTask;
 
     #endregion
 
@@ -57,18 +66,23 @@ namespace Sidekick.Windows.ViewModels.SpacedRepetition
     /// <param name="query">Optional collection query</param>
     /// <param name="db">Database instance.</param>
     /// <param name="pleaseWaitService">The please wait service.</param>
+    /// <param name="commandManager">The command manager.</param>
     public CollectionDataGridViewModel(
-      CollectionQuery query, IDatabaseAsync db, IPleaseWaitService pleaseWaitService)
-      : base(false)
+      CollectionQuery query, IDatabaseAsync db, IPleaseWaitService pleaseWaitService,
+      ICommandManager commandManager) : base(false)
     {
       Argument.IsNotNull(() => db);
       Argument.IsNotNull(() => pleaseWaitService);
 
       _db = db;
       _pleaseWaitService = pleaseWaitService;
-
+      
       Query = query;
-      PageableCollection = new DbPageableCollection<Card>(_db, FilterCollection);
+      DataPager = new DatabaseDataPager<Card>(FilterCollection, 100, db);
+
+      // Search command
+      SearchCommand = new Command(() => IsDataGridSearchVisible = !IsDataGridSearchVisible);
+      commandManager.RegisterCommand(Commands.General.Search, SearchCommand, this);
     }
 
     #endregion
@@ -77,49 +91,64 @@ namespace Sidekick.Windows.ViewModels.SpacedRepetition
 
     #region Properties
 
-    /// <summary>Gets or sets the pageable collection.</summary>
+    /// <summary>Gets or sets the data pager.</summary>
     [Model]
-    public PageableCollectionBase<Card> PageableCollection { get; set; }
-
-    /// <summary>Gets or sets the filtered collection.</summary>
-    [ViewModelToModel("PageableCollection", "CurrentPageItems")]
-    public FastObservableCollection<Card> FilteredCollection { get; set; }
+    public DatabaseDataPager<Card> DataPager { get; set; }
 
     /// <summary>Gets or sets the size of the page.</summary>
-    /// <value>The size of the page.</value>
-    [ViewModelToModel("PageableCollection", "PageSize")]
+    [ViewModelToModel("DataPager", "PageSize")]
     public int PageSize { get; set; }
 
-    /// <summary>Gets or sets the selected page.</summary>
-    [ViewModelToModel("PageableCollection", "CurrentPage")]
-    public int SelectedPage { get; set; }
-
     /// <summary>Gets or sets the total page count.</summary>
-    [ViewModelToModel("PageableCollection", "TotalPageCount")]
-    public int TotalPageCount { get; set; }
+    [ViewModelToModel("DataPager", "PageCount")]
+    public int PageCount { get; set; }
 
     /// <summary>Gets or sets the query.</summary>
+    [Model]
     public CollectionQuery Query { get; set; }
 
-    /// <summary>Gets or sets the DataGrid sort controller.</summary>
-    /// <summary>Called when control sorting is updated.</summary>
-    /// <param name="sortDescriptions">The sort descriptions.</param>
-    public bool OnSorting(SortDescriptionCollection sortDescriptions)
+    /// <summary>Gets or sets a value indicating whether the data grid search control is visible.</summary>
+    public bool IsDataGridSearchVisible { get; set; } = false;
+
+    /// <summary>Gets or sets the search command.</summary>
+    public ICommand SearchCommand { get; set; }
+
+    #endregion
+
+
+
+    #region Methods
+
+    /// <summary>Called when sorting columns.</summary>
+    /// <param name="sfDataPager">The sf data pager.</param>
+    public void OnSortColumnsExecute(SfDataPager sfDataPager)
     {
-      _sortDescriptions = sortDescriptions;
+      sfDataPager.PagedSource.ResetCache();
+      sfDataPager.PagedSource.ResetCacheForPage(SfDataPager.PageIndex);
 
-#pragma warning disable 4014
-      _sortTask = PageableCollection.UpdateCurrentPageItemsAsync()
-        .ContinueWith(ret => _sortTask = null);
-#pragma warning restore 4014
+      _sortDescriptions = sfDataPager.PagedSource.SortDescriptions;
 
-      return false;
+      sfDataPager.MoveToPage(SfDataPager.PageIndex);
     }
 
-    /// <summary>Determines whether sort is enabled.</summary>
-    public bool CanSort()
+    /// <summary>Called when loading is required.</summary>
+    /// <param name="sfDataPager">The sf data pager.</param>
+    /// <param name="args">
+    ///   The
+    ///   <see cref="Syncfusion.UI.Xaml.Controls.DataPager.OnDemandLoadingEventArgs" /> instance
+    ///   containing the event data.
+    /// </param>
+    public async void OnDemandLoadExecuteAsync(
+      SfDataPager sfDataPager, OnDemandLoadingEventArgs args)
     {
-      return _sortTask == null;
+      // Fix for SfDataPager calling on close...
+      if (IsClosed)
+        return;
+
+      var items = await DataPager.LoadPageAsync(args.StartIndex, PageSize).ConfigureAwait(true);
+
+      sfDataPager.LoadDynamicItems(args.StartIndex, items);
+      sfDataPager.PagedSource.Refresh();
     }
 
     /// <inheritdoc />
@@ -129,12 +158,30 @@ namespace Sidekick.Windows.ViewModels.SpacedRepetition
       {
         _pleaseWaitService.Push("Loading collection");
 
-        await PageableCollection.UpdateCurrentPageItemsAsync().ConfigureAwait(true);
+        await DataPager.ResetAsync().ConfigureAwait(true);
+
+        // Fix inconsistent SfDataPager behavior....
+        if (SfDataPager.PageSize != 0)
+        {
+          SfDataPager.DataContext = this;
+          SfDataPager.GetBindingExpression(SfDataPager.PageCountProperty).UpdateTarget();
+          SfDataPager.GetBindingExpression(SfDataPager.PageSizeProperty).UpdateTarget();
+
+          SfDataPager.MoveToFirstPage();
+        }
       }
       finally
       {
         _pleaseWaitService.Pop();
       }
+    }
+
+    /// <inheritdoc />
+    protected override Task CloseAsync()
+    {
+      SfDataPager = null;
+
+      return base.CloseAsync();
     }
 
     private ITableQueryAsync<Card> FilterCollection(ITableQueryAsync<Card> query)
@@ -149,12 +196,6 @@ namespace Sidekick.Windows.ViewModels.SpacedRepetition
             sortDescription.Direction == ListSortDirection.Ascending);
 
       return query;
-    }
-
-    private void OnQueryChanged()
-    {
-      if (PageableCollection != null)
-        PageableCollection.GoToFirstPage(true);
     }
 
     #endregion

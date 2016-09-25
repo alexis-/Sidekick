@@ -32,6 +32,7 @@ namespace Sidekick.Windows.Services
   using Catel.Logging;
   using Catel.MVVM;
 
+  using Sidekick.Shared.Extensions;
   using Sidekick.Windows.Services.Interfaces;
 
   using InputGesture = Catel.Windows.Input.InputGesture;
@@ -255,7 +256,7 @@ namespace Sidekick.Windows.Services
           throw Log.ErrorAndCreateException<InvalidOperationException>(
             "Command '{0}' is not yet created using the CreateCommand method", commandName);
 
-        _commands[commandName].Execute(_commandsParameter[commandName]);
+        _commands[commandName].Execute(_commandsParameter.SafeGet(commandName));
       }
     }
 

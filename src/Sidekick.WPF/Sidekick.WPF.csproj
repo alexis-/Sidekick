@@ -107,6 +107,7 @@
     </Compile>
     <Compile Include="Extensions\ComboBoxExtensions.cs" />
     <Compile Include="Markup\EnumBinding.cs" />
+    <Compile Include="Markup\MethodBinding.cs" />
     <Compile Include="Markup\ResourceBinding.cs" />
     <Compile Include="ModuleInitializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -11,6 +11,9 @@
     <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
     <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
     <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colors.xaml" />
+    
+    <!--MahApps - SyncFusion mapping styles-->
+    <ResourceDictionary Source="pack://application:,,,/MahApps.SyncFusion;component/Themes/Generic.xaml" />
 
     <!--Existing controls styles-->
     <ResourceDictionary Source="pack://application:,,,/Sidekick.Windows;component/Styles/Controls.xaml" />

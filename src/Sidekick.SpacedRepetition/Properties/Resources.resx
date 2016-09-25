@@ -117,6 +117,18 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="SpacedRepetition_Card_GroupedHeader_SpacedRepetition" xml:space="preserve">
+    <value>Spaced Repetition</value>
+  </data>
+  <data name="SpacedRepetition_Card_GroupedHeader_State" xml:space="preserve">
+    <value>State</value>
+  </data>
+  <data name="SpacedRepetition_Card_GroupedHeader_Times" xml:space="preserve">
+    <value>Times</value>
+  </data>
+  <data name="SpacedRepetition_Card_Header_Data" xml:space="preserve">
+    <value>Data</value>
+  </data>
   <data name="SpacedRepetition_Card_Header_Due" xml:space="preserve">
     <value>Due</value>
   </data>

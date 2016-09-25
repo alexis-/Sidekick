@@ -6,14 +6,116 @@
                    xmlns:local="clr-namespace:Sidekick.Windows.Views.SpacedRepetition"
                    xmlns:catel="http://catel.codeplex.com"
                    xmlns:controls="clr-namespace:Sidekick.WPF.Controls;assembly=Sidekick.WPF"
+                   xmlns:Syncfusion="http://schemas.syncfusion.com/wpf"
+                   xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+                   xmlns:markup="clr-namespace:Sidekick.WPF.Markup;assembly=Sidekick.WPF"
+                   xmlns:mahAppsSyncFusionControls="clr-namespace:MahApps.SyncFusion.Controls;assembly=MahApps.SyncFusion"
                    mc:Ignorable="d"
                    d:DesignHeight="300" d:DesignWidth="300">
+  <catel:UserControl.Resources>
+    <Style x:Key="DataGridAlternatingRowStyle" TargetType="Syncfusion:VirtualizingCellsControl">
+      <Setter Property="Background" Value="{DynamicResource GrayBrush10}" />
+    </Style>
+
+    <Style TargetType="Syncfusion:HeaderRowControl">
+      <Setter Property="BorderBrush" Value="{DynamicResource GrayBrush5}" />
+      <Setter Property="BorderThickness" Value="0 0 0 2" />
+    </Style>
+  </catel:UserControl.Resources>
   <Grid>
-    <controls:DataGridEx Name="DataGrid"
-                         SortController="{Binding .}"
-                         ItemsSource="{Binding FilteredCollection}">
-      <DataGrid.Columns>
-      </DataGrid.Columns>
-    </controls:DataGridEx>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="*" />
+      <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
+    <Syncfusion:SfDataGrid x:Name="DataGrid"
+                           ItemsSource="{Binding Path=PagedSource, ElementName=DataPager}"
+                           AutoGenerateColumns="False"
+                           AlternationCount="2"
+                           AlternatingRowStyle="{StaticResource DataGridAlternatingRowStyle}"
+                           SortColumnsChanged="{markup:MethodBinding OnSortColumnsExecute, {Binding ElementName=DataPager}}"
+                           AllowTriStateSorting="True"
+                           ShowSortNumbers="True"
+                           FocusVisualStyle="{x:Null}"
+                           Grid.Row="0">
+      
+      <Syncfusion:SfDataGrid.Columns>
+        <Syncfusion:GridTextColumn HeaderText="{catel:LanguageBinding SpacedRepetition_Card_Header_Data}"
+                                   MappingName="Data"
+                                      AllowResizing="True" />
+
+        <Syncfusion:GridNumericColumn HeaderText="{catel:LanguageBinding SpacedRepetition_Card_Header_PracticeState}"
+                                      MappingName="PracticeState"
+                                      AllowResizing="True"
+                                      ColumnSizer="SizeToHeader" />
+        <Syncfusion:GridNumericColumn HeaderText="{catel:LanguageBinding SpacedRepetition_Card_Header_MiscState}"
+                                      MappingName="MiscState"
+                                      AllowResizing="True"
+                                      ColumnSizer="SizeToHeader" />
+
+        <Syncfusion:GridNumericColumn HeaderText="{catel:LanguageBinding SpacedRepetition_Card_Header_EFactor}"
+                                      MappingName="EFactor"
+                                      AllowResizing="True"
+                                      ColumnSizer="SizeToHeader" />
+        <Syncfusion:GridNumericColumn HeaderText="{catel:LanguageBinding SpacedRepetition_Card_Header_Interval}"
+                                      MappingName="Interval"
+                                      AllowResizing="True"
+                                      ColumnSizer="SizeToHeader" />
+        <Syncfusion:GridNumericColumn HeaderText="{catel:LanguageBinding SpacedRepetition_Card_Header_Reviews}"
+                                      MappingName="Reviews"
+                                      AllowResizing="True"
+                                      ColumnSizer="SizeToHeader" />
+        <Syncfusion:GridNumericColumn HeaderText="{catel:LanguageBinding SpacedRepetition_Card_Header_Lapses}"
+                                      MappingName="Lapses"
+                                      AllowResizing="True"
+                                      ColumnSizer="SizeToHeader" />
+
+        <Syncfusion:GridNumericColumn HeaderText="{catel:LanguageBinding SpacedRepetition_Card_Header_Due}"
+                                      MappingName="Due"
+                                      AllowResizing="True"
+                                      ColumnSizer="Auto" />
+        <Syncfusion:GridNumericColumn HeaderText="{catel:LanguageBinding SpacedRepetition_Card_Header_Id}"
+                                      MappingName="Id"
+                                      AllowResizing="True"
+                                      ColumnSizer="Auto" />
+        <Syncfusion:GridNumericColumn HeaderText="{catel:LanguageBinding SpacedRepetition_Card_Header_LastModified}"
+                                      MappingName="LastModified"
+                                      AllowResizing="True"
+                                      ColumnSizer="Auto" />
+      </Syncfusion:SfDataGrid.Columns>
+
+      <Syncfusion:SfDataGrid.StackedHeaderRows>
+        <Syncfusion:StackedHeaderRow>
+          <Syncfusion:StackedHeaderRow.StackedColumns>
+            <Syncfusion:StackedColumn HeaderText="{catel:LanguageBinding SpacedRepetition_Card_GroupedHeader_State}"
+                                      ChildColumns="Data,PracticeState,MiscState" />
+            <Syncfusion:StackedColumn HeaderText="{catel:LanguageBinding SpacedRepetition_Card_GroupedHeader_SpacedRepetition}"
+                                      ChildColumns="EFactor,Interval,Reviews,Lapses" />
+            <Syncfusion:StackedColumn HeaderText="{catel:LanguageBinding SpacedRepetition_Card_GroupedHeader_Times}"
+                                      ChildColumns="Due,Id,LastModified" />
+          </Syncfusion:StackedHeaderRow.StackedColumns>
+        </Syncfusion:StackedHeaderRow>
+      </Syncfusion:SfDataGrid.StackedHeaderRows>
+    </Syncfusion:SfDataGrid>
+
+    <mahAppsSyncFusionControls:SfDataGridSearchControl x:Name="DataGridSearch"
+                                                       DataGrid="{Binding ElementName=DataGrid}"
+                                                       VerticalAlignment="Top"
+                                                       HorizontalAlignment="Right"
+                                                       CloseCommand="{Binding SearchCommand}"
+                                                       Visibility="{Binding IsDataGridSearchVisible, Converter={catel:BooleanToCollapsingVisibilityConverter}}"
+                                                       Grid.Row="0" />
+
+    <Syncfusion:SfDataPager x:Name="DataPager"
+                            NumericButtonCount="10"
+                            PageCount="{Binding PageCount}"
+                            PageSize="{Binding PageSize}"
+                            PageIndex="{Binding PageIndex}"
+                            UseOnDemandPaging="True"
+                            OnDemandLoading="{markup:MethodBinding OnDemandLoadExecuteAsync, {markup:EventSenderParameter}, {markup:EventArgsParameter}}"
+                            AccentForeground="{DynamicResource WhiteBrush}"
+                            AccentBackground="{DynamicResource AccentColorBrush2}"
+                            HorizontalContentAlignment="Center"
+                            Height="50"
+                            Grid.Row="1" />
   </Grid>
 </catel:UserControl>

@@ -8,3 +8,6 @@
 [submodule "libs/Orc.FilterBuilder"]
 	path = libs/Orc.FilterBuilder
 	url = https://github.com/alexis-/Orc.FilterBuilder.git
+[submodule "libs/MahApps.SyncFusion"]
+	path = libs/MahApps.SyncFusion
+	url = https://github.com/alexis-/MahApps.SyncFusion

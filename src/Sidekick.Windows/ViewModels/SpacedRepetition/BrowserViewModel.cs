@@ -21,18 +21,19 @@
 
 namespace Sidekick.Windows.ViewModels.SpacedRepetition
 {
+  using System.Threading.Tasks;
+
   using Catel.IoC;
   using Catel.Messaging;
   using Catel.MVVM;
 
   using Orc.FilterBuilder.Models;
-  
+
   using Sidekick.MVVM.ViewModels;
 
   /// <summary>
-  ///   View Model for main browser view.
-  ///   Handles navigation between the different parts of browser
-  ///   (display content, add queries, ...)
+  ///   View Model for main browser view. Handles navigation between the different parts of
+  ///   browser (display content, add queries, ...)
   /// </summary>
   /// <seealso cref="Sidekick.MVVM.ViewModels.MainContentViewModelBase" />
   [InterestedIn(typeof(BrowserQueryViewerViewModel))]
@@ -49,9 +50,7 @@ namespace Sidekick.Windows.ViewModels.SpacedRepetition
 
     #region Constructors
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="BrowserViewModel" /> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="BrowserViewModel" /> class.</summary>
     /// <param name="mediator">The mediator.</param>
     public BrowserViewModel(IMessageMediator mediator)
     {
@@ -69,9 +68,7 @@ namespace Sidekick.Windows.ViewModels.SpacedRepetition
 
     #region Properties
 
-    /// <summary>
-    ///   Currently displayed ViewModel.
-    /// </summary>
+    /// <summary>Currently displayed ViewModel.</summary>
     public ViewModelBase CurrentModel { get; set; }
 
     #endregion
@@ -81,9 +78,7 @@ namespace Sidekick.Windows.ViewModels.SpacedRepetition
     #region Methods
 
     /// <inheritdoc />
-    /// <summary>
-    ///   Handles commands from child ViewModels (Add query, ...)
-    /// </summary>
+    /// <summary>Handles commands from child ViewModels (Add query, ...)</summary>
     protected override void OnViewModelCommandExecuted(
       IViewModel viewModel, ICatelCommand command, object commandParameter)
     {
@@ -97,6 +92,17 @@ namespace Sidekick.Windows.ViewModels.SpacedRepetition
           ShowQueryBuilder(commandParameter as FilterScheme);
           break;
       }
+    }
+
+    /// <summary>
+    ///   Closes this instance. Always called after the
+    ///   <see cref="M:Catel.MVVM.ViewModelBase.Cancel" /> of
+    ///   <see cref="M:Catel.MVVM.ViewModelBase.Save" /> method.
+    /// </summary>
+    /// <returns></returns>
+    protected override Task CloseAsync()
+    {
+      return _browserQueryViewerViewModel.CloseViewModelAsync(null);
     }
 
     private void OnMessageReceived(SimpleMessage msg)

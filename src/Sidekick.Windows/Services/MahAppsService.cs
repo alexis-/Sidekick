@@ -29,6 +29,7 @@ namespace Sidekick.Windows.Services
 
   using MahApps.Metro.Controls;
 
+  using Orchestra;
   using Orchestra.Models;
   using Orchestra.Services;
 

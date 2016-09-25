@@ -96,6 +96,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DB", "DB", "{88A43661-9BA3-
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SQLite.Net.Platform.Test", "tests\DB\SQLite.Net.Platform.Test\SQLite.Net.Platform.Test.shproj", "{6C2CEAB5-1A88-493B-BD45-B913D43569B9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MahApps.SyncFusion.NET451", "libs\MahApps.SyncFusion\MahApps.SyncFusion.NET451.csproj", "{0A4BA388-7E19-4963-895E-550FCF04ECB8}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		libs\Orc.FilterBuilder\src\Orc.FilterBuilder\Orc.FilterBuilder.Shared\Orc.FilterBuilder.Shared.projitems*{050cea5d-dacb-41c0-bdb7-2149dfcc53a1}*SharedItemsImports = 13
@@ -326,6 +328,18 @@ Global
 		{C5D0F847-3359-4814-9EDF-733E3010CC16}.Release|iPhone.Build.0 = Release|Any CPU
 		{C5D0F847-3359-4814-9EDF-733E3010CC16}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
 		{C5D0F847-3359-4814-9EDF-733E3010CC16}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
+		{0A4BA388-7E19-4963-895E-550FCF04ECB8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A4BA388-7E19-4963-895E-550FCF04ECB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A4BA388-7E19-4963-895E-550FCF04ECB8}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{0A4BA388-7E19-4963-895E-550FCF04ECB8}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{0A4BA388-7E19-4963-895E-550FCF04ECB8}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{0A4BA388-7E19-4963-895E-550FCF04ECB8}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{0A4BA388-7E19-4963-895E-550FCF04ECB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A4BA388-7E19-4963-895E-550FCF04ECB8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A4BA388-7E19-4963-895E-550FCF04ECB8}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{0A4BA388-7E19-4963-895E-550FCF04ECB8}.Release|iPhone.Build.0 = Release|Any CPU
+		{0A4BA388-7E19-4963-895E-550FCF04ECB8}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{0A4BA388-7E19-4963-895E-550FCF04ECB8}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -361,5 +375,6 @@ Global
 		{DDF4B2EF-31CD-4978-9A1F-00796E3990F3} = {971EF148-F3B6-4795-A933-74AC739C636D}
 		{88A43661-9BA3-4F71-837E-75E3EBBD8B74} = {971EF148-F3B6-4795-A933-74AC739C636D}
 		{6C2CEAB5-1A88-493B-BD45-B913D43569B9} = {88A43661-9BA3-4F71-837E-75E3EBBD8B74}
+		{0A4BA388-7E19-4963-895E-550FCF04ECB8} = {EEBA07BA-ECA2-40A0-8911-DB95F72961B2}
 	EndGlobalSection
 EndGlobal

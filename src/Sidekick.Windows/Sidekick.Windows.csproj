@@ -170,6 +170,7 @@
     <Compile Include="Converters\GradeToBrushConverter.cs" />
     <Compile Include="Converters\ItemsPresenterEqualSizeConverter.cs" />
     <Compile Include="Converters\TabSizeConverter.cs" />
+    <Compile Include="Helper\DatabaseDataPager.cs" />
     <Compile Include="Models\CollectionQuery.cs" />
     <Compile Include="Models\CollectionQueries.cs" />
     <Compile Include="Models\MenuItem.cs" />
@@ -266,6 +267,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\libs\MahApps.SyncFusion\MahApps.SyncFusion.NET451.csproj">
+      <Project>{0a4ba388-7e19-4963-895e-550fcf04ecb8}</Project>
+      <Name>MahApps.SyncFusion.NET451</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\libs\Orc.FilterBuilder\src\Orc.FilterBuilder\Orc.FilterBuilder.NET45\Orc.FilterBuilder.NET45.csproj">
       <Project>{df2fdbdc-f137-419d-a0ae-451b70b0b9e8}</Project>
       <Name>Orc.FilterBuilder.NET45</Name>

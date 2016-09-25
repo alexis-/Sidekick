@@ -23,16 +23,12 @@ namespace Sidekick.Windows.Views.SpacedRepetition
 {
   using Orchestra.Windows;
 
-  /// <summary>
-  ///   Interaction logic for BrowserWindow.xaml
-  /// </summary>
+  /// <summary>Interaction logic for BrowserWindow.xaml</summary>
   public partial class BrowserWindow : MetroDataWindow
   {
     #region Constructors
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="BrowserWindow"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="BrowserWindow" /> class.</summary>
     public BrowserWindow()
     {
       InitializeComponent();

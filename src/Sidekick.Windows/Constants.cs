@@ -49,6 +49,17 @@ namespace Sidekick.Windows
 
   public static class Commands
   {
+    public static class General
+    {
+      #region Fields
+
+      public const string Search = "General.Search";
+      public static readonly InputGesture SearchInputGesture = new InputGesture(
+        Key.F, ModifierKeys.Control);
+
+      #endregion
+    }
+
     public static class SpacedRepetition
     {
       public static class CollectionReview

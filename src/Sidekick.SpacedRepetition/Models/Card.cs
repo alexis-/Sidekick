@@ -144,6 +144,7 @@ namespace Sidekick.SpacedRepetition.Models
 
     /// <summary>Data access property.</summary>
     [Ignore]
+    [DisplayName("SpacedRepetition_Card_Header_Data")]
     public string Data { get; set; }
 
     /// <summary>
