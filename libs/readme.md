@@ -26,3 +26,4 @@
   * **WPF**
     * [MahApps.Metro](https://github.com/MahApps/MahApps.Metro) => *Metro UI for WPF.*
     * [GongWpf-DragDrop](https://github.com/punker76/gong-wpf-dragdrop) => *Drag & Drop for WPF.*
+    * [MahApps.SyncFusion](https://github.com/alexis-/MahApps.SyncFusion) => *Styling SyncFusion controls with MahApps theme.*
